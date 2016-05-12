@@ -1,0 +1,227 @@
+#pane_ajout_article {
+    -fx-background-color: #cad6c1;
+    -fx-translate-x: 28.0;
+    -fx-translate-y: 23.0;
+}
+
+#titre_ajout_article{
+    -fx-translate-x: 25.0;
+    -fx-translate-y: 14.0;
+    -fx-text-fill: #424b38;
+    -fx-font-size: 24.0;
+}
+
+#tabpane_ajout_article{
+    -fx-translate-x: 25.0;
+    -fx-translate-y: 55.0;
+    -fx-background-color: #cad6c1;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #cad6c1;
+}
+
+.tab .tab-label { 
+    -fx-text-fill: white;
+}
+
+#titre_tabpane_ouvrage {
+    -fx-translate-y: 10.0;
+    -fx-translate-x: 25.0;
+}
+
+#ouvrage_titre {
+    -fx-translate-y: 10.0;
+    -fx-translate-x: 170.0;
+    -fx-font-size: 12;
+    max-height: 12px;
+}
+
+#lbl_ouvrage_no {
+    -fx-translate-y: 40.0;
+    -fx-translate-x: 25.0;
+}
+
+
+#ouvrage_no_edition {
+    -fx-translate-y: 40.0;
+    -fx-translate-x: 170.0;
+    -fx-font-size: 12;
+}
+
+#lbl_ouvrage_auteur {
+    -fx-font-size: 16.0;
+    -fx-font-weight: bold;
+    -fx-translate-y: 70.0;
+    -fx-translate-x: 25.0;
+}
+
+#lbl_ouvrage_prenom {
+    -fx-translate-y: 100.0;
+    -fx-translate-x: 46.0;
+}
+
+#txtf_auteurPrenom_1{
+    -fx-translate-y: 100.0;
+    -fx-translate-x: 170.0;
+    -fx-font-size: 12;
+}
+
+#lbl_ouvrage_nom {
+    -fx-translate-y: 130.0;
+    -fx-translate-x: 46.0;
+}
+
+#txtf_auteurNom_1{
+    -fx-translate-y: 130.0;
+    -fx-translate-x: 170.0; 
+    -fx-font-size: 12;
+}
+
+#btn_ajoutAuteur {
+    height: 22px;
+    width: 30px;
+    -fx-background-color: #647a52;
+    -fx-translate-y: 160.0;
+    -fx-translate-x: 250.0;
+    -fx-text-fill: white;
+}
+
+#btn_ajoutAuteur:hover{
+    -fx-cursor: hand;
+    -fx-background-color: #96ad83;
+}
+
+#btn_retireAuteur{
+    height: 22px;
+    min-width: 30px;
+    width: 30px;
+    -fx-background-color: #647a52;
+    -fx-translate-y: 160.0;
+    -fx-translate-x: 286.0; 
+    -fx-text-fill: white;
+}
+
+#btn_retireAuteur:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #96ad83;
+}
+
+#lbl_ouvrage_editeur {
+    -fx-translate-y: 200.0;
+    -fx-translate-x: 25.0;
+}
+
+#txtf_editeur {
+    -fx-translate-y: 200.0;
+    -fx-translate-x: 170.0;
+    -fx-font-size: 12;
+}
+
+#lbl_ouvrage_annee {
+    -fx-translate-y: 230.0;
+    -fx-translate-x: 25.0;
+}
+
+#txtf_annee {
+    -fx-translate-y: 230.0;
+    -fx-translate-x: 170.0;
+    -fx-font-size: 12;
+}
+
+#lbl_ouvrage_codeEAN {
+    -fx-translate-y: 260.0;
+    -fx-translate-x: 25.0;  
+}
+
+#txtf_code{
+    -fx-translate-y: 260.0;
+    -fx-translate-x: 170.0;
+    -fx-font-size: 12;
+}
+
+#cb_code {
+    -fx-translate-y: 260.0;
+    -fx-translate-x: 340.0;
+}
+
+#cb_code:hover {
+    -fx-cursor: hand;
+}
+
+#lbl_ouvrage_matiere {
+    -fx-translate-y: 290.0;
+    -fx-translate-x: 25.0;    
+}
+
+#cbb_matiere {
+    -fx-translate-y: 290.0;
+    -fx-translate-x: 170.0;
+    -fx-font-size: 12;
+}
+
+#cbb_matiere:hover {
+    -fx-cursor: hand;
+}
+
+#btn_ajoutOuvrage {
+    -fx-background-color: #647a52;
+    -fx-text-fill: white;
+    -fx-translate-y: 350.0;
+    -fx-translate-x: 440.0;
+}
+
+#btn_ajoutOuvrage:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #96ad83;
+}
+
+#lbl_objet_nom {
+    -fx-translate-y: 10.0;
+    -fx-translate-x: 25.0;
+}
+
+#txt_objet_nom {
+    -fx-translate-y: 10.0;
+    -fx-translate-x: 170.0;
+    -fx-font-size: 12;
+}
+
+#lbl_objet_cat {
+    -fx-translate-y: 40.0;
+    -fx-translate-x: 25.0;
+}
+
+#cbb_categorie {
+    -fx-translate-y: 40.0;
+    -fx-translate-x: 170.0;
+    -fx-font-size: 12; 
+}
+
+#cbb_categorie:hover {
+    -fx-cursor: hand;
+}
+
+#lbl_objet_comm {
+    -fx-translate-y: 70.0;
+    -fx-translate-x: 25.0;
+}
+
+#ta_objet_comm {
+    -fx-translate-y: 70.0;
+    -fx-translate-x: 170.0;
+    -fx-font-size: 12; 
+    -fx-wrap-text: true;
+}
+
+#btn_ajoutObjet {
+    -fx-background-color: #647a52;
+    -fx-text-fill: white;
+    -fx-translate-y: 350.0;
+    -fx-translate-x: 440.0;
+}
+
+#btn_ajoutObjet:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #96ad83;
+}

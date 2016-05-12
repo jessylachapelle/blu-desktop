@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="controller.ItemViewController">
+  <children>
+    <VBox prefHeight="1555.0" prefWidth="689.0">
+      <children>
+        <ScrollPane prefHeight="600.0" prefWidth="697.0">
+          <content>
+            <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1313.0" prefWidth="669.0">
+              <children>
+                <Pane layoutX="32.0" layoutY="51.0" prefHeight="1230.0" prefWidth="611.0" style="-fx-background-color: #d8e0d2">
+                  <children>
+                    <Label layoutX="22.0" layoutY="15.0" prefWidth="165.0" text="Titre :" textFill="#424b38" />
+                    <Label fx:id="lbl_titre" layoutX="180.0" layoutY="15.0" textFill="#424b38" />
+                    <Label layoutX="22.0" layoutY="35.0" prefWidth="165.0" text="Description :" textFill="#424b38" />
+                    <Label fx:id="lbl_description" layoutX="180.0" layoutY="35.0" textFill="#424b38" />
+                    <Label layoutX="22.0" layoutY="55.0" prefWidth="165.0" text="Auteur :" textFill="#424b38" />
+                    <Label fx:id="lbl_auteur" layoutX="180.0" layoutY="55.0" textFill="#424b38" />
+                    <Label layoutX="22.0" layoutY="75.0" prefWidth="165.0" text="Édition :" textFill="#424b38" />
+                    <Label fx:id="lbl_edition" layoutX="180.0" layoutY="75.0" textFill="#424b38" />
+                    <Label layoutX="22.0" layoutY="95.0" prefWidth="165.0" text="Éditeur :" textFill="#424b38" />
+                    <Label fx:id="lbl_editeur" layoutX="180.0" layoutY="95.0" textFill="#424b38" />
+                    <Label layoutX="22.0" layoutY="115.0" prefWidth="165.0" text="Année :" textFill="#424b38" />
+                    <Label fx:id="lbl_annee" layoutX="180.0" layoutY="115.0" textFill="#424b38" />
+                    <Label layoutX="22.0" layoutY="135.0" prefWidth="165.0" text="Code EAN13 :" textFill="#424b38" />
+                    <Label fx:id="lbl_code" layoutX="180.0" layoutY="135.0" textFill="#424b38" />
+                    <Label layoutX="22.0" layoutY="155.0" prefWidth="165.0" text="Commentaire :" textFill="#424b38" />
+                    <Button fx:id="btn_commentaire" layoutX="140.0" layoutY="155.0" text="Modifier" />
+                    <Label fx:id="lbl_commentaire" layoutX="22.0" layoutY="185.0" textFill="#424b38" text="Ceci est un commentaire" />
+
+                    <Label layoutX="22.0" layoutY="195.0" text="Gestion interne" textFill="#424b38">
+                      <font>
+                        <Font size="18.0" />
+                      </font>
+                    </Label>
+                    <Label layoutX="22.0" layoutY="225.0" prefWidth="165.0" text="Statut :" textFill="#424b38" />
+                    <Label fx:id="lbl_statut" layoutX="180.0" layoutY="225.0" textFill="#424b38" />
+                    <Button fx:id="monte_statut" layoutX="260.0" layoutY="220.0" text="^" />
+                    <Button fx:id="baisse_statut" layoutX="300.0" layoutY="220.0" text="v" />
+                    <Label layoutX="22.0" layoutY="245.0" prefWidth="165.0" text="Catégorie :" textFill="#424b38" />
+                    <Label fx:id="lbl_categorie" layoutX="180.0" layoutY="245.0" textFill="#424b38" />
+                    <Label layoutX="22.0" layoutY="265.0" prefWidth="165.0" text="Matière :" textFill="#424b38" />
+                    <Label fx:id="lbl_matiere" layoutX="180.0" layoutY="265.0" textFill="#424b38" />
+                    <Label layoutX="22.0" layoutY="285.0" prefWidth="165.0" text="Caisses de rangement :" textFill="#424b38" />
+                    <Button fx:id="btn_rangement" layoutX="140.0" layoutY="285.0" text="Modifier" />
+                    <Label fx:id="lbl_rangement" layoutX="22.0" layoutY="315.0" textFill="#424b38" />
+
+                    <Button fx:id="btn_faire_reservation" layoutX="25.0" layoutY="350.0" text="Faire une réservation" />
+
+                    <Label layoutX="25.0" layoutY="381.0" text="Statistiques" textFill="#424b38">
+                      <font>
+                        <Font size="18.0" />
+                      </font>
+                    </Label>
+                    <TableView fx:id="tbl_statOuvrage" layoutX="25.0" layoutY="416.0" prefHeight="141.0" prefWidth="569.0">
+                      <columns>
+                        <TableColumn prefWidth="263.0" text="C1" />
+                        <TableColumn prefWidth="305.0" text="C2" />
+                      </columns>
+                    </TableView>
+
+                    <Button fx:id="btn_reservation" layoutX="25.0" layoutY="592.0" mnemonicParsing="false" style="-fx-background-color: none;" text="Réservation  v" />
+                    <TableView fx:id="tbl_reservation" layoutX="26.0" layoutY="629.0" prefHeight="91.0" prefWidth="569.0">
+                      <columns>
+                        <TableColumn fx:id="col_reservation_membre" prefWidth="196.0" text="Membre" />
+                        <TableColumn fx:id="col_reservation_vendeur" prefWidth="164.0" text="Vendeur" />
+                        <TableColumn fx:id="col_reservation_ajout" prefWidth="147.0" text="Date d'ajout" />
+                        <TableColumn fx:id="col_reservation_date" prefWidth="147.0" text="Date de réservation" />
+                        <TableColumn fx:id="col_reservation_prix" prefWidth="61.0" text="Prix" />
+                      </columns>
+                    </TableView>
+
+                    <Button fx:id="btn_aVendre" layoutX="25.0" layoutY="752.0" mnemonicParsing="false" style="-fx-background-color: none;" text="À vendre  v" />
+                    <TableView fx:id="tbl_aVendre" layoutX="25.0" layoutY="789.0" prefHeight="109.0" prefWidth="569.0">
+                      <columns>
+                        <TableColumn fx:id="col_aVendre_vendeur" prefWidth="360.0" text="Vendeur" />
+                        <TableColumn fx:id="col_aVendre_ajout" prefWidth="108.0" text="Date d'ajout" />
+                        <TableColumn fx:id="col_aVendre_prix" prefWidth="62.0" text="Prix" />
+                        <TableColumn fx:id="col_aVendre_action" prefWidth="37.0" text="Action" />
+                      </columns>
+                    </TableView>
+
+                    <Button fx:id="btn_vendu" layoutX="25.0" layoutY="911.0" mnemonicParsing="false" style="-fx-background-color: none;" text="Vendu  v" />
+                    <TableView fx:id="tbl_vendu" layoutX="26.0" layoutY="948.0" prefHeight="91.0" prefWidth="569.0">
+                      <columns>
+                        <TableColumn fx:id="col_vendu_vendeur" prefWidth="255.0" text="Vendeur" />
+                        <TableColumn fx:id="col_vendu_ajout" prefWidth="137.0" text="Date d'ajout" />
+                        <TableColumn fx:id="col_vendu_vente" prefWidth="91.0" text="Date de vente" />
+                        <TableColumn fx:id="col_vendu_prix" prefWidth="55.0" text="Prix" />
+                      </columns>
+                    </TableView>
+
+                    <Button fx:id="btn_remis" layoutX="25.0" layoutY="1060.0" mnemonicParsing="false" style="-fx-background-color: none;" text="Argent remis  v" />
+                    <TableView fx:id="tbl_remis" layoutX="25.0" layoutY="1106.0" prefHeight="91.0" prefWidth="569.0">
+                      <columns>
+                        <TableColumn fx:id="col_remis_vendeur" prefWidth="255.0" text="Vendeur" />
+                        <TableColumn fx:id="col_remis_ajout" prefWidth="137.0" text="Date d'ajout" />
+                        <TableColumn fx:id="col_remis_vente" prefWidth="91.0" text="Date de vente" />
+                        <TableColumn fx:id="col_remis_date" prefWidth="91.0" text="Date de remise d'argent" />
+                        <TableColumn fx:id="col_remis_prix" prefWidth="55.0" text="Prix" />
+                      </columns>
+                    </TableView>
+                  </children>
+                </Pane>
+                <Label layoutX="49.0" layoutY="16.0" text="Ouvrage" textFill="#424b38">
+                  <font>
+                    <Font size="24.0" />
+                  </font>
+                </Label>
+                <Button fx:id="btn_modif" layoutX="153.0" layoutY="21.0" mnemonicParsing="false" style="-fx-background-color: none;" text="Modifier l'ouvrage" />
+                <Button fx:id="btn_suppOuv" layoutX="270.0" layoutY="21.0" mnemonicParsing="false" style="-fx-background-color: none;" text="Supprimer" />
+                <Button fx:id="btn_fusion" layoutX="350.0" layoutY="21.0" mnemonicParsing="false" style="-fx-background-color: none;" text="Fusionner avec un autre ouvrage" />
+              </children>
+            </Pane>
+          </content>
+        </ScrollPane>
+      </children>
+    </VBox>
+  </children>
+</Pane>

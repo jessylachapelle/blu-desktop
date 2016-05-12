@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" id="root_layout" fx:id="rootLayout"   minHeight="-Infinity" minWidth="-Infinity" prefHeight="1042.0" prefWidth="1620.0" fx:controller="controller.WindowController" >
+   <top>
+      <MenuBar prefHeight="0.0" prefWidth="390.0" BorderPane.alignment="CENTER">
+        <menus>
+          <Menu id="menu_fichier" mnemonicParsing="false" text="Fichier">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Fermer" />
+            </items>
+          </Menu>
+          <Menu id="menu_edit" mnemonicParsing="false" text="Édition">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Effacer" />
+            </items>
+          </Menu>
+          <Menu id="menu_aide" mnemonicParsing="false" text="Aide">
+            <items>
+              <MenuItem mnemonicParsing="false" text="À propos" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <left>
+      <Pane id="left_menu" prefHeight="470.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="135.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../files/logo.png" />
+               </image>
+            </ImageView>
+            <Button id="btn_recherche" fx:id="btn_recherche" alignment="TOP_LEFT" layoutY="132.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" text="Recherche" textFill="WHITE" wrapText="true">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Button>
+            <Button id="btn_articles" fx:id="btn_articles" alignment="TOP_LEFT" layoutY="182.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="200.0" text="Articles" textFill="WHITE" wrapText="true">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Button>
+            <Button id="btn_membres" fx:id="btn_membres" alignment="TOP_LEFT" layoutY="232.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="200.0" text="Membres" textFill="WHITE">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Button>
+            <Button id="btn_admin" fx:id="btn_admin" alignment="TOP_LEFT" layoutY="282.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="200.0" text="Administration" textFill="WHITE">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Button>
+         </children>
+      </Pane>
+   </left>
+   <center>
+      <AnchorPane fx:id="centreDroit" prefHeight="923.0" prefWidth="1344.0" BorderPane.alignment="TOP_LEFT">
+         <fx:include source="search.fxml"/>
+      </AnchorPane>
+   </center>
+</BorderPane>

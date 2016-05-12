@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.*?>
+<Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="544.0" prefWidth="669.0" fx:controller="controller.MemberFormController">
+    <children>
+        <Pane id="main_pane_ajout_membre" prefHeight="580.0" prefWidth="615.0">
+            <children>
+                <Label id="lbl_ajout" fx:id="lbl_ajout" text="Ajouter un membre"/>
+
+                <Label id="lbl_prenom" text="Prénom* :" />
+                <TextField id="prenom" fx:id="prenom"/>
+
+                <Label id="lbl_nom" text="Nom* :" />
+                <TextField id="nom" fx:id="nom"/>
+
+                <Label id="lbl_noEtudiant" text="Numéro Étudiant* :" />
+                <TextField id="no" fx:id="no"/>
+
+                <CheckBox id="cb_numDA" mnemonicParsing="false" text="Générer un numéro étudiant" />
+
+                <Label id="lbl_addr_postal" text="Adresse postale" />
+
+                <Label id="lbl_noCivic" text="Numéro :" />
+                <TextField id="no_civic" fx:id="no_civic"/>
+
+                <Label id="lbl_rue" text="Rue :" />
+                <TextField id="rue" fx:id="rue"/>
+
+                <Label id="lbl_appt" text="Appartement :" />
+                <TextField id="app" fx:id="app"/>
+
+                <Label id="lbl_codePostal" text="Code Postal :" />
+                <TextField id="code_postal" fx:id="code_postal"/>
+
+                <Label id="lbl_ville" text="Ville :" />
+                <TextField id="ville" fx:id="ville"/>
+
+                <Label id="lbl_province" text="Province :" />
+                <ComboBox id="province" fx:id="province">
+                    <value>
+                        <String fx:value="QC" />
+                    </value>
+                </ComboBox>
+
+                <Label id="lbl_email" text="Adresse courriel* :" />
+                <TextField id="courriel" fx:id="courriel"/>
+
+                <Label id="lbl_tel1" text="Téléphone 1 :" />
+                <TextField id="numero1" fx:id="numero1"/>
+
+                <Label id="lbl_tel2" text="Telephone 2 :" />
+                <TextField id="numero2" fx:id="numero2"/>
+
+                <Label id="lbl_note1" text="Note :" />
+                <TextField id="note1" fx:id="note1" />
+                <Label id="lbl_note2" text="Note :" />
+                <TextField id="note2" fx:id="note2" />
+
+                <Label id="lbl_commentaire" fx:id="lbl_commentaire" text="Commentaires :" />
+                <TextArea id="commentaire" fx:id="commentaire"/>
+
+                <Button id="btn_annuler" fx:id="btn_annuler" mnemonicParsing="false"  text="Annuler"/>
+                <Button id="btn_ajout" fx:id="btn_ajout" mnemonicParsing="false" text="Ajouter"/>
+            </children>
+        </Pane>
+    </children>
+</Pane>

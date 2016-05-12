@@ -1,0 +1,29 @@
+#left_menu{
+    -fx-background-color: #96ad83;
+}
+
+#left_menu .button{
+    -fx-background-color: #96ad83;
+}
+
+#left_menu .button:hover{
+    -fx-background-color: #647a52;
+    -fx-cursor: hand;
+}
+
+#menu_fichier *:hover, #menu_edit *:hover, #menu_aide *:hover{
+    -fx-cursor: hand;
+}
+
+.tab{
+    -fx-background-color: #96ad83;
+}
+
+.tab:hover{
+    -fx-background-color: #647a52;
+    -fx-cursor: hand;
+}
+
+.tab:selected { 
+    -fx-background-color: #647a52;
+}
