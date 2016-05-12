@@ -19,7 +19,8 @@
             <RadioButton id="rb_membre" fx:id="rb_membre" mnemonicParsing="false" text="Un membre" toggleGroup="$type_recherche" userData="membre" />
             <RadioButton id="rb_article" fx:id="rb_article"  mnemonicParsing="false" text="Un ouvrage" toggleGroup="$type_recherche" userData="article" />
             <CheckBox id="cb_desactive" fx:id="cb_desactive" text="Chercher dans les comptes désactivés" userData="desactive" />
-            <Label id="lb_message" fx:id="lb_message" text="Aucun résultat trouvé" />
+             <Button id="lb_message" fx:id="btn_add"  layoutX="13.0" layoutY="165.0" text="Ajouter" textFill="#424b38" />
+             <Label id="lb_message" fx:id="lb_message" text="Aucun résultat trouvé" />
 
             <TableView id="resultat_membre" fx:id="resultat_membre">
               <columns>
