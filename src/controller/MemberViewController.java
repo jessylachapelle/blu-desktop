@@ -151,7 +151,7 @@ public class MemberViewController extends Controller {
   }
 
   public void loadMembre(int noMembre) {
-    membre = gMembre.consulteMembre(noMembre);
+    membre = gMembre.getMember(noMembre);
     afficheMembre();
   }
 

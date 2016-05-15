@@ -23,8 +23,8 @@ import org.json.JSONObject;
  */
 public class AccesBD {
   static final String API_KEY = "8ecf71749e3a5a5f02d585943e81849f";
-  //static final String DEFAULT_URL = "http://localhost/blunew/desktop/query.php";
-  static final String DEFAULT_URL = "http://jessylachapelle.no-ip.biz/blu/desktop/query.php";
+  static final String DEFAULT_URL = "http://localhost/blu-api/query.php";
+  //static final String DEFAULT_URL = "http://jessylachapelle.no-ip.biz/blu/desktop/query.php";
 
   /**
    * Recupère des données JSON du serveur

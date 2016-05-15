@@ -1,5 +1,6 @@
 package hanlder;
 
+import api.APIConnector;
 import bd.AccesBD;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +22,7 @@ public class CopyHandler {
   /**
    * Constructeur par défaut
    */
-  public void GestionnaireExemplaire() {
+  public CopyHandler() {
     this.exemplaire = new Exemplaire();
   }
 
@@ -29,7 +30,7 @@ public class CopyHandler {
    * Constructeur avec un exemplaire
    * @param exemplaire Exemplaire à utiliser
    */
-  public void GestionnaireExemplaire(Exemplaire exemplaire) {
+  public CopyHandler(Exemplaire exemplaire) {
     this.exemplaire = exemplaire;
   }
 
@@ -53,7 +54,7 @@ public class CopyHandler {
       json.append("function", "insert");
       json.append("data", data.toString());
 
-      response = AccesBD.executeFunction(json);
+      response = APIConnector.call(json);
       exemplaireId = response.getJSONObject("exemplaire").getInt("id");
     } catch (JSONException ex) {
       Logger.getLogger(CopyHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -78,7 +79,7 @@ public class CopyHandler {
       json.append("function", "delete");
       json.append("data", data.toString());
 
-      AccesBD.executeFunction(json);
+      APIConnector.call(json);
       return true;
     } catch (JSONException ex) {
       Logger.getLogger(CopyHandler.class.getName()).log(Level.SEVERE, null, ex);

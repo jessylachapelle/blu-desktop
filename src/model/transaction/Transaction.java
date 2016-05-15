@@ -1,5 +1,8 @@
 package model.transaction;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 
 /**
@@ -11,7 +14,6 @@ import java.util.Date;
  * @version 0.1
  */
 public class Transaction {
-
   private int type,
               idExemplaire,
               noMembre;
@@ -21,6 +23,15 @@ public class Transaction {
    * Constructeur par défaut, crée une transaction aux valeurs null
    */
   public Transaction() {
+    init();
+  }
+
+  public Transaction(JSONObject json) {
+    init();
+    fromJSON(json);
+  }
+
+  private void init() {
     type = 0;
     idExemplaire = 0;
     noMembre = 0;
@@ -133,5 +144,25 @@ public class Transaction {
    */
   public void setNoMembre(int noMembre) {
     this.noMembre = noMembre;
+  }
+
+  public void fromJSON(JSONObject json) {
+    try {
+      if (json.has("type")) {
+        type = json.getInt("type");
+      }
+
+      if (json.has("id_exemplaire")) {
+        idExemplaire = json.getInt("id_exemplaire");
+      }
+
+      if (json.has("no_membre")) {
+        noMembre = json.getInt("no_membre");
+      }
+
+      if (json.has("date")) {
+        setDate(json.getString("date"));
+      }
+    } catch (JSONException e) {}
   }
 }

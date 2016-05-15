@@ -1,5 +1,11 @@
 package model.membre;
 
+import model.article.Article;
+import model.article.Exemplaire;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Un membre de la BLU, contenant ses coordonnées
  *
@@ -39,6 +45,23 @@ public class Membre {
     ville = "";
     province = "";
     codePostal = new char[6];
+  }
+
+  public Membre(JSONObject json) {
+    noMembre = 0;
+    compte = new Compte();
+    telephone = new Telephone[2];
+    nom = new String[2];
+    nom[0] = "";
+    nom[1] = "";
+    courriel = "";
+    noCivic = 0;
+    rue = "";
+    appartement = new char[5];
+    ville = "";
+    province = "";
+    codePostal = new char[6];
+    fromJSON(json);
   }
 
   /**
@@ -299,5 +322,44 @@ public class Membre {
     adresse += ", " + ville + " (" + province + ")  " + cp.substring(0, 3) + " " + cp.substring(3, 6);
 
     return adresse;
+  }
+
+  public void fromJSON(JSONObject json) {
+    try {
+      if (json.has("no")) {
+        noMembre = json.getInt("no");
+      }
+
+      if (json.has("prenom")) {
+        setPrenom(json.getString("prenom"));
+      }
+
+      if (json.has("nom")) {
+        setNom(json.getString("nom"));
+      }
+
+      if (json.has("courriel")) {
+        courriel = json.getString("courriel");
+      }
+
+      if (json.has("exemplaire")) {
+        JSONArray copiesData = json.getJSONArray("exemplaire");
+
+        for(int i = 0; i < copiesData.length(); i++) {
+          JSONObject copyData = copiesData.getJSONObject(i);
+          JSONObject transactions = copyData.getJSONObject("transaction");
+
+          Exemplaire copy = new Exemplaire(copyData);
+
+          if(transactions.has("4")) {
+            compte.ajoutArgentRemis(copy);
+          } else if(transactions.has("1") && transactions.has("2")) {
+            compte.ajoutVendu(copy);
+          } else {
+            compte.ajoutEnVente(copy);
+          }
+        }
+      }
+    } catch (JSONException e) {}
   }
 }

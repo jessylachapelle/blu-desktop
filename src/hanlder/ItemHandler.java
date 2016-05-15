@@ -1,14 +1,21 @@
 package hanlder;
 
+import api.APIConnector;
 import bd.AccesBD;
 import bd.ArticleSQL;
 import model.article.*;
 import static bd.TransactionSQL.*;
+
+import model.membre.Membre;
 import model.transaction.*;
 import static bd.ArticleSQL.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import ressources.JsonParser;
 
 /**
@@ -537,18 +544,40 @@ public Article getArticle(){
   public ArrayList<Article> consulterListeArticle(String nom, boolean etat) {
     return construitListeArticle(selectListeArticle(nom, etat));
   }
-//
-//  /**
-//   * Ajoute un article à la base de données
-//   *
-//   * @param noArticle Le numéro de l'article
-//   * @param nom Le nom de l'article
-//   * @param etat L'état de l'article
-//   * @return Un boolean selon la réussite
-//   */
-//  private boolean ajoutArticle(int noArticle, String nom, int etat) {
-//    return insertArticle(construitArticle(noArticle, nom, etat));
-//  }
+
+  /**
+   * Search for items with corresponding query
+   * @param search The search query
+   * @return A list of items
+   */
+  public ArrayList<Article> searchItem(String search, boolean archive) {
+    ArrayList<Article> items = new ArrayList<>();
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("search", search);
+      json.put("function", "search");
+      json.put("object", "article");
+      json.put("data", data);
+
+      JSONArray itemArray = APIConnector.call(json).getJSONArray("data");
+
+      for(int i = 0; i < itemArray.length(); i++) {
+        JSONObject itemData = itemArray.getJSONObject(i);
+        Article item = new Article();
+
+        item.setNoArticle(itemData.getInt("id"));
+        item.setNom(itemData.getString("nom"));
+
+        items.add(item);
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return items;
+  }
 
   /**
    * Supprime un article de la base de données
@@ -688,7 +717,6 @@ public Article getArticle(){
    * Vérifie si le type de l'article est ouvrage
    *
    * @param noArticle Le numéro de l'article
-   * @param type Le hashmap contenant le type de l'article
    * @return Vrai si l'article est un ouvrage
    */
   private boolean estOuvrage(int noArticle) {

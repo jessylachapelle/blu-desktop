@@ -21,7 +21,7 @@ import org.json.JSONObject;
  */
 public class APIConnector {
   private static final String API_KEY = "8ecf71749e3a5a5f02d585943e81849f";
-  private static final String API_URL = "http://jessylachapelle.no-ip.biz/blu/desktop/query.php";
+  private static final String API_URL = "http://localhost/blu-api/query.php";
 
   /**
    * Calls the API and sends it JSON.
@@ -32,7 +32,7 @@ public class APIConnector {
   public static JSONObject call(JSONObject json) {
     try {
       URL url = new URL(API_URL);
-      json.append("apikey", API_KEY);
+      json = addAPIKey(json);
 
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("POST");
@@ -48,14 +48,33 @@ public class APIConnector {
       String response = bufferedReader.readLine();
       bufferedReader.close();
 
-      JSONObject responseJSON = new JSONObject(response);
-      return responseJSON;
-    } catch (MalformedURLException | JSONException e) {
-      // TODO: return ERROR 422 INVALID_DATA
-      return null;
-    } catch (IOException e) {
-      // TODO: return ERROR 500 INTERNAL_SERVER_ERROR
-      return null;
+      json = new JSONObject(response);
+      return json;
+    } catch (MalformedURLException e) {
+      return error(422, "INVALID_DATA");
+    } catch (IOException | JSONException e) {
+      return error(500, "INTERNAL_SERVER_ERROR");
     }
+  }
+
+  private static JSONObject addAPIKey(JSONObject json) {
+    try {
+      json.put("apikey", API_KEY);
+    } catch (JSONException e) {}
+
+    return json;
+  }
+
+  private static JSONObject error(int code, String message) {
+    JSONObject error = new JSONObject();
+    JSONObject errorData = new JSONObject();
+
+    try {
+      errorData.put("code", code);
+      errorData.put("message", message);
+      error.put("error", errorData);
+    } catch (JSONException e) {}
+
+    return error;
   }
 }

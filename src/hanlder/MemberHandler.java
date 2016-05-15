@@ -1,5 +1,6 @@
 package hanlder;
 
+import api.APIConnector;
 import bd.AccesBD;
 import bd.MembreSQL;
 import model.membre.*;
@@ -50,46 +51,58 @@ public class MemberHandler {
     return membre;
   }
 
-  /**
-   * Accède à une liste de membre
-   *
-   * @param nom Le prénom ou nom des membres
-   * @return Une liste des membres remplissant le critère
-   */
-  public ArrayList<Membre> consulteListeMembre(String nom) {
-    return construitListeMembre(selectListeMembre(nom));
+  public Membre getMember(int no) {
+    Membre member = new Membre();
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("no", no);
+      json.put("function", "select");
+      json.put("object", "membre");
+      json.put("data", data);
+
+      JSONObject memberData = APIConnector.call(json).getJSONObject("data");
+      member.fromJSON(memberData);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return member;
   }
 
   /**
-   * Accède à une liste de membre
-   *
-   * @param nom Le prénom ou nom des membres
-   * @param desactive Vrai pour obtenir les comptes désactivés
-   * @return Une liste des membres remplissant le critère
+   * Search for members with corresponding query
+   * @param search The search query
+   * @param deactivated True if want to search in deactivated accounts
+   * @return A List of members
    */
-  public ArrayList<Membre> consulteListeMembre(String nom, boolean desactive) {
-    return construitListeMembre(selectListeMembre(nom, desactive));
-  }
+  public ArrayList<Membre> searchMembers(String search, boolean deactivated) {
+    ArrayList<Membre> members = new ArrayList<>();
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
 
-  /**
-   * Accède à une liste de membre
-   *
-   * @param noMembre Le numéro de membre
-   * @return Une liste des membres remplissant le critère
-   */
-  public ArrayList<Membre> consulteListeMembre(int noMembre) {
-    return construitListeMembre(selectListeMembre(noMembre));
-  }
+    try {
+      data.put("search", search);
 
-  /**
-   * Accède à une liste de membre
-   *
-   * @param noMembre Le numéro de membre
-   * @param desactive Vrai pour obtenir les comptes désactivés
-   * @return Une liste des membres remplissant le critère
-   */
-  public ArrayList<Membre> consulteListeMembre(int noMembre, boolean desactive) {
-    return construitListeMembre(selectListeMembre(noMembre, desactive));
+      if (deactivated) {
+        data.put("deactivated", deactivated);
+      }
+
+      json.put("function", "search");
+      json.put("object", "membre");
+      json.put("data", data);
+
+      JSONArray memberArray = APIConnector.call(json).getJSONArray("data");
+
+      for(int i = 0; i < memberArray.length(); i++) {
+        members.add(new Membre(memberArray.getJSONObject(i)));
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return members;
   }
 
   /**
@@ -257,26 +270,6 @@ public class MemberHandler {
     return membre;
   }
 
-  /**
-   * Construit une liste d'objet de type Membre à partir d'un résultat de
-   * requête
-   */
-  private ArrayList<Membre> construitListeMembre(ArrayList<HashMap> infoMembres) {
-    ArrayList<Membre> membres = new ArrayList<>();
-
-    for (int noMembre = 0; noMembre < infoMembres.size(); noMembre++) {
-      Membre m = new Membre();
-
-      m.setNoMembre(Integer.parseInt((String) infoMembres.get(noMembre).get("no")));
-      m.setPrenom((String) infoMembres.get(noMembre).get("prenom"));
-      m.setNom((String) infoMembres.get(noMembre).get("nom"));
-
-      membres.add(m);
-    }
-
-    return this.membres = membres;
-  }
-
   private void ajoutCompte(int noMembre) {
     String[][] params = {{"noMembre", Integer.toString(noMembre)}};
     membre.setCompte(construitCompte(noMembre, JsonParser.toHashMap(AccesBD.executeFunction("selectCompte", params)).get(0)));
@@ -391,7 +384,7 @@ public class MemberHandler {
       json.append("function", "insert");
       json.append("data", data.toString());
 
-      response = AccesBD.executeFunction(json);
+      response = APIConnector.call(json);
 
       for(int i = 0; i < member.getTelephone().length; i++) {
         if (!member.getTelephone(i).getNumero().equals("")) {
@@ -458,7 +451,7 @@ public class MemberHandler {
       json.append("function", "update");
       json.append("data", data.toString());
 
-      response = AccesBD.executeFunction(json);
+      response = APIConnector.call(json);
     } catch (JSONException ex) {
       Logger.getLogger(MemberHandler.class.getName()).log(Level.SEVERE, null, ex);
       return null;

@@ -13,7 +13,6 @@ import model.membre.Membre;
  * @version 0.1
  */
 public class SearchHandler {
-
   private String recherche;
   private boolean article,
           archive;
@@ -98,14 +97,8 @@ public class SearchHandler {
    * @return Liste des Membres résultant de la recherche
    */
   public ArrayList<Membre> rechercheMembre() {
-    MemberHandler gm = new MemberHandler();
-
-    try {
-      int noMembre = Integer.parseInt(recherche);
-      return gm.consulteListeMembre(noMembre, archive);
-    } catch (NumberFormatException e) {
-      return gm.consulteListeMembre(recherche, archive);
-    }
+    MemberHandler mh = new MemberHandler();
+    return mh.searchMembers(recherche, archive);
   }
 
   /**
@@ -115,7 +108,7 @@ public class SearchHandler {
    * @return Liste des Articles résultant de la recherche
    */
   public ArrayList<Article> rechercheArticle() {
-    ItemHandler ga = new ItemHandler();
-    return ga.consulterListeArticle(recherche, archive);
+    ItemHandler itemHandler = new ItemHandler();
+    return itemHandler.searchItem(recherche, archive);
   }
 }

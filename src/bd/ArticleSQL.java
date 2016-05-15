@@ -9,7 +9,7 @@ import model.article.Article;
  * Contient les requêtes faites à la Base de données reliées à Article
  *
  * @author Dereck
- * @verison 0.2
+ * @version 0.2
  * @since 2015/11/03
  */
 public class ArticleSQL {

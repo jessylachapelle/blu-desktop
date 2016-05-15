@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import model.membre.Membre;
 import model.membre.ParentEtudiant;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Classe exemplaire qui contient les informations spécifiques sur un
@@ -15,7 +18,6 @@ import model.membre.ParentEtudiant;
  * @date 30/10/2015
  */
 public class Exemplaire {
-
   private int noExemplaire;
   private Membre membre,
                  parent;
@@ -24,6 +26,15 @@ public class Exemplaire {
   private ArrayList<Transaction> transaction;
 
   public Exemplaire() {
+    init();
+  }
+
+  public Exemplaire(JSONObject json) {
+    init();
+    fromJSON(json);
+  }
+
+  private void init() {
     noExemplaire = 0;
     membre = new Membre();
     parent = new ParentEtudiant();
@@ -275,5 +286,34 @@ public class Exemplaire {
 
   public String getReservant() {
     return parent.getPrenom() + " " + parent.getNom();
+  }
+
+  public void fromJSON(JSONObject json) {
+    try {
+      if (json.has("id")) {
+        noExemplaire = json.getInt("id");
+      }
+
+      if (json.has("prix")) {
+        prix = json.getDouble("prix");
+      }
+
+      if (json.has("transaction")) {
+        JSONArray transactions = new JSONArray();
+        json.getJSONObject("transaction").toJSONArray(transactions);
+
+        for(int i = 0; i < transactions.length(); i++) {
+          transaction.add(new Transaction(transactions.getJSONObject(i)));
+        }
+      }
+
+      if (json.has("membre")) {
+        membre.fromJSON(json.getJSONObject("membre"));
+      }
+
+      if (json.has("article")) {
+        // article.fromJSON(json.getJSONObject("article"));
+      }
+    } catch (JSONException e) {}
   }
 }
