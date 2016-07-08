@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import model.article.Exemplaire;
 import model.transaction.Transaction;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Le compte d'un membre, contient tous les exemplaires mis en vente par le
@@ -13,7 +16,7 @@ import model.transaction.Transaction;
  * @since 26/10/2015
  * @version 0.2
  */
-public class Compte {
+public class Account {
 
   private Date dateCreation,
                dateDerniereActivite;
@@ -30,7 +33,16 @@ public class Compte {
   /**
    * Constructeur par défaut, crée compte à valeur null
    */
-  public Compte() {
+  public Account() {
+    init();
+  }
+
+  public Account(JSONObject json) {
+    init();
+    fromJSON(json);
+  }
+
+  private void init() {
     dateCreation = new Date();
     dateDerniereActivite = new Date();
     solde = 0;
@@ -48,7 +60,7 @@ public class Compte {
    * @param dateCreation La date d'ouverture du compte
    * @param dateDerniereActivite La dernière activité enregistré au compte
    */
-  public Compte(Date dateCreation, Date dateDerniereActivite) {
+  public Account(Date dateCreation, Date dateDerniereActivite) {
     setDateCreation(dateCreation);
     setDateDerniereActivite(dateDerniereActivite);
 
@@ -418,5 +430,37 @@ public class Compte {
 
   public int nombreRemis() {
     return argentRemis.size();
+  }
+
+  public Commentaire getComment(int id) {
+    for(int i = 0; i < commentaire.size(); i++) {
+      if (commentaire.get(i).getId() == id) {
+        return commentaire.get(i);
+      }
+    }
+
+    return null;
+  }
+
+  public void fromJSON(JSONObject json) {
+    try {
+      if (json.has("inscription")) {
+
+      }
+
+      if(json.has("derniere_activite")) {
+
+      }
+
+      if (json.has("commentaire")) {
+        JSONArray comments = json.getJSONArray("commentaire");
+
+        for(int i = 0; i < comments.length(); i++) {
+          commentaire.add(new Commentaire(comments.getJSONObject(i)));
+        }
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
   }
 }

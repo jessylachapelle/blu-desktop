@@ -1,7 +1,7 @@
-package hanlder;
+package handler;
 
 import api.APIConnector;
-import bd.AccesBD;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.article.Exemplaire;
@@ -26,12 +26,69 @@ public class CopyHandler {
     this.exemplaire = new Exemplaire();
   }
 
+
+
   /**
    * Constructeur avec un exemplaire
    * @param exemplaire Exemplaire à utiliser
    */
   public CopyHandler(Exemplaire exemplaire) {
     this.exemplaire = exemplaire;
+  }
+
+  /**
+   * Modifie un exemplaire dans la base de données
+   *
+   * @param copyId Le numéro de l'exemplaire
+   * @param price Le nouveau prix
+   * @return True si l'exemplaire a été modifié
+   */
+  public boolean updateCopyPrice(int copyId, double price) {
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("id", copyId);
+      data.put("price", price);
+
+      json.put("function", "update");
+      json.put("object", "exemplaire");
+      json.put("data", data);
+
+      JSONObject response = APIConnector.call(json).getJSONObject("data");
+
+      return response.has("code") && response.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  /**
+   * Supprime un exemplaire de la base de données
+   *
+   * @param copyId L'identifiant de l'exmplaire
+   * @return Vrai si l'exemplaire a été supprimé
+   */
+  public boolean deleteCopy(int copyId) {
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("id", copyId);
+      json.put("function", "delete");
+      json.put("object", "exemplaire");
+      json.put("data", data);
+
+      JSONObject response = APIConnector.call(json).getJSONObject("data");
+
+      return response.has("code") && response.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
   }
 
   /**

@@ -1,4 +1,4 @@
-package hanlder;
+package handler;
 
 import java.util.ArrayList;
 import model.article.Article;

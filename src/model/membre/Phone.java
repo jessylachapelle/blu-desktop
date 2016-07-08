@@ -1,5 +1,8 @@
 package model.membre;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Un numéro de téléphone avec une note
  *
@@ -7,7 +10,7 @@ package model.membre;
  * @since 26/10/2015
  * @version 0.1
  */
-public class Telephone {
+public class Phone {
   private int id;
   private String numero;
   private String note;
@@ -15,7 +18,15 @@ public class Telephone {
   /**
    * Constructeur par défaut, crée objet à valeur null
    */
-  public Telephone() {
+  public Phone() {
+    init();
+  }
+
+  public Phone(JSONObject json) {
+    fromJson(json, true);
+  }
+
+  private void init() {
     id = 0;
     numero = "";
     note = "";
@@ -26,7 +37,7 @@ public class Telephone {
    *
    * @param numero Numéro de téléphone
    */
-  public Telephone(String numero) {
+  public Phone(String numero) {
     setNumero(numero);
     note = null;
   }
@@ -37,7 +48,7 @@ public class Telephone {
    * @param numero Numéro de téléphone
    * @param note Note associée au numéro
    */
-  public Telephone(String numero, String note) {
+  public Phone(String numero, String note) {
     setNumero(numero);
     setNote(note);
   }
@@ -100,5 +111,31 @@ public class Telephone {
       strTel += " (" + note + ")";
     }
     return strTel;
+  }
+
+  public void fromJson(JSONObject json) {
+    fromJson(json, false);
+  }
+
+  public void fromJson(JSONObject json, boolean reinitialize) {
+    if (reinitialize) {
+      init();
+    }
+
+    try {
+      if(json.has("id")) {
+        id = json.getInt("id");
+      }
+
+      if (json.has("numero")) {
+        numero = json.getString("numero");
+      }
+
+      if (json.has("note")) {
+        note = json.getString("note");
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
   }
 }

@@ -1,7 +1,14 @@
-package hanlder;
+package handler;
 
 import static bd.TransactionSQL.*;
+
+import api.APIConnector;
+import bd.TransactionSQL;
 import model.transaction.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,7 +21,7 @@ import java.util.HashMap;
  * @since 12/11/2015
  * @version 0.2
  */
-public class TransactionHalder {
+public class TransactionHandler {
 
   private static final int RESERVATION = 5;
   private Transaction transaction;
@@ -23,9 +30,101 @@ public class TransactionHalder {
   /**
    * Constructeur par défaut
    */
-  public TransactionHalder() {
+  public TransactionHandler() {
     transactions = new ArrayList<>();
   }
+
+
+  public ArrayList<Transaction> insert(int member, int copy, int type) {
+    int[] copies = new int[1];
+    copies[0] = copy;
+    return insert(member, copies, type);
+  }
+
+  public ArrayList<Transaction> insert(int member, int[] copy, int type) {
+    transactions.clear();
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+    JSONArray copies = new JSONArray();
+
+    try {
+      for(int i = 0; i < copy.length; i++) {
+        copies.put(copy[i]);
+      }
+      data.put("member", member);
+      data.put("copies", copies);
+      data.put("type", type);
+
+      json.put("function", "insert");
+      json.put("object", "transaction");
+      json.put("data", data);
+
+      JSONArray response = APIConnector.call(json).getJSONArray("data");
+
+      for (int i = 0; i < response.length(); i++) {
+        transactions.add(new Transaction(response.getJSONObject(i)));
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return transactions;
+  }
+
+  public boolean delete(int id) {
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("id", id);
+      json.put("function", "delete");
+      json.put("object", "transaction");
+      json.put("data", data);
+
+      JSONObject response = APIConnector.call(json).getJSONObject("data");
+
+      return response.has("code") && response.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  public boolean delete(int copyId, int type) {
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("copy_id", copyId);
+      data.put("type", type);
+
+      json.put("function", "delete");
+      json.put("object", "transaction");
+      json.put("data", data);
+
+      JSONObject response = APIConnector.call(json).getJSONObject("data");
+
+      return response.has("code") && response.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /**
    * Consulte la liste de transactions d'un membre
@@ -66,11 +165,11 @@ public class TransactionHalder {
    * @return Vrai si l'ajout est complétée
    */
   public boolean ajoutTransaction(int type, int noMembre, int idExemplaire) {
-    return insertTransaction(construitTransaction(type, noMembre, idExemplaire));
+    return TransactionSQL.insertTransaction(construitTransaction(type, noMembre, idExemplaire));
   }
 
   public boolean ajoutTransaction(int type, int idExemplaire) {
-    return insertTransaction(construitTransaction(type, idExemplaire));
+    return TransactionSQL.insertTransaction(construitTransaction(type, idExemplaire));
   }
 
   public boolean supprimeTransactionsExemplaire(int idExemplaire) {

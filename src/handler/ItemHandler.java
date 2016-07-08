@@ -1,4 +1,4 @@
-package hanlder;
+package handler;
 
 import api.APIConnector;
 import bd.AccesBD;
@@ -6,7 +6,6 @@ import bd.ArticleSQL;
 import model.article.*;
 import static bd.TransactionSQL.*;
 
-import model.membre.Membre;
 import model.transaction.*;
 import static bd.ArticleSQL.*;
 import java.util.ArrayList;
@@ -41,6 +40,80 @@ public void GestionnaireArticle() {
     article = null;
     articles = new ArrayList<>();
   }
+
+  public boolean updateComment(int id, String comment) {
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("id", id);
+      data.put("comment", comment);
+
+      json.put("function", "update_comment");
+      json.put("object", "article");
+      json.put("data", data);
+
+      JSONObject response = APIConnector.call(json).getJSONObject("data");
+
+      return response.has("code") && response.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  public int addTransaction(int memberNo, int copyId, int type) {
+    int id = 0;
+
+    TransactionHandler transactionHandler = new TransactionHandler();
+    transactionHandler.insert(memberNo, copyId, type);
+
+    return id;
+  }
+
+  public boolean cancelSell(int copyId) {
+    TransactionHandler transactionHandler = new TransactionHandler();
+    return transactionHandler.delete(copyId, 2);
+  }
+
+  public boolean updateStorage(int id, String[] storage) {
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+    JSONArray storagejson = new JSONArray();
+
+    try {
+      for(int i = 0; i < storage.length; i++) {
+        storagejson.put(storage[i]);
+      }
+
+      data.put("id", id);
+      data.put("storage", storagejson);
+
+      json.put("function", "update_storage");
+      json.put("object", "article");
+      json.put("data", data);
+
+      JSONObject response = APIConnector.call(json).getJSONObject("data");
+
+      return response.has("code") && response.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+
+
+
+
+
+
+
+
+
+
 
 public Article getArticle(){
   return this.article;
@@ -682,26 +755,6 @@ public Article getArticle(){
     return insertExemplaire(noArticle, prix);
   }
 
-  /**
-   * Modifie un exemplaire dans la base de données
-   *
-   * @param noExemplaire Le numéro de l'exemplaire
-   * @param prix Le nouveau prix
-   * @return Vrai si l'exemplaire a été modifié
-   */
-  public boolean modifieExemplaire(int noExemplaire, double prix) {
-    return updateExemplaire(noExemplaire, prix);
-  }
-
-  /**
-   * Supprime un exemplaire de la base de données
-   *
-   * @param noExemplaire L'identifiant de l'exmplaire
-   * @return Vrai si l'exemplaire a été supprimé
-   */
-  public boolean retireExemplaire(int noExemplaire) {
-    return removeExemplaire(noExemplaire);
-  }
 
   /**
    * Retire tous les exemplaires liés a un article
@@ -905,18 +958,18 @@ public Article getArticle(){
   }
 
   public boolean annuleVente(int idExemplaire) {
-    TransactionHalder gt = new TransactionHalder();
+    TransactionHandler gt = new TransactionHandler();
     return gt.supprimeTransactionVente(idExemplaire);
   }
 
   public boolean vendreExemplaire(int noMembre, int idExemplaire) {
-    TransactionHalder gt = new TransactionHalder();
+    TransactionHandler gt = new TransactionHandler();
     return gt.ajoutTransaction(2, noMembre, idExemplaire);
   }
 
   public boolean vendreExemplaire(int noMembre, int idExemplaire, boolean rabais) {
     if (rabais) {
-      TransactionHalder gt = new TransactionHalder();
+      TransactionHandler gt = new TransactionHandler();
       return gt.ajoutTransaction(3, noMembre, idExemplaire);
     }
     return vendreExemplaire(noMembre, idExemplaire);

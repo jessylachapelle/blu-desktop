@@ -1,4 +1,4 @@
-package hanlder;
+package handler;
 
 import api.APIConnector;
 import bd.AccesBD;
@@ -30,25 +30,9 @@ public class MemberHandler {
   /**
    * Constructeur par défaut
    */
-  public void GestionnaireMembre() {
+  public MemberHandler() {
     this.membre = new Membre();
     this.membres = new ArrayList<>();
-  }
-
-  /**
-   * Accède à un membre de la BD
-   *
-   * @param noMembre Numéro du membre à consulter
-   * @return Le membre à consulter
-   */
-  public Membre consulteMembre(int noMembre) {
-    String[][] params = {{"noMembre", Integer.toString(noMembre)}};
-
-    construitMembre(JsonParser.toHashMap(AccesBD.executeFunction("selectMembre", params)));
-    ajoutTelephone(noMembre);
-    ajoutCompte(noMembre);
-
-    return membre;
   }
 
   public Membre getMember(int no) {
@@ -103,242 +87,6 @@ public class MemberHandler {
     }
 
     return members;
-  }
-
-  /**
-   * Permet de modifier un membre dans la BD
-   *
-   * @param noMembre Le numéro du membre à modifier
-   * @param infoMembre Une liste associatives des champs et valeurs à modifier
-   * @return vrai si la modification a fonctionné
-   */
-  public boolean modifieMembre(int noMembre, HashMap infoMembre) {
-    return updateMembre(noMembre, infoMembre);
-  }
-
-  public int ajoutCommentaire(int noMembre, String commentaire) {
-    return insertCommentaire(noMembre, commentaire);
-  }
-
-  public boolean modifieCommentaire(int idCommentaire, String commentaire) {
-    return updateCommentaire(idCommentaire, commentaire);
-  }
-
-  public boolean supprimeCommentaire(int idCommentaire) {
-    return deleteCommentaire(idCommentaire);
-  }
-
-  public boolean renouveleCompte(int noMembre) {
-    String[][] params = {{"noMembre", Integer.toString(noMembre)}};
-    return AccesBD.executeUpdate("renouveleCompte", params);
-  }
-
-  /**
-   * Permet d'ajouter un membre à la BD
-   *
-   * @param infoMembre Une map de clé/valeur des champs et valeurs à insérer
-   * @return vrai si l'ajout a fonctionné
-   */
-  public boolean ajouteMembre(HashMap infoMembre) {
-    return insertMembre(construitMembre(infoMembre));
-  }
-
-  /**
-   * Permet de supprimer un membre de la BD
-   *
-   * @param noMembre Le numéro du membre à supprimer
-   * @return vrai si la suppression a fonctionné
-   */
-  public boolean supprimeMembre(int noMembre) {
-    return deleteMembre(noMembre);
-  }
-
-  /**
-   * Permet de tansférer le compte d'un membre vers un autre
-   *
-   * @param noMembre Le mauvais numéro de membre (à transférer)
-   * @return vrai si le transfère a fonctionné
-   */
-  public boolean transfereMembre(int noMembre) {
-    if (transferMembre(membre.getNoMembre(), noMembre)) {
-      return supprimeMembre(noMembre);
-    }
-    return false;
-  }
-
-  public boolean ajoutExemplaire(int noMembre, int idArticle, double prix) {
-    ItemHandler ga = new ItemHandler();
-    TransactionHalder gt = new TransactionHalder();
-
-    int idExemplaire = 0; //ga.ajoutExemplaire(idArticle, prix);
-    return gt.ajoutTransaction(1, noMembre, idExemplaire);
-  }
-
-  public boolean supprimeExemplaire(int idExemplaire) {
-    ItemHandler ga = new ItemHandler();
-    TransactionHalder gt = new TransactionHalder();
-
-    if (gt.supprimeTransactionsExemplaire(idExemplaire)) {
-      return ga.retireExemplaire(idExemplaire);
-    }
-    return false;
-  }
-
-  public boolean vendreExemplaire(int noMembre, int idExemplaire) {
-    TransactionHalder gt = new TransactionHalder();
-    return gt.ajoutTransaction(2, noMembre, idExemplaire);
-  }
-
-  public boolean vendreExemplaire(int noMembre, int idExemplaire, boolean rabais) {
-    if (rabais) {
-      TransactionHalder gt = new TransactionHalder();
-      return gt.ajoutTransaction(3, noMembre, idExemplaire);
-    }
-    return vendreExemplaire(noMembre, idExemplaire);
-  }
-
-  public boolean remiseArgentExemplaire(int noMembre, int idExemplaire) {
-    TransactionHalder gt = new TransactionHalder();
-    return gt.ajoutTransaction(4, noMembre, idExemplaire);
-  }
-
-  public boolean reserveExemplaire(int noMembre, int idExemplaire) {
-    TransactionHalder gt = new TransactionHalder();
-    return gt.ajoutTransaction(5, noMembre, idExemplaire);
-  }
-
-  public boolean annuleVente(int idExemplaire) {
-    TransactionHalder gt = new TransactionHalder();
-    return gt.supprimeTransactionVente(idExemplaire);
-  }
-
-  public boolean annuleReservationExemplaire(int noMembre, int idExemplaire) {
-    TransactionHalder gt = new TransactionHalder();
-    return gt.ajoutTransaction(5, noMembre, idExemplaire);
-  }
-
-  public boolean modifiePrixExemplaire(int idExemplaire, double prix) {
-    ItemHandler ga = new ItemHandler();
-    return ga.modifieExemplaire(idExemplaire, prix);
-  }
-
-  public boolean membreExiste(int noMembre) {
-    return MembreSQL.membreExiste(noMembre);
-  }
-
-  private void ajoutTelephone(int noMembre) {
-    String[][] params = {{"noMembre", Integer.toString(noMembre)}};
-    ArrayList<HashMap> telephones = JsonParser.toHashMap(AccesBD.executeFunction("selectTelephone", params));
-
-    if (!telephones.isEmpty())
-      membre.setPremierTelephone(construitTelephone(telephones.get(0)));
-    if (telephones.size() > 1)
-      membre.setSecondTelephone(construitTelephone(telephones.get(1)));
-  }
-
-  /**
-   * Construit un objet de type Membre à partir d'une map clé/valeur
-   */
-  private Membre construitMembre(ArrayList<HashMap> infoMembres) {
-    return construitMembre(infoMembres.get(0));
-  }
-
-  /**
-   * Construit un objet de type Membre à partir d'une map clé/valeur
-   */
-  public Membre construitMembre(HashMap<String, String> infoMembre) {
-    membre = new Membre();
-    membre.setNoMembre(Integer.parseInt(infoMembre.get("no")));
-    membre.setPrenom((String) infoMembre.get("prenom"));
-    membre.setNom((String) infoMembre.get("nom"));
-    membre.setCourriel((String) infoMembre.get("courriel"));
-    membre.setNoCivic(Integer.parseInt(infoMembre.get("no_civic")));
-    membre.setRue((String) infoMembre.get("rue"));
-    membre.setAppartement(infoMembre.get("app").toCharArray());
-    membre.setVille((String) infoMembre.get("ville"));
-    membre.setProvince((String) infoMembre.get("province"));
-    membre.setCodePostal(infoMembre.get("code_postal").toCharArray());
-
-    if (infoMembre.containsKey("numero1")) {
-      membre.setPremierTelephone(new Telephone(infoMembre.get("numero1"), infoMembre.get("note1")));
-    }
-
-    if (infoMembre.containsKey("numero2")) {
-      membre.setSecondTelephone(new Telephone(infoMembre.get("numero2"), infoMembre.get("note2")));
-    }
-
-    return membre;
-  }
-
-  private void ajoutCompte(int noMembre) {
-    String[][] params = {{"noMembre", Integer.toString(noMembre)}};
-    membre.setCompte(construitCompte(noMembre, JsonParser.toHashMap(AccesBD.executeFunction("selectCompte", params)).get(0)));
-  }
-
-  private Compte construitCompte(int noMembre, HashMap infoCompte) {
-    ItemHandler ga = new ItemHandler();
-    Compte compte = new Compte();
-
-    Date inscription = new Date();
-    String strInscription = (String) infoCompte.get("inscription");
-    String anneeInscription = strInscription.substring(0, 4);
-    String moisInscription = strInscription.substring(5, 7);
-    String jourInscription = strInscription.substring(8, 10);
-    inscription.setYear(Integer.parseInt(anneeInscription) - 1900);
-    inscription.setMonth(Integer.parseInt(moisInscription) - 1);
-    inscription.setDate(Integer.parseInt(jourInscription));
-
-    Date derniereActivite = new Date();
-    String strDerniereActivite = (String) infoCompte.get("derniere_activite");
-    String anneeDerniereActivite = strDerniereActivite.substring(0, 4);
-    String moisDerniereActivite = strDerniereActivite.substring(5, 7);
-    String jourDerniereActivite = strDerniereActivite.substring(8, 10);
-    derniereActivite.setYear(Integer.parseInt(anneeDerniereActivite) - 1900);
-    derniereActivite.setMonth(Integer.parseInt(moisDerniereActivite) - 1);
-    derniereActivite.setDate(Integer.parseInt(jourDerniereActivite));
-
-    compte.setDateCreation(inscription);
-    compte.setDateDerniereActivite(derniereActivite);
-    compte.setSolde(Double.parseDouble((String) infoCompte.get("solde")));
-
-    String[][] params = {{"noMembre", Integer.toString(noMembre)}};
-    compte.setCommentaire(construitCommentaire(JsonParser.toHashMap(AccesBD.executeFunction("selectCommentaire", params))));
-
-    compte.setEnVente(ga.consulteExemplairesEnVenteMembre(noMembre));
-    compte.setVendu(ga.consulteExemplairesVenduMembre(noMembre));
-    compte.setArgentRemis(ga.consulteExemplairesArgentRemisMembre(noMembre));
-
-    return compte;
-  }
-
-  /**
-   * Construit un objet de type Telephone à partir d'un résultat de requête
-   */
-  private Telephone construitTelephone(HashMap infoTelephone) {
-    Telephone telephone = new Telephone();
-
-    telephone.setNumero((String) infoTelephone.get("numero"));
-    telephone.setNote((String) infoTelephone.get("note"));
-
-    return telephone;
-  }
-
-  /**
-   * Construit un tableau de String à partir d'un résultat de requête
-   */
-  private ArrayList<Commentaire> construitCommentaire(ArrayList<HashMap> infoCommentaire) {
-    ArrayList<Commentaire> commentaires = new ArrayList<>();
-
-    for (int noCommentaire = 0; noCommentaire < infoCommentaire.size(); noCommentaire++) {
-      Commentaire c = new Commentaire();
-
-      c.setId(Integer.parseInt((String) infoCommentaire.get(noCommentaire).get("id")));
-      c.setCommentaire((String) infoCommentaire.get(noCommentaire).get("commentaire"));
-      c.setDate((String) infoCommentaire.get(noCommentaire).get("date_modification"));
-
-      commentaires.add(c);
-    }
-    return commentaires;
   }
 
   public Membre insertMember(Membre member) {
@@ -458,5 +206,324 @@ public class MemberHandler {
     }
 
     return member;
+  }
+
+  public boolean deleteMember(int no) {
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("no", no);
+      json.put("function", "delete");
+      json.put("object", "membre");
+      json.put("data", data);
+
+      JSONObject response = APIConnector.call(json).getJSONObject("data");
+
+      if (response.has("code")) {
+        return response.getInt("code") == 200;
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  public boolean renewAccount(int no) {
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("no", no);
+      json.put("function", "renew");
+      json.put("object", "membre");
+      json.put("data", data);
+
+      JSONObject response = APIConnector.call(json).getJSONObject("data");
+
+      if (response.has("code")) {
+        return response.getInt("code") == 200;
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  public int addComment(int noMember, String comment) {
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("no", noMember);
+      data.put("comment", comment);
+
+      json.put("function", "insert_comment");
+      json.put("object", "membre");
+      json.put("data", data);
+
+      JSONObject response = APIConnector.call(json).getJSONObject("data");
+      return response.getInt("id");
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return 0;
+  }
+
+  public boolean editComment(int id, String comment) {
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("id", id);
+      data.put("comment", comment);
+
+      json.put("function", "update_comment");
+      json.put("object", "membre");
+      json.put("data", data);
+
+      JSONObject response = APIConnector.call(json).getJSONObject("data");
+
+      return response.has("code") && response.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  public boolean deleteComment(int id) {
+    JSONObject json = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("id", id);
+      json.put("function", "delete_comment");
+      json.put("object", "membre");
+      json.put("data", data);
+
+      JSONObject response = APIConnector.call(json).getJSONObject("data");
+
+      return response.has("code") && response.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  public int addTransaction(int no, int id, int type) {
+    TransactionHandler transactionHandler = new TransactionHandler();
+    transactionHandler.insert(no, id, type).get(0);
+    return 0;
+  }
+
+  public int addTransaction(int no, int[] copies, int type) {
+    TransactionHandler transactionHandler = new TransactionHandler();
+    transactionHandler.insert(no, copies, type).get(0);
+    return 0;
+  }
+
+  public boolean updateCopyPrice(int copyId, double price) {
+    CopyHandler copyHandler = new CopyHandler();
+    return copyHandler.updateCopyPrice(copyId, price);
+  }
+
+  public boolean deleteCopy(int copyId) {
+    CopyHandler copyHandler = new CopyHandler();
+    return copyHandler.deleteCopy(copyId);
+  }
+
+  public boolean cancelSell(int copyId) {
+    TransactionHandler transactionHandler = new TransactionHandler();
+    return transactionHandler.delete(copyId, 2);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /**
+   * Permet d'ajouter un membre à la BD
+   *
+   * @param infoMembre Une map de clé/valeur des champs et valeurs à insérer
+   * @return vrai si l'ajout a fonctionné
+   */
+  public boolean ajouteMembre(HashMap infoMembre) {
+    return insertMembre(construitMembre(infoMembre));
+  }
+
+  /**
+   * Permet de supprimer un membre de la BD
+   *
+   * @param noMembre Le numéro du membre à supprimer
+   * @return vrai si la suppression a fonctionné
+   */
+  public boolean supprimeMembre(int noMembre) {
+    return deleteMembre(noMembre);
+  }
+
+  /**
+   * Permet de tansférer le compte d'un membre vers un autre
+   *
+   * @param noMembre Le mauvais numéro de membre (à transférer)
+   * @return vrai si le transfère a fonctionné
+   */
+  public boolean transfereMembre(int noMembre) {
+    if (transferMembre(membre.getNoMembre(), noMembre)) {
+      return supprimeMembre(noMembre);
+    }
+    return false;
+  }
+
+  public boolean ajoutExemplaire(int noMembre, int idArticle, double prix) {
+    ItemHandler ga = new ItemHandler();
+    TransactionHandler gt = new TransactionHandler();
+
+    int idExemplaire = 0; //ga.ajoutExemplaire(idArticle, prix);
+    return gt.ajoutTransaction(1, noMembre, idExemplaire);
+  }
+
+
+
+  public boolean vendreExemplaire(int noMembre, int idExemplaire) {
+    TransactionHandler gt = new TransactionHandler();
+    return gt.ajoutTransaction(2, noMembre, idExemplaire);
+  }
+
+  public boolean annuleVente(int idExemplaire) {
+    TransactionHandler gt = new TransactionHandler();
+    return gt.supprimeTransactionVente(idExemplaire);
+  }
+
+  public boolean membreExiste(int noMembre) {
+    return MembreSQL.membreExiste(noMembre);
+  }
+
+  /**
+   * Construit un objet de type Membre à partir d'une map clé/valeur
+   */
+  private Membre construitMembre(ArrayList<HashMap> infoMembres) {
+    return construitMembre(infoMembres.get(0));
+  }
+
+  /**
+   * Construit un objet de type Membre à partir d'une map clé/valeur
+   */
+  public Membre construitMembre(HashMap<String, String> infoMembre) {
+    membre = new Membre();
+    membre.setNoMembre(Integer.parseInt(infoMembre.get("no")));
+    membre.setPrenom((String) infoMembre.get("prenom"));
+    membre.setNom((String) infoMembre.get("nom"));
+    membre.setCourriel((String) infoMembre.get("courriel"));
+    membre.setNoCivic(Integer.parseInt(infoMembre.get("no_civic")));
+    membre.setRue((String) infoMembre.get("rue"));
+    membre.setAppartement(infoMembre.get("app").toCharArray());
+    membre.setVille((String) infoMembre.get("ville"));
+    membre.setProvince((String) infoMembre.get("province"));
+    membre.setCodePostal(infoMembre.get("code_postal").toCharArray());
+
+    if (infoMembre.containsKey("numero1")) {
+      membre.setPremierTelephone(new Telephone(infoMembre.get("numero1"), infoMembre.get("note1")));
+    }
+
+    if (infoMembre.containsKey("numero2")) {
+      membre.setSecondTelephone(new Telephone(infoMembre.get("numero2"), infoMembre.get("note2")));
+    }
+
+    return membre;
+  }
+
+  private void ajoutCompte(int noMembre) {
+    String[][] params = {{"noMembre", Integer.toString(noMembre)}};
+    membre.setCompte(construitCompte(noMembre, JsonParser.toHashMap(AccesBD.executeFunction("selectCompte", params)).get(0)));
+  }
+
+  private Compte construitCompte(int noMembre, HashMap infoCompte) {
+    ItemHandler ga = new ItemHandler();
+    Compte compte = new Compte();
+
+    Date inscription = new Date();
+    String strInscription = (String) infoCompte.get("inscription");
+    String anneeInscription = strInscription.substring(0, 4);
+    String moisInscription = strInscription.substring(5, 7);
+    String jourInscription = strInscription.substring(8, 10);
+    inscription.setYear(Integer.parseInt(anneeInscription) - 1900);
+    inscription.setMonth(Integer.parseInt(moisInscription) - 1);
+    inscription.setDate(Integer.parseInt(jourInscription));
+
+    Date derniereActivite = new Date();
+    String strDerniereActivite = (String) infoCompte.get("derniere_activite");
+    String anneeDerniereActivite = strDerniereActivite.substring(0, 4);
+    String moisDerniereActivite = strDerniereActivite.substring(5, 7);
+    String jourDerniereActivite = strDerniereActivite.substring(8, 10);
+    derniereActivite.setYear(Integer.parseInt(anneeDerniereActivite) - 1900);
+    derniereActivite.setMonth(Integer.parseInt(moisDerniereActivite) - 1);
+    derniereActivite.setDate(Integer.parseInt(jourDerniereActivite));
+
+    compte.setDateCreation(inscription);
+    compte.setDateDerniereActivite(derniereActivite);
+    compte.setSolde(Double.parseDouble((String) infoCompte.get("solde")));
+
+    String[][] params = {{"noMembre", Integer.toString(noMembre)}};
+    compte.setCommentaire(construitCommentaire(JsonParser.toHashMap(AccesBD.executeFunction("selectCommentaire", params))));
+
+    compte.setEnVente(ga.consulteExemplairesEnVenteMembre(noMembre));
+    compte.setVendu(ga.consulteExemplairesVenduMembre(noMembre));
+    compte.setArgentRemis(ga.consulteExemplairesArgentRemisMembre(noMembre));
+
+    return compte;
+  }
+
+  /**
+   * Construit un objet de type Telephone à partir d'un résultat de requête
+   */
+  private Telephone construitTelephone(HashMap infoTelephone) {
+    Telephone telephone = new Telephone();
+
+    telephone.setNumero((String) infoTelephone.get("numero"));
+    telephone.setNote((String) infoTelephone.get("note"));
+
+    return telephone;
+  }
+
+  /**
+   * Construit un tableau de String à partir d'un résultat de requête
+   */
+  private ArrayList<Commentaire> construitCommentaire(ArrayList<HashMap> infoCommentaire) {
+    ArrayList<Commentaire> commentaires = new ArrayList<>();
+
+    for (int noCommentaire = 0; noCommentaire < infoCommentaire.size(); noCommentaire++) {
+      Commentaire c = new Commentaire();
+
+      c.setId(Integer.parseInt((String) infoCommentaire.get(noCommentaire).get("id")));
+      c.setCommentaire((String) infoCommentaire.get(noCommentaire).get("commentaire"));
+      c.setDate((String) infoCommentaire.get(noCommentaire).get("date_modification"));
+
+      commentaires.add(c);
+    }
+    return commentaires;
   }
 }
