@@ -1,5 +1,9 @@
 package model.article;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -12,177 +16,188 @@ import java.util.Date;
  */
 public class Ouvrage extends Article {
 
-  private int annee;
-  private ArrayList<String> auteur;
-  private String editeur;
-  private int noEdition;
-  private Date dateAjout,
-               dateDesuet,
-               dateRetire;
+  private int publication;
+  private ArrayList<String> author;
+  private String editor;
+  private int edition;
+  private Date added,
+               outdated,
+               removed;
 
   /**
    * Constructeur par défaut de Ouvrage
    */
   public Ouvrage() {
     super();
-    annee = 0;
-    auteur = new ArrayList<>();
-    editeur = "";
-    noEdition = 0;
-    dateAjout = null;
-    dateDesuet = null;
-    dateRetire = null;
+  }
+
+  public Ouvrage(JSONObject json) {
+    super();
+    init();
+    fromJSON(json);
+  }
+
+  private void init() {
+    publication = 0;
+    author = new ArrayList<>();
+    editor = "";
+    edition = 0;
+    added = null;
+    outdated = null;
+    removed = null;
   }
 
   /**
    * Récupère l'année de parution de l'ouvrage
    *
-   * @return annee Année de parution
+   * @return publication Année de parution
    */
-  public int getAnnee() {
-    return annee;
+  public int getPublication() {
+    return publication;
   }
 
   /**
    * Attribue une valeur à l'année de parution
    *
-   * @param annee Année de parution de l'ouvrage
+   * @param publication Année de parution de l'ouvrage
    */
-  public void setAnnee(int annee) {
-    this.annee = annee;
+  public void setPublication(int publication) {
+    this.publication = publication;
   }
 
   /**
-   * Ajoute un auteur à l'ouvrage
+   * Ajoute un author à l'ouvrage
    *
-   * @param auteur Un auteur
+   * @param author Un author
    */
-  public void ajouterAuteur(String auteur) {
-    this.auteur.add(auteur);
+  public void addAuthor(String author) {
+    this.author.add(author);
   }
 
-  /**
-   * Ajoute une liste d'auteurs à l'ouvrage
-   *
-   * @param auteurs Les auteurs à ajouter
-   */
-  public void ajouterAuteurs(ArrayList<String> auteurs) {
-    for (int nbAuteur = 0; nbAuteur < auteurs.size(); nbAuteur++) {
-      auteur.add(auteur.get(nbAuteur));
-    }
-  }
 
   /**
-   * Récupère un auteur lié à un ouvrage
+   * Récupère un author lié à un ouvrage
    *
-   * @param index L'index de l'auteur
-   * @return auteur L'auteur situé à l'index
+   * @param index L'index de l'author
+   * @return author L'author situé à l'index
    */
-  public String getAuteur(int index) {
-    return auteur.get(index);
+  public String getAuthor(int index) {
+    return author.get(index);
   }
 
   /**
    * Récupère tous auteurs liés à l'ouvrage
    *
-   * @return auteur Une liste des auteurs
+   * @return author Une liste des auteurs
    */
-  public ArrayList<String> getTousAuteurs() {
-    return auteur;
+  public ArrayList<String> getAuthors() {
+    return author;
   }
 
-  public String getAuteurToString() {
-    String strAuteurs = "";
+  public String getAuthorString() {
+    String authorString = "";
 
-    for (int noAuteur = 0; noAuteur < auteur.size(); noAuteur++) {
-      strAuteurs += auteur.get(noAuteur);
+    for (int i = 0; i < author.size(); i++) {
+      authorString += author.get(i);
 
-      if (noAuteur != (auteur.size() - 1))
-        strAuteurs += ", ";
+      if (i != (author.size() - 1))
+        authorString += ", ";
     }
-    return strAuteurs;
+    return authorString;
   }
 
   /**
-   * Supprime un auteur lié à un ouvrage
+   * Supprime un author lié à un ouvrage
    *
-   * @param index L'index de l'auteur
+   * @param index L'index de l'author
    */
   public void supprimerAuteur(int index) {
-    auteur.remove(index);
+    author.remove(index);
   }
 
   /**
    * Supprime tous les auteurs liés à un ouvrage
    */
   public void supprimerTousAuteur() {
-    auteur.clear();
+    author.clear();
   }
 
   /**
    * Récupère l'éditeur de l'ouvrage
    *
-   * @return editeur Éditeur de l'ouvrage
+   * @return editor Éditeur de l'ouvrage
    */
-  public String getEditeur() {
-    return editeur;
+  public String getEditor() {
+    return editor;
   }
 
   /**
    * Attribue une valeur à l'éditeur de l'ouvrage
    *
-   * @param editeur Éditeur de l'ouvrage
+   * @param editor Éditeur de l'ouvrage
    */
-  public void setEditeur(String editeur) {
-    this.editeur = editeur;
+  public void setEditor(String editor) {
+    this.editor = editor;
   }
 
   /**
    * Récupère le numéro d'édition de l'ouvrage
    *
-   * @return noEdition Numéro d'édition de l'ouvrage
+   * @return edition Numéro d'édition de l'ouvrage
    */
-  public int getNoEdition() {
-    return noEdition;
+  public int getEdition() {
+    return edition;
   }
 
   /**
    * Attribue une valeur au numéro d'édition de l'ouvrage
    *
-   * @param noEdition Numéro d'édition de l'ouvrage
+   * @param edition Numéro d'édition de l'ouvrage
    */
-  public void setNoEdition(int noEdition) {
-    this.noEdition = noEdition;
+  public void setEdition(int edition) {
+    this.edition = edition;
   }
 
-  public void setDateAjout(Date date) {
-    dateAjout = date;
+  public void setAdded(Date date) {
+    added = date;
   }
 
   public void setDateAjout(String date) {
-    dateAjout = stringToDate(date);
+    added = stringToDate(date);
   }
 
-  public void setDateDesuet(Date date) {
-    dateDesuet = date;
+  public String getAdded() {
+    return added.toString();
+  }
+
+  public void setOutdated(Date date) {
+    outdated = date;
   }
 
   public void setDateDesuet(String date) {
-    dateDesuet = stringToDate(date);
+    outdated = stringToDate(date);
   }
 
-  public void setDateRetire(Date date) {
-    dateRetire = date;
+  public String getOutdated() {
+    return outdated.toString();
+  }
+
+  public void setRemoved(Date date) {
+    removed = date;
   }
 
   public void setDateRetire(String date) {
-    dateRetire = stringToDate(date);
+    removed = stringToDate(date);
+  }
+
+  public String getRemoved() {
+    return removed.toString();
   }
 
   public String getStatut() {
-    if(dateRetire != null)
+    if(removed != null)
       return "Retiré";
-    else if(dateDesuet != null)
+    else if(outdated != null)
       return "Désuet";
     return "Valide";
   }
@@ -202,5 +217,51 @@ public class Ouvrage extends Article {
     date.setDate(Integer.parseInt(strJour));
 
     return date;
+  }
+
+  public void fromJSON(JSONObject json) {
+    super.fromJSON(json);
+
+    try {
+      if (json.has("editor")) {
+        editor = json.getString("editor");
+      }
+
+      if (json.has("publication")) {
+        publication = json.getInt("publication");
+      }
+
+      if (json.has("author")) {
+        JSONArray authors = json.getJSONArray("author");
+
+        for(int i = 0; i < authors.length(); i++) {
+          JSONObject author = authors.getJSONObject(i);
+
+          this.author.add(author.getString("first_name") + " " + author.getString("last_name"));
+        }
+      }
+
+      if (json.has("edition")) {
+        edition = json.getInt("edition");
+      }
+
+      if (json.has("status")) {
+        JSONObject status = json.getJSONObject("status");
+
+        if (status.has("VALID")) {
+          setDateAjout(status.getString("VALID"));
+        }
+
+        if (status.has("OUTDATED")) {
+          setDateDesuet(status.getString("OUTDATED"));
+        }
+
+        if (status.has("REMOVED")) {
+          setDateRetire(status.getString("REMOVED"));
+        }
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
   }
 }

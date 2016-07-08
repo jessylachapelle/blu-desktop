@@ -96,23 +96,23 @@ public class CopyHandler {
    * @param exemplaire L'exemplaire à ajouter
    * @return Identifiant de l'exemplaire ajouté
    */
-  public int ajoutExemplaire(Exemplaire exemplaire) {
+  public int addCopy(Exemplaire exemplaire) {
     int exemplaireId = 0;
     JSONObject json = new JSONObject();
     JSONObject data = new JSONObject();
     JSONObject response;
 
     try {
-      data.append("id_article", exemplaire.getArticle().getNoArticle());
-      data.append("prix", exemplaire.getPrix());
-      data.append("noMembre", exemplaire.getMembre().getNoMembre());
+      data.put("item_id", exemplaire.getArticle().getId());
+      data.put("price", exemplaire.getPrice());
+      data.put("member_no", exemplaire.getMembre().getNo());
 
-      json.append("object", "exemplaire");
-      json.append("function", "insert");
-      json.append("data", data.toString());
+      json.put("object", "exemplaire");
+      json.put("function", "insert");
+      json.put("data", data);
 
-      response = APIConnector.call(json);
-      exemplaireId = response.getJSONObject("exemplaire").getInt("id");
+      response = APIConnector.call(json).getJSONObject("data");
+      exemplaireId = response.getJSONObject("copy").getInt("id");
     } catch (JSONException ex) {
       Logger.getLogger(CopyHandler.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -125,12 +125,12 @@ public class CopyHandler {
    * @param exemplaire l'exemplaire à supprimer
    * @return true si supprimé
    */
-  public boolean supprimeExemplaire(Exemplaire exemplaire) {
+  public boolean deleteCopy(Exemplaire exemplaire) {
     JSONObject json = new JSONObject();
     JSONObject data = new JSONObject();
 
     try {
-      data.append("exemplaireId", exemplaire.getNoExemplaire());
+      data.append("exemplaireId", exemplaire.getId());
 
       json.append("object", "exemplaire");
       json.append("function", "delete");

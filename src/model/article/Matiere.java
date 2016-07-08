@@ -1,5 +1,8 @@
 package model.article;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Classe Matiere qui contient les informations concernant une matière
  *
@@ -17,6 +20,10 @@ public class Matiere {
   public Matiere() {
     nom = "";
     categorie = "";
+  }
+
+  public Matiere(JSONObject json) {
+    fromJson(json);
   }
 
   /**
@@ -64,5 +71,19 @@ public class Matiere {
    */
   public void setCategorie(String categorie) {
     this.categorie = categorie;
+  }
+
+  public void fromJson(JSONObject json) {
+    try {
+      if (json.has("nom")) {
+        nom = json.getString("nom");
+      }
+
+      if (json.has("categorie")) {
+        categorie = json.getString("categorie");
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
   }
 }

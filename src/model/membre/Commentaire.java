@@ -5,6 +5,9 @@
  */
 package model.membre;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 
 /**
@@ -14,12 +17,20 @@ import java.util.Date;
 public class Commentaire {
 
   private int id;
-  private String commentaire;
+  private String comment;
   private String date;
 
   public Commentaire() {
+    init();
+  }
+
+  public Commentaire(JSONObject json) {
+    fromJson(json, true);
+  }
+
+  private void init() {
     this.id = 0;
-    this.commentaire = "";
+    this.comment = "";
     this.date = "";
   }
 
@@ -31,12 +42,12 @@ public class Commentaire {
     this.id = id;
   }
 
-  public String getCommentaire() {
-    return commentaire;
+  public String getComment() {
+    return comment;
   }
 
-  public void setCommentaire(String commentaire) {
-    this.commentaire = commentaire;
+  public void setComment(String comment) {
+    this.comment = comment;
   }
 
   public String getDate() {
@@ -55,5 +66,45 @@ public class Commentaire {
 
   public void setDate(Date date) {
     this.date = (date.getYear() + 1900) + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+  }
+
+  public void fromJson(JSONObject json) {
+    fromJson(json, false);
+  }
+
+  public void fromJson(JSONObject json, boolean reinitialize) {
+    if (reinitialize) {
+      init();
+    }
+
+    try {
+      if (json.has("id")) {
+        id = json.getInt("id");
+      }
+
+      if (json.has("comment")) {
+        comment = json.getString("comment");
+      }
+
+      if (json.has("updated_at")) {
+        setDate(json.getString("updated_at"));
+      }
+
+      if (json.has("updated_by")) {
+        // TODO: add employee to object
+        // employee = json.getString("updated_by");
+      }
+
+      // TODO: DELETE
+      if (json.has("comment")) {
+        comment = json.getString("comment");
+      }
+
+      if (json.has("date")) {
+        setDate(json.getString("date"));
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
   }
 }

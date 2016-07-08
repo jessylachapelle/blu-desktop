@@ -12,7 +12,7 @@ import org.json.JSONObject;
  */
 public class Phone {
   private int id;
-  private String numero;
+  private String number;
   private String note;
 
   /**
@@ -28,28 +28,28 @@ public class Phone {
 
   private void init() {
     id = 0;
-    numero = "";
+    number = "";
     note = "";
   }
 
   /**
    * Constructeur d'un numéro de téléphone sans note
    *
-   * @param numero Numéro de téléphone
+   * @param number Numéro de téléphone
    */
-  public Phone(String numero) {
-    setNumero(numero);
+  public Phone(String number) {
+    setNumber(number);
     note = null;
   }
 
   /**
    * Constructeur d'un numéro de téléphone avec note
    *
-   * @param numero Numéro de téléphone
+   * @param number Numéro de téléphone
    * @param note Note associée au numéro
    */
-  public Phone(String numero, String note) {
-    setNumero(numero);
+  public Phone(String number, String note) {
+    setNumber(number);
     setNote(note);
   }
 
@@ -63,19 +63,19 @@ public class Phone {
   /**
    * Accède au numéro de téléphone
    *
-   * @return numero Le numéro de téléphone
+   * @return number Le numéro de téléphone
    */
-  public String getNumero() {
-    return numero;
+  public String getNumber() {
+    return number;
   }
 
   /**
    * Modifie le numéro de téléphone
    *
-   * @param numero Le nouveau numéro de téléphone
+   * @param number Le nouveau numéro de téléphone
    */
-  public void setNumero(String numero) {
-    this.numero = numero;
+  public void setNumber(String number) {
+    this.number = number;
   }
 
   /**
@@ -101,16 +101,19 @@ public class Phone {
 
   @Override
   public String toString() {
-    if (numero.isEmpty() || this == null) {
-      return "";
+    String phone = "";
+
+    if (number.isEmpty()) {
+      return phone;
     }
 
-    String strTel = numero.substring(0, 3) + " " + numero.substring(3, 6) + "-" + numero.substring(6, 10);
+    phone = number.substring(0, 3) + " " + number.substring(3, 6) + "-" + number.substring(6, 10);
 
-    if (note != null && !note.equals("")) {
-      strTel += " (" + note + ")";
+    if (!note.isEmpty()) {
+      phone += " (" + note + ")";
     }
-    return strTel;
+
+    return phone;
   }
 
   public void fromJson(JSONObject json) {
@@ -123,12 +126,12 @@ public class Phone {
     }
 
     try {
-      if(json.has("id")) {
+      if (json.has("id")) {
         id = json.getInt("id");
       }
 
-      if (json.has("numero")) {
-        numero = json.getString("numero");
+      if (json.has("number")) {
+        number = json.getString("number");
       }
 
       if (json.has("note")) {

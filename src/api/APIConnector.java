@@ -49,6 +49,7 @@ public class APIConnector {
       bufferedReader.close();
 
       json = new JSONObject(response);
+
       return json;
     } catch (MalformedURLException e) {
       return error(422, "INVALID_DATA");
@@ -72,7 +73,7 @@ public class APIConnector {
     try {
       errorData.put("code", code);
       errorData.put("message", message);
-      error.put("error", errorData);
+      error.put("data", errorData);
     } catch (JSONException e) {}
 
     return error;

@@ -1,14 +1,11 @@
 package controller;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -16,8 +13,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import hanlder.MemberHandler;
+import handler.MemberHandler;
 import model.membre.Membre;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * La classe qui fait le pont entre la vue(ajoutMembre) et le modèle
@@ -27,167 +27,96 @@ import model.membre.Membre;
  */
 public class MemberFormController extends Controller {
 
-  private MemberHandler gMembre;
+  private MemberHandler memberHandler;
   private Membre membre;
   private BooleanProperty success;
-  private boolean ajout;
+  private boolean insertion;
 
-  @FXML
-  private Label lbl_ajout;
-  @FXML
-  private Label lbl_commentaire;
-  @FXML
-  private TextArea commentaire;
-  @FXML
-  private TextField no;
-  @FXML
-  private TextField nom;
-  @FXML
-  private TextField prenom;
-  @FXML
-  private TextField no_civic;
-  @FXML
-  private TextField rue;
-  @FXML
-  private TextField app;
-  @FXML
-  private TextField code_postal;
-  @FXML
-  private TextField ville;
-  @FXML
-  private ComboBox province;
-  @FXML
-  private TextField courriel;
-  @FXML
-  private TextField numero1;
-  @FXML
-  private TextField numero2;
-  @FXML
-  private CheckBox cb_numDA;
-  @FXML
-  private TextField note1;
-  @FXML
-  private TextField note2;
-  @FXML
-  private Button btn_ajout;
-  @FXML
-  private Button btn_annuler;
+  @FXML private Label lbl_ajout;
+  @FXML private Label lbl_commentaire;
 
-  @Override // This method is called by the FXMLLoader when initialization is complete
+  @FXML private TextField no;
+  @FXML private TextField nom;
+  @FXML private TextField prenom;
+  @FXML private TextField address;
+  @FXML private TextField code_postal;
+  @FXML private TextField ville;
+  @FXML private TextField courriel;
+  @FXML private TextField numero1;
+  @FXML private TextField numero2;
+  @FXML private TextField note1;
+  @FXML private TextField note2;
+
+  @FXML private TextArea commentaire;
+
+  @FXML private ComboBox province;
+
+  @FXML private CheckBox cb_numDA;
+
+  @FXML private Button btn_ajout;
+  @FXML private Button btn_annuler;
+
+  @Override
   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
     this.success = new SimpleBooleanProperty(false);
-    ajout = true;
+    insertion = true;
     btn_annuler.setVisible(false);
-    assertInjection();
-    gMembre = new MemberHandler();
+    memberHandler = new MemberHandler();
     membre = new Membre();
-    populeProvince();
+    populeState();
 
-    // initialize your logic here: all @FXML variables will have been injected
-    btn_ajout.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        HashMap<String, String> infoMembre = new HashMap();
-        retrieveValues(infoMembre);
-        if (gMembre.ajouteMembre(infoMembre)) {
-          success.set(true);
-        } else {
-          System.out.println("False");
-        }
-        System.out.println(province.getValue());
-      }
-    });
+    btn_ajout.setOnAction(event -> memberHandler.insertMember(new Membre(formToJSON())));
   }
 
   /**
    * Rajout les choix de province au CbBox
    */
-  private void populeProvince() {
-    // @TODO Softcoder les provinces à la bd
-    // Voir matiere dans ajout article
-
-    ObservableList<String> options
-            = FXCollections.observableArrayList(
-                    "AB",
-                    "BC",
-                    "MB",
-                    "NB",
-                    "NL",
-                    "NT",
-                    "NU",
-                    "ON",
-                    "PE",
-                    "QC",
-                    "SK",
-                    "YT"
-            );
+  private void populeState() {
+    // TODO: Use database
+    ObservableList<String> options = FXCollections.observableArrayList("AB", "BC", "MB", "NB", "NL", "NT", "NU", "ON", "PE", "QC", "SK", "YT");
     province.setItems(options);
   }
 
-  private void assertInjection() {
-    assert lbl_ajout != null : "fx:id=\"lbl_ajout\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert lbl_commentaire != null : "fx:id=\"lbl_commentaire\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert btn_ajout != null : "fx:id=\"btn_ajout\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert btn_annuler != null : "fx:id=\"btn_annuler\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert no != null : "fx:id=\"no\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert nom != null : "fx:id=\"nom\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert prenom != null : "fx:id=\"prenom\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert no_civic != null : "fx:id=\"no_civic\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert rue != null : "fx:id=\"rue\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert app != null : "fx:id=\"app\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert code_postal != null : "fx:id=\"code_postal\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert ville != null : "fx:id=\"ville\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert province != null : "fx:id=\"province\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert courriel != null : "fx:id=\"courriel\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert numero1 != null : "fx:id=\"numero1\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert numero2 != null : "fx:id=\"numero2\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert note1 != null : "fx:id=\"note1\" was not injected: check your FXML file 'memberForm.fxml'.";
-    assert note2 != null : "fx:id=\"note2\" was not injected: check your FXML file 'memberForm.fxml'.";
+  private JSONObject formToJSON() {
+    JSONObject json = new JSONObject();
+    JSONArray phones = new JSONArray();
+
+    try {
+      // TODO: Add auto generator for fake member no
+      json.put("no", no.getText());
+      json.put("last_name", nom.getText());
+      json.put("first_name", prenom.getText());
+      json.put("address", address.getText());
+      json.put("zip", code_postal.getText());
+      json.put("city", ville.getText());
+      json.put("state", province.getValue());
+      json.put("email", courriel.getText());
+      json.put("comment", commentaire.getText());
+
+      // TODO: Optimize
+      if (!numero1.getText().isEmpty()) {
+        JSONObject phone = new JSONObject();
+        phone.put("number", numero1.getText());
+        phone.put("note", note1.getText());
+        phones.put(phone);
+      }
+
+      if (!numero2.getText().isEmpty()) {
+        JSONObject phone = new JSONObject();
+        phone.put("number", numero2.getText());
+        phone.put("note", note2.getText());
+        phones.put(phone);
+      }
+
+      json.put("phone", phones);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return json;
   }
 
-  private void retrieveValues(HashMap infoMembre) {
-    System.out.println(province.getValue());
-    // TODO Le auto number generaotr pour membre....
-    infoMembre.put("no", no.getText());
-    infoMembre.put("nom", nom.getText());
-    infoMembre.put("prenom", prenom.getText());
-    infoMembre.put("no_civic", no_civic.getText());
-    infoMembre.put("rue", rue.getText());
-    infoMembre.put("app", app.getText());
-    infoMembre.put("code_postal", code_postal.getText());
-    infoMembre.put("ville", ville.getText());
-    infoMembre.put("province", province.getValue());
-    infoMembre.put("courriel", courriel.getText());
-    infoMembre.put("numero1", numero1.getText());
-    infoMembre.put("numero2", numero2.getText());
-    infoMembre.put("note1", note1.getText());
-    infoMembre.put("note2", note2.getText());
-    infoMembre.put("commentaire", commentaire.getText());
-  }
-
-  private HashMap getFormValues() {
-    HashMap infoMembre = new HashMap();
-     // TODO Le auto number generaotr pour membre....
-    infoMembre.put("no", no.getText());
-    infoMembre.put("nom", nom.getText());
-    infoMembre.put("prenom", prenom.getText());
-    infoMembre.put("no_civic", no_civic.getText());
-    infoMembre.put("rue", rue.getText());
-    infoMembre.put("app", app.getText());
-    infoMembre.put("code_postal", code_postal.getText());
-    infoMembre.put("ville", ville.getText());
-    infoMembre.put("province", province.getValue());
-    infoMembre.put("courriel", courriel.getText());
-    infoMembre.put("numero1", numero1.getText());
-    infoMembre.put("numero2", numero2.getText());
-    infoMembre.put("note1", note1.getText());
-    infoMembre.put("note2", note2.getText());
-    infoMembre.put("commentaire", commentaire.getText());
-
-    return infoMembre;
-  }
-
-  public Button getBtn_ajout() {
+  public Button getAddButton() {
     return btn_ajout;
   }
 
@@ -199,61 +128,64 @@ public class MemberFormController extends Controller {
     return success;
   }
 
-  public void loadMembre(Membre m) {
+  public void loadMember(Membre m) {
     membre = m;
-    ajout = false;
+    insertion = false;
 
     lbl_ajout.setText("Modifier un membre");
     btn_ajout.setText("Modifier");
     lbl_commentaire.setVisible(false);
     commentaire.setVisible(false);
-    //cb_numDA.setVisible(false);
+    cb_numDA.setVisible(false);
     btn_annuler.setVisible(true);
 
-    no.setText(Integer.toString(membre.getNoMembre()));
-    prenom.setText(membre.getPrenom());
-    nom.setText(membre.getNom());
-    no_civic.setText(Integer.toString(membre.getNoCivic()));
-    rue.setText(membre.getRue());
-    app.setText(String.valueOf(membre.getAppartement()));
-    code_postal.setText(String.valueOf(membre.getCodePostal()));
-    ville.setText(membre.getVille());
-    courriel.setText(membre.getCourriel());
+    no.setText(Integer.toString(membre.getNo()));
+    prenom.setText(membre.getFirstName());
+    nom.setText(membre.getLastName());
+    address.setText(membre.getAddress());
+    code_postal.setText(membre.getZip());
+    ville.setText(membre.getCity());
+    courriel.setText(membre.getEmail());
 
-    // TODO arange moé ça :p
-    for (int noTel = 0; noTel < 2; noTel++) {
-      if (membre.getTelephone(noTel) != null) {
-        numero1.setText(membre.getTelephone(noTel).getNumero());
-        note1.setText(membre.getTelephone(noTel).getNote());
+    // TODO: Optimisation
+    for (int i = 0; i < 2; i++) {
+      if (membre.getPhone(i) != null) {
+        if (i == 0) {
+          numero1.setText(membre.getPhone(i).getNumber());
+          note1.setText(membre.getPhone(i).getNote());
+        }
+
+        if (i == 1) {
+          numero2.setText(membre.getPhone(i).getNumber());
+          note2.setText(membre.getPhone(i).getNote());
+        }
       }
     }
   }
 
-  public Membre saveMembre() {
-    Membre membre = gMembre.construitMembre(getFormValues());
-
-    if (estAjout()) {
-      return gMembre.insertMember(membre);
+  public Membre saveMember() {
+    if (isInsert()) {
+      return memberHandler.insertMember(new Membre(formToJSON()));
     }
 
-    return gMembre.updateMember(membre);
+    return memberHandler.updateMember(new Membre(formToJSON()));
   }
 
-  public void loadMembre(int noMembre) {
-    ajout = true;
-    membre.setNoMembre(noMembre);
-    no.setText(Integer.toString(membre.getNoMembre()));
+  public void loadMember(int memberNo) {
+    insertion = true;
+    membre.setNo(memberNo);
+    no.setText(Integer.toString(membre.getNo()));
   }
 
-  public boolean estAjout() {
-    return ajout;
+  public boolean isInsert() {
+    return insertion;
   }
 
-  public Button getButtonAnnule() {
+  public Button getCancelButton() {
     return btn_annuler;
   }
 
-  public Membre getMembre() {
+  public Membre getMember() {
     return membre;
   }
 }

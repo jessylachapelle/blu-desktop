@@ -14,23 +14,17 @@
                 <TextField id="prenom" fx:id="prenom"/>
 
                 <Label id="lbl_nom" text="Nom* :" />
-                <TextField id="nom" fx:id="nom"/>
+                <TextField id="name" fx:id="name"/>
 
                 <Label id="lbl_noEtudiant" text="Numéro Étudiant* :" />
                 <TextField id="no" fx:id="no"/>
 
-                <CheckBox id="cb_numDA" mnemonicParsing="false" text="Générer un numéro étudiant" />
+                <CheckBox id="cb_numDA" fx:id="cb_numDA" mnemonicParsing="false" text="Générer un numéro étudiant" />
 
                 <Label id="lbl_addr_postal" text="Adresse postale" />
 
-                <Label id="lbl_noCivic" text="Numéro :" />
-                <TextField id="no_civic" fx:id="no_civic"/>
-
-                <Label id="lbl_rue" text="Rue :" />
-                <TextField id="rue" fx:id="rue"/>
-
-                <Label id="lbl_appt" text="Appartement :" />
-                <TextField id="app" fx:id="app"/>
+                <Label id="lbl_address" text="Adresse :" />
+                <TextField id="address" fx:id="address"/>
 
                 <Label id="lbl_codePostal" text="Code Postal :" />
                 <TextField id="code_postal" fx:id="code_postal"/>
@@ -45,7 +39,7 @@
                     </value>
                 </ComboBox>
 
-                <Label id="lbl_email" text="Adresse courriel* :" />
+                <Label id="lbl_email" text="Adresse email* :" />
                 <TextField id="courriel" fx:id="courriel"/>
 
                 <Label id="lbl_tel1" text="Téléphone 1 :" />

@@ -62,18 +62,8 @@
     -fx-font-weight: bold;
 }
 
-#lbl_noCivic{
+#lbl_address{
     -fx-translate-y: 170.0;
-    -fx-translate-x: 46.0;
-}
-
-#lbl_rue{
-    -fx-translate-y: 200.0;
-    -fx-translate-x: 46.0;
-}
-
-#lbl_appt{
-    -fx-translate-y: 230.0;
     -fx-translate-x: 46.0;
 }
 
@@ -92,20 +82,8 @@
     -fx-translate-x: 46.0;
 }
 
-#no_civic{
+#address{
     -fx-translate-y: 170.0;
-    -fx-translate-x: 170.0;
-    -fx-font-size: 12;
-}
-
-#rue {
-    -fx-translate-y: 200.0;
-    -fx-translate-x: 170.0;
-    -fx-font-size: 12;
-}
-
-#app {
-    -fx-translate-y: 230.0;
     -fx-translate-x: 170.0;
     -fx-font-size: 12;
 }

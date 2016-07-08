@@ -5,7 +5,7 @@ import model.article.Article;
 import model.membre.Membre;
 
 /**
- * Permet de faire une recherche dans la base de données pour y trouver des
+ * Permet de faire une searchQuery dans la base de données pour y trouver des
  * articles et/ou des membres
  *
  * @author Jessy Lachapelle
@@ -13,102 +13,77 @@ import model.membre.Membre;
  * @version 0.1
  */
 public class SearchHandler {
-  private String recherche;
-  private boolean article,
-          archive;
+  private MemberHandler memberHandler;
+  private ItemHandler itemHandler;
+  private String searchQuery;
+  private boolean item,
+                  archive;
 
   /**
    * Constructeur par défaut
    */
-  public void GestionnaireRecherche() {
-    recherche = "";
-    article = false;
+  public SearchHandler() {
+    memberHandler = new MemberHandler();
+    itemHandler = new ItemHandler();
+    searchQuery = "";
+    item = false;
     archive = false;
   }
 
   /**
-   * Définie la chaîne de charactère de la recherche
+   * Définie la chaîne de charactère de la searchQuery
    *
-   * @param recherche La recherche à faire
+   * @param searchQuery La searchQuery à faire
    */
-  public void setCritereRecherche(String recherche) {
-    this.recherche = recherche;
+  public void setSearchQuery(String searchQuery) {
+    this.searchQuery = searchQuery;
   }
 
   /**
-   * Défini une recherche par article
+   * Défini une searchQuery par item
    */
-  public void setRechercheArticle() {
-    this.article = true;
+  public void setItemSearch() {
+    this.item = true;
   }
 
   /**
-   * Défini une recherche par membre
+   * Défini une searchQuery par membre
    */
-  public void setRechercheMembre() {
-    this.article = false;
+  public void setMemberSearch() {
+    this.item = false;
   }
 
   /**
    * Défini de chercher dans les comptes désactivés
    */
-  public void rechercheDesactive() {
+  public void setSearchArchives() {
     this.archive = true;
-  }
-
-  /**
-   * Défini de chercher dans les articles retirés
-   */
-  public void rechercheRetire() {
-    rechercheDesactive();
   }
 
   /**
    * Défini de chercher seulement les comptes actifs
    */
-  public void rechercheActif() {
+  public void setSearchActive() {
     this.archive = false;
-  }
-
-  /**
-   * Défini de chercher seulement les articles valides
-   */
-  public void rechercheValide() {
-    rechercheActif();
-  }
-
-  /**
-   * Demande aux gestionnaire de membre ou d'article de faire une liste selon
-   * les propriétés définies
-   *
-   * @return Liste des Articles ou des Membres résultant de la recherche
-   */
-  public Object recherche() {
-    if (article) {
-      return rechercheArticle();
-    }
-    return rechercheMembre();
   }
 
   /**
    * Demande aux gestionnaire de membre de faire une liste selon les propriétés
    * définies
    *
-   * @return Liste des Membres résultant de la recherche
+   * @return Liste des Membres résultant de la searchQuery
    */
-  public ArrayList<Membre> rechercheMembre() {
-    MemberHandler mh = new MemberHandler();
-    return mh.searchMembers(recherche, archive);
+  public ArrayList<Membre> searchMembers() {
+    return memberHandler.searchMembers(searchQuery, archive);
   }
 
   /**
-   * Demande aux gestionnaire d'article de faire une liste selon les propriétés
+   * Demande aux gestionnaire d'item de faire une liste selon les propriétés
    * définies
    *
-   * @return Liste des Articles résultant de la recherche
+   * @return Liste des Articles résultant de la searchQuery
    */
-  public ArrayList<Article> rechercheArticle() {
-    ItemHandler itemHandler = new ItemHandler();
-    return itemHandler.searchItem(recherche, archive);
+  public ArrayList<Article> searchItems() {
+    return itemHandler.searchItem(searchQuery, archive);
   }
 }

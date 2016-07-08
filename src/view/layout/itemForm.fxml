@@ -77,13 +77,13 @@
                                 <AnchorPane prefWidth="580.0" >
                                     <children>
                                         <Label id="lbl_objet_nom" text="Nom * :" />
-                                        <TextField id="txt_objet_nom" fx:id="nom" />
+                                        <TextField id="txt_objet_nom" fx:id="name" />
 
                                         <Label id="lbl_objet_cat" text="Catégorie :" />
                                         <ComboBox id="cbb_categorie" fx:id="categorie" prefWidth="150.0" />
 
                                         <Label id="lbl_objet_comm" text="Commentaire :" />
-                                        <TextArea id="ta_objet_comm" fx:id="commentaire"  prefHeight="100.0" prefWidth="400.0" />
+                                        <TextArea id="ta_objet_comm" fx:id="comments"  prefHeight="100.0" prefWidth="400.0" />
 
                                         <Button id="btn_ajoutObjet" fx:id="btn_ajoutObjet" mnemonicParsing="false" prefHeight="25.0" prefWidth="136.0" text="Ajouter l'objet" />
                                     </children>

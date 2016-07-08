@@ -1,5 +1,8 @@
 package model.article;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Classe objet qui hérite de la classe Article et qui ajoute une description.
  *
@@ -14,6 +17,15 @@ public class Objet extends Article {
    * Constructeur par défaut d'un Objet
    */
   public Objet() {
+    init();
+  }
+
+  public Objet(JSONObject json) {
+    init();
+    fromJSON(json);
+  }
+
+  private void init() {
     description = "";
   }
 
@@ -42,6 +54,18 @@ public class Objet extends Article {
    */
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public void fromJSON(JSONObject json) {
+    super.fromJSON(json);
+
+    try {
+      if (json.has("description")) {
+        description = json.getString("description");
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
   }
 
 }

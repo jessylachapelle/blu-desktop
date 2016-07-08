@@ -26,8 +26,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import model.article.Article;
 import model.article.Exemplaire;
-import hanlder.ItemHandler;
-import hanlder.MemberHandler;
+import handler.ItemHandler;
+import handler.MemberHandler;
 import model.membre.Membre;
 import ressources.Dialogue;
 
@@ -37,7 +37,6 @@ import ressources.Dialogue;
  *
  * @author Marc
  */
-@SuppressWarnings({"Convert2Lambda", "Convert2Diamond"})
 public class WindowController extends Controller {
 
   @FXML
@@ -65,8 +64,6 @@ public class WindowController extends Controller {
 
   /**
    * Affiche le panel dans la fenetre de droite
-   *
-   * @param panelPath Le chemin de la vue
    */
   private SearchController affichePanelRecherche() {
     try {
@@ -98,7 +95,7 @@ public class WindowController extends Controller {
         @Override
         public void handle(MouseEvent event) {
           Membre m = ((CopyFormController) controller).getMembre();
-          affichePanelFicheMembre().loadMembre(m);
+          affichePanelFicheMembre().loadMember(m);
         }
       });
 
@@ -112,8 +109,6 @@ public class WindowController extends Controller {
 
   /**
    * Affiche le panel dans la fenetre de droite
-   *
-   * @param panelPath Le chemin de la vue
    */
   private MemberViewController affichePanelFicheMembre() {
     try {
@@ -124,24 +119,24 @@ public class WindowController extends Controller {
       centreDroit.getChildren().clear();
       centreDroit.getChildren().add(panel);
 
-      ((MemberViewController) controller).getButtonModif().setOnAction(new EventHandler<ActionEvent>() {
+      ((MemberViewController) controller).getEditButton().setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-          Membre m = ((MemberViewController) controller).getMembre();
-          affichePanelAjoutMembre().loadMembre(m);
+          Membre m = ((MemberViewController) controller).getMember();
+          displayMemberView().loadMember(m);
         }
       });
 
-      ((MemberViewController) controller).getButtonAjoutExemplaires().setOnAction(new EventHandler<ActionEvent>() {
+      ((MemberViewController) controller).getAddCopyButton().setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-          Membre m = ((MemberViewController) controller).getMembre();
+          Membre m = ((MemberViewController) controller).getMember();
           affichePanelAjoutExemplaire().loadMembre(m);
         }
       });
 
-      for (int noTbl = 0; noTbl < ((MemberViewController) controller).getTableauxExemplaires().length; noTbl++) {
-        ((MemberViewController) controller).getTableauxExemplaires()[noTbl].setOnMousePressed(new EventHandler<MouseEvent>() {
+      for (int noTbl = 0; noTbl < ((MemberViewController) controller).getCopyTables().length; noTbl++) {
+        ((MemberViewController) controller).getCopyTables()[noTbl].setOnMousePressed(new EventHandler<MouseEvent>() {
           @Override
           public void handle(MouseEvent event) {
             if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
@@ -155,7 +150,7 @@ public class WindowController extends Controller {
               }
 
               Exemplaire e = (Exemplaire) row.getItem();
-              affichePanelFicheArticle().loadArticle(e.getArticle().getNoArticle());
+              affichePanelFicheArticle().loadArticle(e.getArticle().getId());
             }
           }
         });
@@ -174,10 +169,10 @@ public class WindowController extends Controller {
    * @param noMembre le numéro du membre a afficher;
    */
   private void affichePanelFicheMembre(int noMembre) {
-    affichePanelFicheMembre().loadMembre(noMembre);
+    affichePanelFicheMembre().loadMember(noMembre);
   }
 
-  private MemberFormController affichePanelAjoutMembre() {
+  private MemberFormController displayMemberView() {
     try {
       FXMLLoader loader = new FXMLLoader();
       loader.setLocation(WindowController.class.getClassLoader().getResource("view/layout/memberForm.fxml"));
@@ -242,7 +237,7 @@ public class WindowController extends Controller {
                 row = (TableRow) node.getParent();
 
               Exemplaire e = (Exemplaire) row.getItem();
-              affichePanelFicheMembre().loadMembre(e.getMembre().getNoMembre());
+              affichePanelFicheMembre().loadMember(e.getMembre().getNo());
             }
           }
         });
@@ -300,7 +295,7 @@ public class WindowController extends Controller {
   }
 
   private void setEventHandlersRecherche() {
-    ((SearchController) controller).getResultatMembre().setOnMousePressed(new EventHandler<MouseEvent>() {
+    ((SearchController) controller).getMemberResults().setOnMousePressed(new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent event) {
         if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
@@ -313,12 +308,12 @@ public class WindowController extends Controller {
             row = (TableRow) node.getParent();
 
           Membre m = (Membre) row.getItem();
-          affichePanelFicheMembre().loadMembre(m.getNoMembre());
+          affichePanelFicheMembre().loadMember(m.getNo());
         }
       }
     });
 
-    ((SearchController) controller).getResultatArticle().setOnMousePressed(new EventHandler<MouseEvent>() {
+    ((SearchController) controller).getItemResults().setOnMousePressed(new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent event) {
         if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
@@ -332,7 +327,7 @@ public class WindowController extends Controller {
           }
 
           Article a = (Article) row.getItem();
-          affichePanelFicheArticle().loadArticle(a.getNoArticle());
+          affichePanelFicheArticle().loadArticle(a.getId());
         }
       }
     });
@@ -349,25 +344,25 @@ public class WindowController extends Controller {
       public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
         if (newValue == true) {
           int m = ((MemberFormController) controller).getNoValue();
-          affichePanelFicheMembre().loadMembre(m);
+          affichePanelFicheMembre().loadMember(m);
         }
       }
     });
 
-    ((MemberFormController) controller).getButtonAnnule().setOnAction(new EventHandler<ActionEvent>() {
+    ((MemberFormController) controller).getCancelButton().setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        Membre m = ((MemberFormController) controller).getMembre();
-        affichePanelFicheMembre().loadMembre(m);
+        Membre m = ((MemberFormController) controller).getMember();
+        affichePanelFicheMembre().loadMember(m);
       }
 
     });
 
-    ((MemberFormController) controller).getBtn_ajout().setOnAction(new EventHandler<ActionEvent>() {
+    ((MemberFormController) controller).getAddButton().setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        Membre membre = ((MemberFormController) controller).saveMembre();
-        affichePanelFicheMembre().loadMembre(membre);
+        Membre membre = ((MemberFormController) controller).saveMember();
+        affichePanelFicheMembre().loadMember(membre);
       }
     });
 
@@ -404,7 +399,7 @@ public class WindowController extends Controller {
     btn_membres.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        affichePanelAjoutMembre();
+        displayMemberView();
       }
     });
 
@@ -446,6 +441,17 @@ public class WindowController extends Controller {
           code = console.getItems().toString().replaceAll("[\\D]", "");
           code = "2" + code.substring(1, 9);
           console.getItems().clear();
+
+          MemberHandler gm = new MemberHandler();
+          int noMembre = Integer.parseInt(code);
+
+          if(gm.exist(noMembre)) {         // Membre existe
+            affichePanelFicheMembre().loadMember(noMembre);
+          } else {                                // Nouveau membre
+            displayMemberView().loadMember(noMembre);
+          }
+
+          return;
         } else if (ke.getText().equals("À") && console.getItems().size() == 16) {   // Code EAN13
           code = console.getItems().toString().replaceAll("[\\D]", "");
           console.getItems().clear();
@@ -461,7 +467,7 @@ public class WindowController extends Controller {
         } else if(controller instanceof CopyFormController) {     // Si le panel d'ajout d'exemplaire est ouvert
           ItemHandler ga = new ItemHandler();
 
-          if(article && ga.articleExiste(code)) {   // C'est un article existant
+          if(article) {   // ga.articleExiste(code) C'est un article existant
             // TODO Créer un exemplaire de l'article et permettre la saisie du prix
           } else if(article) {                      // C'est un nouvel article
             // TODO ouvrir un formulaire d'ajout d'article puis retour à l'ajout d'exemplaire
@@ -472,7 +478,7 @@ public class WindowController extends Controller {
           if(article) {                             // C'est un article
             ItemHandler ga = new ItemHandler();
 
-            if(ga.articleExiste(code)) {            // L'article existe
+            if(true) { //ga.articleExiste(code)            // L'article existe
               affichePanelFicheArticle().loadArticle(code);
             } else {                                // Nouvel article
               affichePanelAjoutArticle().loadArticle(code);
@@ -481,10 +487,10 @@ public class WindowController extends Controller {
             MemberHandler gm = new MemberHandler();
             int noMembre = Integer.parseInt(code);
 
-            if(gm.membreExiste(noMembre)) {         // Membre existe
-              affichePanelFicheMembre().loadMembre(noMembre);
+            if(gm.exist(noMembre)) {         // Membre existe
+              affichePanelFicheMembre().loadMember(noMembre);
             } else {                                // Nouveau membre
-              affichePanelAjoutMembre().loadMembre(noMembre);
+              displayMemberView().loadMember(noMembre);
             }
           }
         }

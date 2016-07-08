@@ -26,7 +26,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.RowConstraints;
 import model.article.Article;
 import model.article.Ouvrage;
-import hanlder.ItemHandler;
+import handler.ItemHandler;
 
 /**
  * Il s'agit du controller responsable de l'ajout d'un article

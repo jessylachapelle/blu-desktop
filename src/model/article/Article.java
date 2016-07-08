@@ -1,5 +1,9 @@
 package model.article;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -10,8 +14,8 @@ import java.util.ArrayList;
  */
 public class Article {
 
-  private int noArticle;
-  private String nom;
+  private int id;
+  private String name;
   private int etat;
   private Matiere matiere;
   private String codeBar;
@@ -27,8 +31,17 @@ public class Article {
    * Constructeur sans paramètre de la classe Article
    */
   public Article() {
-    noArticle = 0;
-    nom = "";
+    init();
+  }
+
+  public Article(JSONObject json) {
+    init();
+    fromJSON(json);
+  }
+
+  private void init() {
+    id = 0;
+    name = "";
     etat = 0;
     matiere = new Matiere();
     codeBar = "";
@@ -43,37 +56,37 @@ public class Article {
   /**
    * Récupère le numéro de l'article
    *
-   * @return noArticle
+   * @return id
    */
-  public int getNoArticle() {
-    return noArticle;
+  public int getId() {
+    return id;
   }
 
   /**
    * Attribue une valeur au numéro d'article
    *
-   * @param noArticle
+   * @param id
    */
-  public void setNoArticle(int noArticle) {
-    this.noArticle = noArticle;
+  public void setId(int id) {
+    this.id = id;
   }
 
   /**
-   * Récupère le nom
+   * Récupère le name
    *
-   * @return nom
+   * @return name
    */
-  public String getNom() {
-    return nom;
+  public String getName() {
+    return name;
   }
 
   /**
-   * Attribue une valeur au nom d'article
+   * Attribue une valeur au name d'article
    *
-   * @param nom
+   * @param name
    */
-  public void setNom(String nom) {
-    this.nom = nom;
+  public void setName(String name) {
+    this.name = name;
   }
 
   /**
@@ -196,11 +209,11 @@ public class Article {
 
   public void setExemplaires(ArrayList<Exemplaire> exemplaires) {
     for(int noExemplaire = 0; noExemplaire < exemplaires.size(); noExemplaire++) {
-      if(exemplaires.get(noExemplaire).estReserve())
+      if(exemplaires.get(noExemplaire).isReserved())
         enReservation.add(exemplaires.get(noExemplaire));
-      else if(exemplaires.get(noExemplaire).estVendu())
+      else if(exemplaires.get(noExemplaire).isSold())
         vendu.add(exemplaires.get(noExemplaire));
-      else if(exemplaires.get(noExemplaire).estRemis())
+      else if(exemplaires.get(noExemplaire).isPayed())
         argentRemis.add(exemplaires.get(noExemplaire));
       else
         enVente.add(exemplaires.get(noExemplaire));
@@ -370,7 +383,7 @@ public class Article {
     double montant = 0;
 
     for (int noEnVente = 0; noEnVente < enVente.size(); noEnVente++) {
-      montant += enVente.get(noEnVente).getPrix();
+      montant += enVente.get(noEnVente).getPrice();
     }
     return montant;
   }
@@ -383,7 +396,7 @@ public class Article {
     double montant = 0;
 
     for (int noVendu = 0; noVendu < vendu.size(); noVendu++) {
-      montant += vendu.get(noVendu).getPrix();
+      montant += vendu.get(noVendu).getPrice();
     }
     return montant;
   }
@@ -396,12 +409,54 @@ public class Article {
     double montant = 0;
 
     for (int noRemis = 0; noRemis < argentRemis.size(); noRemis++) {
-      montant += argentRemis.get(noRemis).getPrix();
+      montant += argentRemis.get(noRemis).getPrice();
     }
     return montant;
   }
 
   public int nombreRemis() {
     return argentRemis.size();
+  }
+
+  public void fromJSON(JSONObject json) {
+    try {
+      if (json.has("id")) {
+        id = json.getInt("id");
+      }
+
+      if (json.has("name")) {
+        name = json.getString("name");
+      }
+
+      if (json.has("name")) {
+        name = json.getString("name");
+      }
+
+      if (json.has("etat")) {
+        etat = json.getInt("etat");
+      }
+
+      if (json.has("matiere")) {
+        matiere.fromJson(json.getJSONObject("matiere"));
+      }
+
+      if (json.has("codebar")) {
+        codeBar = json.getString("codebar");
+      }
+
+      if (json.has("commentaire")) {
+        commentaire = json.getString("commentaire");
+      }
+
+      if (json.has("rangement")) {
+        JSONArray storage = json.getJSONArray("rangement");
+
+        for(int i = 0; i < storage.length(); i++) {
+          uniteRangement.add(new UniteRangement(storage.getJSONObject(i)));
+        }
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
   }
 }

@@ -31,7 +31,7 @@
                     <Label fx:id="lbl_code" layoutX="180.0" layoutY="135.0" textFill="#424b38" />
                     <Label layoutX="22.0" layoutY="155.0" prefWidth="165.0" text="Commentaire :" textFill="#424b38" />
                     <Button fx:id="btn_commentaire" layoutX="140.0" layoutY="155.0" text="Modifier" />
-                    <Label fx:id="lbl_commentaire" layoutX="22.0" layoutY="185.0" textFill="#424b38" text="Ceci est un commentaire" />
+                    <Label fx:id="lbl_commentaire" layoutX="22.0" layoutY="185.0" textFill="#424b38" text="Ceci est un comments" />
 
                     <Label layoutX="22.0" layoutY="195.0" text="Gestion interne" textFill="#424b38">
                       <font>

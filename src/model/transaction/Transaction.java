@@ -14,10 +14,12 @@ import java.util.Date;
  * @version 0.1
  */
 public class Transaction {
-  private int type,
+  private int id,
+              type,
               idExemplaire,
               noMembre;
   private Date date;
+  private String typeCode;
 
   /**
    * Constructeur par défaut, crée une transaction aux valeurs null
@@ -32,9 +34,11 @@ public class Transaction {
   }
 
   private void init() {
+    id = 0;
     type = 0;
     idExemplaire = 0;
     noMembre = 0;
+    typeCode = "";
     date = new Date();
   }
 
@@ -69,6 +73,14 @@ public class Transaction {
    */
   public void setType(int type) {
     this.type = type;
+  }
+
+  public String getTypeCode() {
+    return typeCode;
+  }
+
+  public void setTypeCode(String typeCode) {
+    this.typeCode = typeCode;
   }
 
   /**
@@ -148,6 +160,27 @@ public class Transaction {
 
   public void fromJSON(JSONObject json) {
     try {
+      if (json.has("id")) {
+        id = json.getInt("id");
+      }
+
+      if (json.has("date")) {
+        setDate(json.getString("date"));
+      }
+
+      if (json.has("copy")) {
+        idExemplaire = json.getInt("copy");
+      }
+
+      if (json.has("member")) {
+        noMembre = json.getInt("member");
+      }
+
+      if (json.has("code")) {
+        typeCode = json.getString("code");
+      }
+
+      // TODO: DELETE
       if (json.has("type")) {
         type = json.getInt("type");
       }
@@ -158,10 +191,6 @@ public class Transaction {
 
       if (json.has("no_membre")) {
         noMembre = json.getInt("no_membre");
-      }
-
-      if (json.has("date")) {
-        setDate(json.getString("date"));
       }
     } catch (JSONException e) {}
   }

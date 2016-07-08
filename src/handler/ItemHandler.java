@@ -2,9 +2,7 @@ package handler;
 
 import api.APIConnector;
 import bd.AccesBD;
-import bd.ArticleSQL;
 import model.article.*;
-import static bd.TransactionSQL.*;
 
 import model.transaction.*;
 import static bd.ArticleSQL.*;
@@ -36,7 +34,7 @@ public class ItemHandler {
   private ArrayList<Article> articles;
   private Article article;
 
-public void GestionnaireArticle() {
+  public ItemHandler() {
     article = null;
     articles = new ArrayList<>();
   }
@@ -115,7 +113,7 @@ public void GestionnaireArticle() {
 
 
 
-public Article getArticle(){
+  public Article getArticle(){
   return this.article;
 }
   /**
@@ -134,19 +132,19 @@ public Article getArticle(){
         article = new Ouvrage();
 
         if(infoArticle.containsKey("ouvrage_titre"))
-          article.setNom((String) infoArticle.get("ouvrage_titre"));
+          article.setName((String) infoArticle.get("ouvrage_titre"));
 
         if(infoArticle.containsKey("ouvrage_ean13"))
           article.setCodeBar((String) infoArticle.get("ouvrage_ean13"));
 
         if(infoArticle.containsKey("ouvrage_parution"))
-          ((Ouvrage) article).setAnnee(Integer.parseInt((String) infoArticle.get("ouvrage_parution")));
+          ((Ouvrage) article).setPublication(Integer.parseInt((String) infoArticle.get("ouvrage_parution")));
 
         if(infoArticle.containsKey("editeur_nom"))
-          ((Ouvrage) article).setEditeur((String) infoArticle.get("editeur_nom"));
+          ((Ouvrage) article).setEditor((String) infoArticle.get("editeur_nom"));
 
         if(infoArticle.containsKey("ouvrage_no_edition"))
-          ((Ouvrage) article).setNoEdition(Integer.parseInt((String) infoArticle.get("ouvrage_no_edition")));
+          ((Ouvrage) article).setEdition(Integer.parseInt((String) infoArticle.get("ouvrage_no_edition")));
 
         if(infoArticle.containsKey("ouvrage_date_ajout"))
           ((Ouvrage) article).setDateAjout((String) infoArticle.get("ouvrage_date_ajout"));
@@ -160,7 +158,7 @@ public Article getArticle(){
         for(int noAuteur = 1; noAuteur <= 5; noAuteur++)
           if(infoArticle.containsKey("auteur_" + noAuteur) &&
              !((String)infoArticle.get("auteur_" + noAuteur)).isEmpty())
-            ((Ouvrage) article).ajouterAuteur((String) infoArticle.get("auteur_" + noAuteur));
+            ((Ouvrage) article).addAuthor((String) infoArticle.get("auteur_" + noAuteur));
         break;
       case "objet":
         article = new Objet();
@@ -173,7 +171,7 @@ public Article getArticle(){
     }
 
     if(infoArticle.containsKey("id"))
-      article.setNoArticle(Integer.parseInt(((String) infoArticle.get("id")).replace("\n", "").replace("\r", "")));
+      article.setId(Integer.parseInt(((String) infoArticle.get("id")).replace("\n", "").replace("\r", "")));
 
     if(infoArticle.containsKey("commentaire"))
       article.setCommentaire((String) infoArticle.get("commentaire"));
@@ -229,7 +227,7 @@ public Article getArticle(){
             }
           }
 
-          return consulterArticle(article.getCodeBar()).getNoArticle();
+          return consulterArticle(article.getCodeBar()).getId();
         }
        else return OP_ECHEC;
       }
@@ -240,10 +238,10 @@ public Article getArticle(){
     }
     // Insertion d'un objet
     else {
-      if(consulterArticle(article.getNom()) == null){
+      if(consulterArticle(article.getName()) == null){
         int succes = insertArticle(article);
-        article.setNoArticle(consulterArticle(article.getCodeBar()).getNoArticle());
-        if (succes == 1) return article.getNoArticle();
+        article.setId(consulterArticle(article.getCodeBar()).getId());
+        if (succes == 1) return article.getId();
         else return OP_ECHEC;
       }
       // Un objet avec le même nom existe
@@ -260,12 +258,12 @@ public Article getArticle(){
    * @return 1 si succes, sinon lid de lauteur qui a flanché
    */
   private int insertToutAuteur(int idArticle) {
-    for (int i = 0; i < ((Ouvrage)article).getTousAuteurs().size(); i++){
+    for (int i = 0; i < ((Ouvrage)article).getAuthors().size(); i++){
 
       HashMap auteur = null;
       //pour chaque auteur, on vérifie s'il y a un nom identique dans la bd
       for (int j = 0; j < 5; j++){
-        auteur = selectAuteur(((Ouvrage)article).getAuteur(i), j+1);
+        auteur = selectAuteur(((Ouvrage)article).getAuthor(i), j+1);
 
         if (auteur != null){
           break;
@@ -278,7 +276,7 @@ public Article getArticle(){
       }
       // Nouvelle insertion, puis la référence
       else {
-        if(insertPropriete(idArticle, i+2, ((Ouvrage)article).getAuteur(i)) == false)
+        if(insertPropriete(idArticle, i+2, ((Ouvrage)article).getAuthor(i)) == false)
           return i+1;
       }
     }
@@ -317,14 +315,14 @@ public Article getArticle(){
   private int insertEditeur(int idArticle) {
       HashMap editeur;
       // on vérifie s'il y a un nom identique dans la bd
-      editeur = selectEditeur(((Ouvrage)article).getEditeur());
+      editeur = selectEditeur(((Ouvrage)article).getEditor());
 
       // si faux, on insere une nouvelle propriete
       if (editeur == null){
-        if(insertPropriete(idArticle, 9, ((Ouvrage)article).getEditeur()) == false){
+        if(insertPropriete(idArticle, 9, ((Ouvrage)article).getEditor()) == false){
           return OP_ECHEC;
         }
-        editeur = selectEditeur(((Ouvrage)article).getEditeur());
+        editeur = selectEditeur(((Ouvrage)article).getEditor());
       }
       // La référence
       if(insertProprieteArticle(idArticle, Integer.parseInt((String) editeur.get("id"))) == false)
@@ -341,14 +339,14 @@ public Article getArticle(){
   private int insertAnnee(int idArticle) {
       HashMap annee;
       // on vérifie s'il y a un nom identique dans la bd
-      annee = selectAnnee(Integer.toString(((Ouvrage)article).getAnnee()));
+      annee = selectAnnee(Integer.toString(((Ouvrage)article).getPublication()));
 
       // si faux, on insere une nouvelle propriete
       if (annee == null){
-        if(insertPropriete(idArticle, 11, (Integer.toString(((Ouvrage)article).getAnnee()))) == false){
+        if(insertPropriete(idArticle, 11, (Integer.toString(((Ouvrage)article).getPublication()))) == false){
           return OP_ECHEC;
         }
-        annee = selectAnnee(Integer.toString(((Ouvrage)article).getAnnee()));
+        annee = selectAnnee(Integer.toString(((Ouvrage)article).getPublication()));
       }
 
       // La référence
@@ -366,14 +364,14 @@ public Article getArticle(){
   private int insertEdition(int idArticle) {
       HashMap edition;
       // on vérifie s'il y a un nom identique dans la bd
-      edition = selectEdition(Integer.toString(((Ouvrage)article).getNoEdition()));
+      edition = selectEdition(Integer.toString(((Ouvrage)article).getEdition()));
 
       // si faux, on insere une nouvelle propriete
       if (edition == null){
-        if(insertPropriete(idArticle, 12, (Integer.toString(((Ouvrage)article).getNoEdition()))) == false){
+        if(insertPropriete(idArticle, 12, (Integer.toString(((Ouvrage)article).getEdition()))) == false){
           return OP_ECHEC;
         }
-        edition = selectEdition(Integer.toString(((Ouvrage)article).getNoEdition()));
+        edition = selectEdition(Integer.toString(((Ouvrage)article).getEdition()));
       }
 
       // La référence
@@ -428,80 +426,6 @@ public Article getArticle(){
    return OP_SUCCES;
   }
 
-  /**
-   * Construit une liste d'article à partir de pairs clé-valeur
-   *
-   * @param mapArticle Une liste de map clé-valeur d'articles
-   * @return Une liste d'articles
-   */
-  private ArrayList<Article> construitListeArticle(ArrayList<HashMap> mapArticle) {
-    ArrayList<Article> articles = new ArrayList<>();
-
-    for (int noArticle = 0; noArticle < mapArticle.size(); noArticle++) {
-      int id = Integer.parseInt((String) mapArticle.get(noArticle).get("id"));
-
-      if (selectPropriete(id, 1).matches("ouvrage")) {
-        Ouvrage ouvrage = new Ouvrage();
-
-        ouvrage.setNoArticle(id);
-        ouvrage.setNom((String) mapArticle.get(noArticle).get("nom"));
-        ouvrage.setEditeur((String) mapArticle.get(noArticle).get("editeur"));
-        ouvrage.setAnnee(Integer.parseInt((String) mapArticle.get(noArticle).get("annee")));
-        ouvrage.setNoEdition(Integer.parseInt((String) mapArticle.get(noArticle).get("edition")));
-
-        for (int noAuteur = 1; noAuteur <= 5; noAuteur++) {
-          String key = "auteur_" + noAuteur;
-
-          if (mapArticle.get(noArticle).containsKey(key) && mapArticle.get(noArticle).get(key) != null)
-            ouvrage.ajouterAuteur((String) mapArticle.get(noArticle).get(key));
-        }
-
-        articles.add(ouvrage);
-      } else {
-        Objet objet = new Objet();
-
-        objet.setNoArticle(id);
-        objet.setNom((String) mapArticle.get(noArticle).get("nom"));
-
-        articles.add(objet);
-      }
-    }
-
-    return articles;
-  }
-
-  private ArrayList<Exemplaire> construitListeExemplaireMembre(ArrayList<HashMap> infoExemplaire) {
-    ArrayList<Exemplaire> exemplaires = new ArrayList<>();
-
-    for (int noExemplaire = 0; noExemplaire < infoExemplaire.size(); noExemplaire++)
-      exemplaires.add(construitExemplaireMembre(infoExemplaire.get(noExemplaire)));
-    return exemplaires;
-  }
-
-  private Exemplaire construitExemplaireMembre(HashMap infoExemplaire) {
-    Exemplaire exemplaire = new Exemplaire();
-
-    exemplaire.setNoExemplaire(Integer.parseInt((String)infoExemplaire.get("exemplaire_id")));
-    exemplaire.setPrix(Double.parseDouble((String) infoExemplaire.get("prix")));
-    exemplaire.getArticle().setNoArticle(Integer.parseInt((String) infoExemplaire.get("article_id")));
-    exemplaire.getArticle().setNom((String) infoExemplaire.get("titre"));
-
-    Date date = new Date();
-    String strDate = (String) infoExemplaire.get("date");
-    String annee = strDate.substring(0, 4);
-    String mois = strDate.substring(5, 7);
-    String jour = strDate.substring(8, 10);
-    date.setYear(Integer.parseInt(annee) - 1900);
-    date.setMonth(Integer.parseInt(mois) - 1);
-    date.setDate(Integer.parseInt(jour));
-
-    Transaction transaction = new Transaction();
-    transaction.setDate(date);
-
-    exemplaire.ajouterTransaction(transaction);
-    return exemplaire;
-  }
-
   private ArrayList<Exemplaire> construitListeExemplaireArticle(ArrayList<HashMap> infoExemplaire) {
     ArrayList<Exemplaire> exemplaires = new ArrayList<>();
 
@@ -513,11 +437,11 @@ public Article getArticle(){
   private Exemplaire construitExemplaireArticle(HashMap infoExemplaire) {
     Exemplaire exemplaire = new Exemplaire();
 
-    exemplaire.setNoExemplaire(Integer.parseInt((String) infoExemplaire.get("id")));
-    exemplaire.setPrix(Double.parseDouble((String) infoExemplaire.get("prix")));
-    exemplaire.getMembre().setNoMembre(Integer.parseInt((String) infoExemplaire.get("no")));
-    exemplaire.getMembre().setPrenom((String) infoExemplaire.get("prenom"));
-    exemplaire.getMembre().setNom((String) infoExemplaire.get("nom"));
+    exemplaire.setId(Integer.parseInt((String) infoExemplaire.get("id")));
+    exemplaire.setPrice(Double.parseDouble((String) infoExemplaire.get("prix")));
+    exemplaire.getMembre().setNo(Integer.parseInt((String) infoExemplaire.get("no")));
+    exemplaire.getMembre().setFirstName((String) infoExemplaire.get("prenom"));
+    exemplaire.getMembre().setLastName((String) infoExemplaire.get("nom"));
 
     Transaction transaction = new Transaction();
     transaction.setType(1);
@@ -564,9 +488,9 @@ public Article getArticle(){
     transaction.setDate((String)infoDemande.get("date"));
 
     exemplaire.getTousTransactions().add(transaction);
-    exemplaire.getParent().setNoMembre(Integer.parseInt((String)infoDemande.get("no")));
-    exemplaire.getParent().setPrenom((String)infoDemande.get("prenom"));
-    exemplaire.getParent().setNom((String)infoDemande.get("nom"));
+    exemplaire.getParent().setNo(Integer.parseInt((String)infoDemande.get("no")));
+    exemplaire.getParent().setFirstName((String)infoDemande.get("prenom"));
+    exemplaire.getParent().setLastName((String)infoDemande.get("nom"));
 
     return exemplaire;
   }
@@ -598,38 +522,22 @@ public Article getArticle(){
   }
 
   /**
-   * Consulte une liste d'article selon le nom
-   *
-   * @param nom Nom de l'article
-   * @return Une liste d'article
-   */
-  public ArrayList<Article> consulterListeArticle(String nom) {
-    return construitListeArticle(selectListeArticle(nom));
-  }
-
-  /**
-   * Construit une liste d'article selon le nom et l'état
-   *
-   * @param nom Nom de l'article
-   * @param etat État de l'article
-   * @return Une liste d'article
-   */
-  public ArrayList<Article> consulterListeArticle(String nom, boolean etat) {
-    return construitListeArticle(selectListeArticle(nom, etat));
-  }
-
-  /**
    * Search for items with corresponding query
    * @param search The search query
    * @return A list of items
    */
-  public ArrayList<Article> searchItem(String search, boolean archive) {
+  public ArrayList<Article> searchItem(String search, boolean outdated) {
     ArrayList<Article> items = new ArrayList<>();
     JSONObject json = new JSONObject();
     JSONObject data = new JSONObject();
 
     try {
       data.put("search", search);
+
+      if(outdated) {
+        data.put("outdated", outdated);
+      }
+
       json.put("function", "search");
       json.put("object", "article");
       json.put("data", data);
@@ -637,40 +545,19 @@ public Article getArticle(){
       JSONArray itemArray = APIConnector.call(json).getJSONArray("data");
 
       for(int i = 0; i < itemArray.length(); i++) {
-        JSONObject itemData = itemArray.getJSONObject(i);
-        Article item = new Article();
+        JSONObject item = itemArray.getJSONObject(i);
 
-        item.setNoArticle(itemData.getInt("id"));
-        item.setNom(itemData.getString("nom"));
-
-        items.add(item);
+        if (item.has("is_book") && item.getBoolean("is_book")) {
+          items.add(new Ouvrage(itemArray.getJSONObject(i)));
+        } else {
+          items.add(new Objet(itemArray.getJSONObject(i)));
+        }
       }
     } catch (JSONException e) {
       e.printStackTrace();
     }
 
     return items;
-  }
-
-  /**
-   * Supprime un article de la base de données
-   *
-   * @param noArticle L'article à supprimer
-   * @return Vrai si c'est une réussite
-   */
-  private boolean supprimeArticle(int noArticle) {
-    return removeArticle(noArticle);
-  }
-
-  /**
-   * Modifie l'état d'un article
-   *
-   * @param noArticle Le numéro de l'article à modifié
-   * @param etat Le nouvel état
-   * @return Vrai si c'est une réussite
-   */
-  private boolean modifieEtat(int noArticle, int etat) {
-    return updateEtat(noArticle, etat);
   }
 
   /**
@@ -682,172 +569,12 @@ public Article getArticle(){
     return selectAllMatiere();
   }
 
-  /**
-   * Ajoute une matière à la base de données
-   *
-   * @param nom Nom de la matière
-   * @return Vrai si c'est une réussite
-   */
-  private boolean ajoutMatiere(String nom) {
-    return insertMatiere(nom);
-  }
-
-  /**
-   * Modifie le nom d'une matière dans la BD
-   *
-   * @param nouveauNom Le nouveau nom de la matière
-   * @param ancienNom Le nom erroné
-   * @return Vrai si c'est une réussite
-   */
-  private boolean modifieMatiere(String nouveauNom, String ancienNom) {
-    return updateMatiere(nouveauNom, ancienNom);
-  }
-
-  /**
-   * Supprime une matière de la base de données
-   *
-   * @param nom Nom de la matière à supprimée
-   * @return Vrai si la matière a été supprimée
-   */
-  private boolean supprimeMatiere(String nom) {
-    return removeMatiere(nom);
-  }
-
-  /**
-   * Ajoute une catégorie à la base de données
-   *
-   * @param nom Nom de la catégorie
-   * @return Vrai si c'est une réussite
-   */
-  private boolean ajoutCategorie(String nom) {
-    return insertCategorie(nom);
-  }
-
-  /**
-   * Modifie le nom d'une catégorie dans la BD
-   *
-   * @param nouveauNom Le nouveau nom de la catégorie
-   * @param ancienNom Le nom erroné
-   * @return Vrai si c'est une réussite
-   */
-  private boolean modifieCategorie(String nouveauNom, String ancienNom) {
-    return updateCategorie(nouveauNom, ancienNom);
-  }
-
-  /**
-   * Supprime une catégorie de la base de données
-   *
-   * @param nom Nom de la catégorie à supprimée
-   * @return Vrai si la catégorie a été supprimée
-   */
-  private boolean supprimeCategorie(String nom) {
-    return removeCategorie(nom);
-  }
-
-  /**
-   * Insère un exemplaire dans la base de données
-   *
-   * @param noArticle Le numéro de l'article
-   * @param prix Le prix de l'exemplaire
-   * @return Vrai si l'exemplaire a été ajouté
-   */
-  private boolean ajoutExemplaire(int noArticle, int prix) {
-    return insertExemplaire(noArticle, prix);
-  }
-
-
-  /**
-   * Retire tous les exemplaires liés a un article
-   *
-   * @param noArticle L'article auquel sont liés les exemplaires
-   * @return Vrai si les exemplaires ont été enlevés
-   */
-  private boolean retireTousExemplaire(int noArticle) {
-    return removeTousExemplaire(noArticle);
-  }
-
-  /**
-   * Vérifie si le type de l'article est ouvrage
-   *
-   * @param noArticle Le numéro de l'article
-   * @return Vrai si l'article est un ouvrage
-   */
-  private boolean estOuvrage(int noArticle) {
-    HashMap type = selectTypeArticle(noArticle);
-    String typeArticle = (String) type.get("type_article");
-
-    return "ouvrage".equals(typeArticle);
-  }
-
-  /**
-   * Ajoute un nouvel auteur si il reste de la place. Un maximum de 5 auteurs
-   * peuvent être ajoutés par article.
-   *
-   * @param noArticle Le numéro de l'article
-   * @param nom Le nom de l'auteur
-   * @return Vrai si l'auteur a pu etre ajouté.
-   */
-  private boolean ajoutAuteur(int noArticle, String nom) {
-    HashMap hmAuteur = selectAuteur(noArticle, 1);
-    String auteur = (String) hmAuteur.get("nom");
-
-    if ("".equals(auteur)) {
-      return insertAuteur(noArticle, nom, 1);
-    } else {
-      if (insertAuteurQuandVide(noArticle, nom, 2) == false) {
-        if (insertAuteurQuandVide(noArticle, nom, 3) == false) {
-          if (insertAuteurQuandVide(noArticle, nom, 4) == false) {
-            if ((insertAuteurQuandVide(noArticle, nom, 5) == false)) {
-              return false;
-            }
-          }
-        }
-      }
-      return true;
-    }
-  }
-
-  /**
-   * Regarde si il reste une place pour ajouter l'auteur. Un maximum de 5
-   * auteurs peuvent être ajoutés. Si il reste une place, insère l'auteur dans
-   * la BD
-   *
-   * @param noArticle Le numéro de l'article
-   * @param nom Le nom de l'auteur
-   * @param numero Le numero d'auteur à tester (1 a 5)
-   * @return Vrai si l'auteur a ete ajouté, faux si il n'a pas été ajouté
-   */
-  private boolean insertAuteurQuandVide(int noArticle, String nom, int numero) {
-    HashMap hmAuteur = selectAuteur(noArticle, numero);
-    String auteur = (String) hmAuteur.get("nom");
-
-    if ("".equals(auteur)) {
-      insertAuteur(noArticle, nom, numero);
-      return true;
-    }
-    return false;
-  }
-
   public boolean ajoutDemandeReservation(int noMembre, int idArticle) {
     return insertDemandeReservation(noMembre, idArticle);
   }
 
   public boolean supprimeDemandeReservation(int noMembre, int idArticle) {
     return deleteDemandeReservation(noMembre, idArticle);
-  }
-
-  /**
-   * Insère une réservation pour un exemplaire et un membre dans la BD
-   *
-   * @param noMembre Le membre qui veut réserver un exemplaire
-   * @param idExemplaire Le id de l'exemplaire réservé
-   * @return Vrai si la réservation est enregistrée
-   */
-  public boolean ajoutReservation(int noMembre, int idExemplaire) {
-    Date date = new Date();
-    Transaction transaction = new Transaction(5, date, idExemplaire, noMembre);
-
-    return insertTransaction(transaction);
   }
 
   /**
@@ -859,136 +586,11 @@ public Article getArticle(){
     return deleteReservation(idExemplaire);
   }
 
-  /**
-   * Insère un remboursement d'argent selon un exemplaire et un membre dans la
-   * BD
-   *
-   * @param noMembre
-   * @param idExemplaire
-   * @return
-   */
-  private boolean rembourseExemplaire(int noMembre, int idExemplaire) {
-    Date date = new Date();
-    Transaction transaction = new Transaction(3, date, idExemplaire, noMembre);
-
-    return insertTransaction(transaction);
-  }
-
-  /**
-   * Insère une transaction de mise en vente d'un exemplaire dans la BD
-   *
-   * @param noMembre Le numero du membre
-   * @param idExemplaire Le numero de l'exemplaire associé
-   * @return Si la transaction de mise a vente a été inséré
-   */
-  private boolean miseEnVenteExemplaire(int noMembre, int idExemplaire) {
-    Date date = new Date();
-    Transaction transaction = new Transaction(1, date, idExemplaire, noMembre);
-
-    return insertTransaction(transaction);
-  }
-
-  /**
-   * Insère une transaction de vente d'exemplaire dans la BD
-   *
-   * @param noMembre Le numero du membre
-   * @param idExemplaire Le numero de l'exemplaire associé
-   * @return Si la transaction a ete inséré
-   */
-  private boolean venteExemplaire(int noMembre, int idExemplaire) {
-    Date date = new Date();
-    Transaction transaction = new Transaction(2, date, idExemplaire, noMembre);
-
-    return insertTransaction(transaction);
-  }
-
-  public ArrayList<Exemplaire> consulteExemplairesEnVenteMembre(int noMembre) {
-    return consulteExemplairesMembre(noMembre, 1);
-  }
-
-  public ArrayList<Exemplaire> consulteExemplairesVenduMembre(int noMembre) {
-    return consulteExemplairesMembre(noMembre, 2);
-  }
-
-  public ArrayList<Exemplaire> consulteExemplairesArgentRemisMembre(int noMembre) {
-    return consulteExemplairesMembre(noMembre, 4);
-  }
-
-  public ArrayList<Exemplaire> consulteExemplairesMembre(int noMembre, int etat) {
-    return construitListeExemplaireMembre(selectExemplairesMembre(noMembre, etat));
-  }
-
-  public ArrayList<Exemplaire> consulteExemplairesEnVenteArticle(int idArticle) {
-    return consulteExemplairesArticle(idArticle, 1);
-  }
-
-  public ArrayList<Exemplaire> consulteExemplairesVenduArticle(int idArticle) {
-    return consulteExemplairesArticle(idArticle, 2);
-  }
-
-  public ArrayList<Exemplaire> consulteExemplairesArgentRemisArticle(int idArticle) {
-    return consulteExemplairesArticle(idArticle, 4);
-  }
-
-  public ArrayList<Exemplaire> consulteExemplairesArticle(int idArticle, int etat) {
-    return construitListeExemplaireArticle(selectExemplairesArticle(idArticle, etat));
-  }
-
   public ArrayList<Exemplaire> consulteExemplairesArticle(int idArticle) {
     ArrayList<Exemplaire> exemplaires = construitListeExemplaireArticle(selectExemplairesArticle(idArticle));
     exemplaires.addAll(construitDemandeReservation(selectDemandesReservation(idArticle)));
 
     return exemplaires;
-  }
-
-  public ArrayList<UniteRangement> consulteUniteRangement(int idArticle) {
-    return construitListeUniteRangement(selectUniteRangement(idArticle));
-  }
-
-  private ArrayList<UniteRangement> construitListeUniteRangement(ArrayList<HashMap> infoRangement) {
-    ArrayList<UniteRangement> rangement = new ArrayList<>();
-
-    for(int noRangement = 0; noRangement < infoRangement.size(); noRangement++) {
-      UniteRangement ur = new UniteRangement();
-      ur.setCode((String) infoRangement.get(noRangement).get("valeur"));
-      rangement.add(ur);
-    }
-
-    return rangement;
-  }
-
-  public boolean annuleVente(int idExemplaire) {
-    TransactionHandler gt = new TransactionHandler();
-    return gt.supprimeTransactionVente(idExemplaire);
-  }
-
-  public boolean vendreExemplaire(int noMembre, int idExemplaire) {
-    TransactionHandler gt = new TransactionHandler();
-    return gt.ajoutTransaction(2, noMembre, idExemplaire);
-  }
-
-  public boolean vendreExemplaire(int noMembre, int idExemplaire, boolean rabais) {
-    if (rabais) {
-      TransactionHandler gt = new TransactionHandler();
-      return gt.ajoutTransaction(3, noMembre, idExemplaire);
-    }
-    return vendreExemplaire(noMembre, idExemplaire);
-  }
-
-  public boolean articleExiste(String ean13) {
-    return ArticleSQL.articleExiste(ean13);
-  }
-
-  public boolean ajoutCommentaire(int idArticle, String commentaire) {
-    return ArticleSQL.insertCommentaire(idArticle, commentaire);
-  }
-
-  public boolean modifieCommentaire(int idArticle, String commentaire) {
-    return ArticleSQL.updateCommentaire(idArticle, commentaire);
-  }
-
-  public boolean supprimeCommentaire(int idArticle) {
-    return ArticleSQL.deleteCommentaire(idArticle);
   }
 
   public boolean ajoutDateDesuet(int idArticle) {

@@ -1,6 +1,7 @@
 package controller;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,7 +22,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.article.Article;
 import model.article.Ouvrage;
-import hanlder.SearchHandler;
+import handler.SearchHandler;
 import model.membre.Membre;
 
 /**
@@ -30,10 +31,9 @@ import model.membre.Membre;
  * @since 19/11/2015
  * @version 0.1
  */
-@SuppressWarnings({"Convert2Lambda", "Convert2Diamond"})
 public class SearchController extends Controller {
 
-  private SearchHandler gRecherche;
+  private SearchHandler searchHandler;
 
   @FXML
   private Label titre_recherche;
@@ -76,47 +76,24 @@ public class SearchController extends Controller {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    gRecherche = new SearchHandler();
-    assertions();
+    searchHandler = new SearchHandler();
     dataBinding();
     eventHandlers();
 
     rb_membre.setSelected(true);
-    resetRecherche(false);
-  }
-
-  private void assertions() {
-    assert titre_recherche != null: "fx:id=\"titre_recherche\" was not injected: check your FXML file 'search.fxml'.";
-    assert txtf_recherche != null : "fx:id=\"txtf_recherche\" was not injected: check your FXML file 'search.fxml'.";
-    assert btn_recherche != null : "fx:id=\"btn_recherche\" was not injected: check your FXML file 'search.fxml'.";
-    assert type_recherche != null : "fx:id=\"type_recherche\" was not injected: check your FXML file 'search.fxml'.";
-    assert rb_membre != null : "fx:id=\"rb_membre\" was not injected: check your FXML file 'search.fxml'.";
-    assert rb_article != null : "fx:id=\"rb_article\" was not injected: check your FXML file 'search.fxml'.";
-    assert cb_desactive != null : "fx:id=\"cb_desactive\" was not injected: check your FXML file 'search.fxml'.";
-    assert btn_add != null : "fx:id=\"btn_add\" was not injected: check your FXML file 'search.fxml'.";
-    assert lb_message != null : "fx:id=\"lb_message\" was not injected: check your FXML file 'search.fxml'.";
-    assert resultat_membre != null : "fx:id=\"resultat_membre\" was not injected: check your FXML file 'search.fxml'.";
-    assert col_no != null : "fx:id=\"col_no\" was not injected: check your FXML file 'search.fxml'.";
-    assert col_prenom != null : "fx:id=\"col_prenom\" was not injected: check your FXML file 'search.fxml'.";
-    assert col_nom != null : "fx:id=\"col_nom\" was not injected: check your FXML file 'search.fxml'.";
-    assert resultat_article != null : "fx:id=\"resultat_article\" was not injected: check your FXML file 'search.fxml'.";
-    assert col_titre != null : "fx:id=\"col_titre\" was not injected: check your FXML file 'search.fxml'.";
-    assert col_edition != null : "fx:id=\"col_edition\" was not injected: check your FXML file 'search.fxml'.";
-    assert col_editeur != null : "fx:id=\"col_editeur\" was not injected: check your FXML file 'search.fxml'.";
-    assert col_annee != null : "fx:id=\"col_annee\" was not injected: check your FXML file 'search.fxml'.";
-    assert col_auteur != null : "fx:id=\"col_auteur\" was not injected: check your FXML file 'search.fxml'.";
+    resetSearch(false);
   }
 
   private void dataBinding() {
-    col_no.setCellValueFactory(new PropertyValueFactory<Membre, Integer>("noMembre"));
-    col_prenom.setCellValueFactory(new PropertyValueFactory<Membre, String>("prenom"));
-    col_nom.setCellValueFactory(new PropertyValueFactory<Membre, String>("nom"));
+    col_no.setCellValueFactory(new PropertyValueFactory<Membre, Integer>("no"));
+    col_prenom.setCellValueFactory(new PropertyValueFactory<Membre, String>("firstName"));
+    col_nom.setCellValueFactory(new PropertyValueFactory<Membre, String>("lastName"));
 
-    col_titre.setCellValueFactory(new PropertyValueFactory<Article, String>("nom"));
-    col_edition.setCellValueFactory(new PropertyValueFactory<Ouvrage, Integer>("noEdition"));
-    col_editeur.setCellValueFactory(new PropertyValueFactory<Ouvrage, String>("editeur"));
-    col_annee.setCellValueFactory(new PropertyValueFactory<Ouvrage, Integer>("annee"));
-    col_auteur.setCellValueFactory(new PropertyValueFactory<Ouvrage, String>("strAuteurs"));
+    col_titre.setCellValueFactory(new PropertyValueFactory<Article, String>("name"));
+    col_edition.setCellValueFactory(new PropertyValueFactory<Ouvrage, Integer>("edition"));
+    col_editeur.setCellValueFactory(new PropertyValueFactory<Ouvrage, String>("editor"));
+    col_annee.setCellValueFactory(new PropertyValueFactory<Ouvrage, Integer>("publication"));
+    col_auteur.setCellValueFactory(new PropertyValueFactory<Ouvrage, String>("authorString"));
   }
 
   private void eventHandlers() {
@@ -141,14 +118,14 @@ public class SearchController extends Controller {
           String data = type_recherche.getSelectedToggle().getUserData().toString();
 
           if (data.matches("membre")) {
-            gRecherche.setRechercheMembre();
+            searchHandler.setMemberSearch();
             cb_desactive.setDisable(false);
-            resetRecherche(true);
+            resetSearch(true);
           } else {
-            gRecherche.setRechercheArticle();
+            searchHandler.setItemSearch();
             cb_desactive.setSelected(false);
             cb_desactive.setDisable(true);
-            resetRecherche(true);
+            resetSearch(true);
           }
         }
       }
@@ -158,9 +135,9 @@ public class SearchController extends Controller {
       @Override
       public void handle(ActionEvent event) {
         if (cb_desactive.isSelected()) {
-          gRecherche.rechercheDesactive();
+          searchHandler.setSearchArchives();
         } else {
-          gRecherche.rechercheActif();
+          searchHandler.setSearchActive();
         }
         recherche();
       }
@@ -168,7 +145,7 @@ public class SearchController extends Controller {
   }
 
   private void recherche() {
-    gRecherche.setCritereRecherche(txtf_recherche.getText());
+    searchHandler.setSearchQuery(txtf_recherche.getText());
 
     if (type_recherche.getSelectedToggle().getUserData().toString().matches("membre"))
       rechercheMembre();
@@ -177,7 +154,7 @@ public class SearchController extends Controller {
   }
 
   private void rechercheMembre() {
-    ObservableList<Membre> membres = FXCollections.observableArrayList(gRecherche.rechercheMembre());
+    ObservableList<Membre> membres = FXCollections.observableArrayList(searchHandler.searchMembers());
 
     if (!membres.isEmpty()) {
       resultat_membre.setItems(membres);
@@ -190,7 +167,7 @@ public class SearchController extends Controller {
   }
 
   private void rechercheArticle() {
-    ObservableList<Article> articles = FXCollections.observableArrayList(gRecherche.rechercheArticle());
+    ObservableList<Article> articles = FXCollections.observableArrayList(searchHandler.searchItems());
 
     if (!articles.isEmpty()) {
       resultat_article.setItems(articles);
@@ -202,15 +179,15 @@ public class SearchController extends Controller {
     }
   }
 
-  public TableView getResultatMembre() {
+  public TableView getMemberResults() {
     return resultat_membre;
   }
 
-  public TableView getResultatArticle() {
+  public TableView getItemResults() {
     return resultat_article;
   }
 
-  public void resetRecherche(boolean effaceRecherche) {
+  public void resetSearch(boolean effaceRecherche) {
     lb_message.setVisible(true);
     resultat_membre.setVisible(false);
     resultat_article.setVisible(false);
@@ -226,7 +203,7 @@ public class SearchController extends Controller {
     toggleFilters(true);
   }
 
-  public void setSearchArticleOnly() {
+  public void setSearchItemOnly() {
     rb_article.setSelected(true);
     titre_recherche.setText("Recherche d'articles");
     toggleFilters(false);
@@ -246,7 +223,7 @@ public class SearchController extends Controller {
     return rb_membre.isSelected();
   }
 
-  public boolean isArticleSearch() {
+  public boolean isItemSearch() {
     return rb_article.isSelected();
   }
 

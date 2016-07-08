@@ -32,7 +32,7 @@ import javafx.scene.layout.Pane;
 
 import model.article.Article;
 import model.article.Exemplaire;
-import hanlder.CopyHandler;
+import handler.CopyHandler;
 import model.membre.Membre;
 
 import ressources.Dialogue;
@@ -74,7 +74,6 @@ public class CopyFormController extends Controller {
   public void initialize(URL location, ResourceBundle resources) {
     ge = new CopyHandler();
     exemplaires = new ArrayList<>();
-    assertions();
     dataBinding();
 
     setPrix.setVisible(false);
@@ -83,27 +82,11 @@ public class CopyFormController extends Controller {
   }
 
   /**
-   * Validation des ressources FXML
-   */
-  private void assertions() {
-    assert ressources != null : "fx:id=\"ressources\" was not injected: check your FXML file 'copyForm.fxml'.";
-    assert setPrix != null : "fx:id=\"setPrix\" was not injected: check your FXML file 'copyForm.fxml'.";
-    assert nomMembre != null : "fx:id=\"nomMembre\" was not injected: check your FXML file 'copyForm.fxml'.";
-    assert nomArticle != null : "fx:id=\"nomArticle\" was not injected: check your FXML file 'copyForm.fxml'.";
-    assert btn_cancel != null : "fx:id=\"btn_cancel\" was not injected: check your FXML file 'copyForm.fxml'.";
-    assert btn_add != null : "fx:id=\"btn_add\" was not injected: check your FXML file 'copyForm.fxml'.";
-    assert txt_prix != null : "fx:id=\"txt_prix\" was not injected: check your FXML file 'copyForm.fxml'.";
-    assert listeExemplaires != null : "fx:id=\"listeExemplaires\" was not injected: check your FXML file 'copyForm.fxml'.";
-    assert col_article != null : "fx:id=\"col_article\" was not injected: check your FXML file 'copyForm.fxml'.";
-    assert col_prix != null : "fx:id=\"col_prix\" was not injected: check your FXML file 'copyForm.fxml'.";
-  }
-
-  /**
    * Ajout des données au tableau des exemplaires
    */
   private void dataBinding() {
-    col_article.setCellValueFactory(new PropertyValueFactory<>("nom"));
-    col_prix.setCellValueFactory(new PropertyValueFactory<>("prix"));
+    col_article.setCellValueFactory(new PropertyValueFactory<>("name"));
+    col_prix.setCellValueFactory(new PropertyValueFactory<>("price"));
   }
 
   /**
@@ -120,14 +103,14 @@ public class CopyFormController extends Controller {
     btn_add.setOnAction((ActionEvent event) -> {
       try {
         double prix = Double.parseDouble(txt_prix.getText());
-        exemplaireCourrant.setPrix(prix);
+        exemplaireCourrant.setPrice(prix);
       } catch (NumberFormatException e) {
         Dialogue.dialogueInformation("Vous devez entrer un montant valide");
         return;
       }
 
       exemplaireCourrant.setMembre(membre);
-      exemplaireCourrant.setNoExemplaire(ge.ajoutExemplaire(exemplaireCourrant));
+      exemplaireCourrant.setId(ge.addCopy(exemplaireCourrant));
       exemplaires.add(exemplaireCourrant);
       exemplaireCourrant = null;
 
@@ -156,7 +139,7 @@ public class CopyFormController extends Controller {
 
         // Clique sur le choix supprimer
         supprimer.setOnAction((ActionEvent event1) -> {
-          if (ge.supprimeExemplaire(e)){
+          if (ge.deleteCopy(e)){
             exemplaires.remove(e);
             afficheExemplaires();
           }
@@ -167,7 +150,7 @@ public class CopyFormController extends Controller {
 
   private void rechercheEventHandlers() {
     // Double click sur un item de la liste d'articles
-    ((SearchController) controller).getResultatArticle().setOnMousePressed((MouseEvent event) -> {
+    ((SearchController) controller).getItemResults().setOnMousePressed((MouseEvent event) -> {
       if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
         Node node = ((Node) event.getTarget()).getParent();
         TableRow row;
@@ -181,7 +164,7 @@ public class CopyFormController extends Controller {
         Article a = (Article) row.getItem();
         exemplaireCourrant = new Exemplaire();
         exemplaireCourrant.setArticle(a);
-        nomArticle.setText(a.getNom());
+        nomArticle.setText(a.getName());
 
         toggleView(true, false);
       }
@@ -198,7 +181,7 @@ public class CopyFormController extends Controller {
       Article a = ((ItemFormController) controller).ajoutArticle();
       exemplaireCourrant = new Exemplaire();
       exemplaireCourrant.setArticle(a);
-      nomArticle.setText(a.getNom());
+      nomArticle.setText(a.getName());
 
       affichePanelRecherche();
       toggleView(true, true);
@@ -208,7 +191,7 @@ public class CopyFormController extends Controller {
       Article a = ((ItemFormController) controller).ajoutArticle();
       exemplaireCourrant = new Exemplaire();
       exemplaireCourrant.setArticle(a);
-      nomArticle.setText(a.getNom());
+      nomArticle.setText(a.getName());
 
       affichePanelRecherche();
       toggleView(true, true);
@@ -222,7 +205,7 @@ public class CopyFormController extends Controller {
    */
   public void loadMembre(Membre m) {
     membre = m;
-    nomMembre.setText(membre.getPrenom() + " " + membre.getNom());
+    nomMembre.setText(membre.getFirstName() + " " + membre.getLastName());
   }
 
   /**
@@ -256,7 +239,7 @@ public class CopyFormController extends Controller {
 
       rechercheEventHandlers();
 
-      ((SearchController) controller).setSearchArticleOnly();
+      ((SearchController) controller).setSearchItemOnly();
       return (SearchController) controller;
     } catch (IOException e) {
       System.out.println(e);
@@ -308,7 +291,7 @@ public class CopyFormController extends Controller {
     }
 
     if (resetRecherche && controller instanceof SearchController) {
-      ((SearchController) controller).resetRecherche(true);
+      ((SearchController) controller).resetSearch(true);
     }
 
     ressources.setVisible(!ressources.isVisible());

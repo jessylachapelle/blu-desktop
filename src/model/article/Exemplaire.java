@@ -3,6 +3,7 @@ package model.article;
 import model.transaction.Transaction;
 import java.util.ArrayList;
 import java.util.Date;
+
 import model.membre.Membre;
 import model.membre.ParentEtudiant;
 import org.json.JSONArray;
@@ -18,11 +19,11 @@ import org.json.JSONObject;
  * @date 30/10/2015
  */
 public class Exemplaire {
-  private int noExemplaire;
+  private int id;
   private Membre membre,
                  parent;
   private Article article;
-  private double prix;
+  private double price;
   private ArrayList<Transaction> transaction;
 
   public Exemplaire() {
@@ -35,30 +36,30 @@ public class Exemplaire {
   }
 
   private void init() {
-    noExemplaire = 0;
+    id = 0;
     membre = new Membre();
     parent = new ParentEtudiant();
     article = new Article();
-    prix = 0;
+    price = 0;
     transaction = new ArrayList<>();
   }
 
   /**
    * Récupère la valeur du numéro d'exemplaire
    *
-   * @return noExemplaire Le numéro de l'exemplaire
+   * @return id Le numéro de l'exemplaire
    */
-  public int getNoExemplaire() {
-    return noExemplaire;
+  public int getId() {
+    return id;
   }
 
   /**
    * Attribue une valeur au numéro de l'exemplaire
    *
-   * @param noExemplaire Le numéro de l'exemplaire
+   * @param id Le numéro de l'exemplaire
    */
-  public void setNoExemplaire(int noExemplaire) {
-    this.noExemplaire = noExemplaire;
+  public void setId(int id) {
+    this.id = id;
   }
 
   /**
@@ -96,32 +97,32 @@ public class Exemplaire {
   }
 
   /**
-   * Récupère le prix de l'exemplaire
+   * Récupère le price de l'exemplaire
    *
-   * @return prix Prix de l'exemplaire
+   * @return price Prix de l'exemplaire
    */
-  public double getPrix() {
-    return prix;
+  public double getPrice() {
+    return price;
   }
 
   /**
-   * Récupère le prix dans un format string
+   * Récupère le price dans un format string
    *
-   * @return Le prix en string
+   * @return Le price en string
    */
   public String getStrPrix() {
-    if(prix == 0)
+    if(price == 0)
       return "";
-    return (int) prix + " $";
+    return (int) price + " $";
   }
 
   /**
-   * Attribue une valeur au prix de l'exemplaire
+   * Attribue une valeur au price de l'exemplaire
    *
-   * @param prix Prix de l'exemplaire
+   * @param price Prix de l'exemplaire
    */
-  public void setPrix(double prix) {
-    this.prix = prix;
+  public void setPrice(double price) {
+    this.price = price;
   }
 
   /**
@@ -138,6 +139,31 @@ public class Exemplaire {
     }
 
     return etat;
+  }
+
+  public String getState() {
+    boolean sold = false,
+            payed = false;
+
+    for(int i = 0; i < transaction.size(); i++) {
+      if (transaction.get(i).getTypeCode().equals("SELL") || transaction.get(i).getTypeCode().equals("SELL_PARENT")) {
+        sold = true;
+      }
+
+      if (transaction.get(i).getTypeCode().equals("PAY")) {
+        payed = true;
+      }
+    }
+
+    if (payed) {
+      return "PAYED";
+    }
+
+    if (sold) {
+      return "SOLD";
+    }
+
+    return "ADDED";
   }
 
   /**
@@ -199,8 +225,8 @@ public class Exemplaire {
    *
    * @return Vrai si l'Exemplaire l'exemplaire est vendu
    */
-  public boolean estVendu() {
-    return (getEtat() == 2 || getEtat() == 3);
+  public boolean isSold() {
+    return getState().equals("SOLD");
   }
 
   public boolean estVenduReg() {
@@ -215,16 +241,22 @@ public class Exemplaire {
    *
    * @return Vrai si l'exemplaire est réservé
    */
-  public boolean estReserve() {
-    return getEtat() == 5;
+  public boolean isReserved() {
+    for(int i = 0; i < transaction.size(); i++) {
+      if (transaction.get(i).getTypeCode().equals("RESERVE")) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
-  public boolean estEnVente() {
-    return getEtat() == 1;
+  public boolean isAdded() {
+    return getState().equals("ADDED");
   }
 
-  public boolean estRemis() {
-    return getEtat() == 4;
+  public boolean isPayed() {
+    return getState().equals("PAYED");
   }
 
   public String getDate(int type) {
@@ -238,73 +270,94 @@ public class Exemplaire {
     return "";
   }
 
-  public String getNom() {
-    return article.getNom();
+  private String getDate(String type) {
+    for (int i = 0; i < transaction.size(); i++) {
+      if (transaction.get(i).getTypeCode().equals(type)) {
+        Date date = transaction.get(i).getDate();
+        return date.getDate() + "/" + (date.getMonth() + 1) + "/" + (date.getYear() + 1900);
+      }
+    }
+    return "";
+  }
+
+  public String getDateAdded() {
+    return getDate("ADD");
+  }
+
+  public String getDateSold() {
+    String date = getDate("SELL");
+
+    if (date.isEmpty()) {
+      return getDate("SELL_PARENT");
+    }
+
+    return date;
+  }
+
+  public String getDatePaid() {
+    return getDate("PAY");
+  }
+
+  public String getName() {
+    return article.getName();
   }
 
   public String getEdition() {
     if (article instanceof Ouvrage) {
-      Ouvrage o = (Ouvrage) article;
-      return String.valueOf(o.getNoEdition());
+      int edition = ((Ouvrage) article).getEdition();
+
+      if (edition == 0) {
+        return "";
+      }
+
+      return Integer.toString(edition);
     }
     return "";
   }
 
-  public String getEditeur() {
+  public String getEditor() {
     if (article instanceof Ouvrage) {
-      Ouvrage o = (Ouvrage) article;
-      return o.getEditeur();
+      return ((Ouvrage) article).getEditor();
     }
     return "";
-  }
-
-  public String getEtiquetteVente() {
-    return "$$$";
-  }
-
-  public String getDateAjout() {
-    return getDate(1);
-  }
-
-  public String getDateVente() {
-    if(!getDate(2).isEmpty())
-      return getDate(2);
-    return getDate(3);
-  }
-
-  public String getDateRemise() {
-    return getDate(4);
-  }
-
-  public String getDateReservation() {
-    return getDate(5);
-  }
-
-  public String getVendeur() {
-    return membre.getPrenom() + " " + membre.getNom();
-  }
-
-  public String getReservant() {
-    return parent.getPrenom() + " " + parent.getNom();
   }
 
   public void fromJSON(JSONObject json) {
     try {
       if (json.has("id")) {
-        noExemplaire = json.getInt("id");
+        id = json.getInt("id");
       }
 
-      if (json.has("prix")) {
-        prix = json.getDouble("prix");
+      if (json.has("price")) {
+        price = json.getDouble("price");
+      }
+
+      if (json.has("member")) {
+        membre.fromJSON(json.getJSONObject("member"));
+      }
+
+      if (json.has("item")) {
+        JSONObject itemData = json.getJSONObject("item");
+
+        if (itemData.has("is_book") && itemData.getBoolean("is_book")) {
+          article = new Ouvrage(itemData);
+        } else {
+          article = new Objet();
+          ((Objet) article).fromJSON(itemData);
+        }
       }
 
       if (json.has("transaction")) {
-        JSONArray transactions = new JSONArray();
-        json.getJSONObject("transaction").toJSONArray(transactions);
+        JSONArray transactions = json.getJSONArray("transaction");
 
         for(int i = 0; i < transactions.length(); i++) {
           transaction.add(new Transaction(transactions.getJSONObject(i)));
         }
+      }
+
+      // TODO: DELETE
+      if (json.has("prix")) {
+        price = json.getDouble("prix");
       }
 
       if (json.has("membre")) {
@@ -312,7 +365,7 @@ public class Exemplaire {
       }
 
       if (json.has("article")) {
-        // article.fromJSON(json.getJSONObject("article"));
+        article.fromJSON(json.getJSONObject("article"));
       }
     } catch (JSONException e) {}
   }

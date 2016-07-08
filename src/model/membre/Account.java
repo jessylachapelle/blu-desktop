@@ -23,7 +23,7 @@ public class Account {
   private double solde;
 
   private ArrayList<Transaction> transactions;
-  private ArrayList<Commentaire> commentaire;
+  private ArrayList<Commentaire> comments;
 
   private ArrayList<Exemplaire> enVente,
                                 vendu,
@@ -47,7 +47,7 @@ public class Account {
     dateDerniereActivite = new Date();
     solde = 0;
     transactions = new ArrayList<>();
-    commentaire = new ArrayList<>();
+    comments = new ArrayList<>();
     enVente = new ArrayList<>();
     vendu = new ArrayList<>();
     argentRemis = new ArrayList<>();
@@ -65,7 +65,7 @@ public class Account {
     setDateDerniereActivite(dateDerniereActivite);
 
     transactions = new ArrayList<>();
-    commentaire = new ArrayList<>();
+    comments = new ArrayList<>();
     enVente = new ArrayList<>();
     vendu = new ArrayList<>();
     enReservation = new ArrayList<>();
@@ -90,6 +90,23 @@ public class Account {
   }
 
   /**
+   *
+   * @param strDate Date au format aaaa-mm-jj
+   */
+  public void setDateCreation(String strDate) {
+    Date date = new Date();
+
+    String annee = strDate.substring(0, 4);
+    String mois = strDate.substring(5, 7);
+    String jour = strDate.substring(8, 10);
+    date.setYear(Integer.parseInt(annee) - 1900);
+    date.setMonth(Integer.parseInt(mois) - 1);
+    date.setDate(Integer.parseInt(jour));
+
+    dateCreation = date;
+  }
+
+  /**
    * Accède à la date de la dernière activité au compte
    *
    * @return dateDernièreActivite La date de la dernière activité
@@ -105,6 +122,23 @@ public class Account {
    */
   public void setDateDerniereActivite(Date dateDerniereActivite) {
     this.dateDerniereActivite = dateDerniereActivite;
+  }
+
+  /**
+   *
+   * @param strDate Date au format aaaa-mm-jj
+   */
+  public void setDateDerniereActivite(String strDate) {
+    Date date = new Date();
+
+    String annee = strDate.substring(0, 4);
+    String mois = strDate.substring(5, 7);
+    String jour = strDate.substring(8, 10);
+    date.setYear(Integer.parseInt(annee) - 1900);
+    date.setMonth(Integer.parseInt(mois) - 1);
+    date.setDate(Integer.parseInt(jour));
+
+    dateDerniereActivite = date;
   }
 
   /**
@@ -164,46 +198,46 @@ public class Account {
   /**
    * Accède à la liste des commentaires associée au compte
    *
-   * @return commentaire La liste des commentaires
+   * @return comments La liste des commentaires
    */
-  public ArrayList<Commentaire> getCommentaire() {
-    return commentaire;
+  public ArrayList<Commentaire> getComments() {
+    return comments;
   }
 
   /**
    * Défini la liste des commentaires
    *
-   * @param commentaire La liste des commentaires
+   * @param comments La liste des commentaires
    */
-  public void setCommentaire(ArrayList<Commentaire> commentaire) {
-    this.commentaire = commentaire;
+  public void setComments(ArrayList<Commentaire> comments) {
+    this.comments = comments;
   }
 
   /**
-   * Ajoute un commentaire à la liste
+   * Ajoute un comments à la liste
    *
    * @param commentaire Commentaire à ajouter
    */
   public void ajoutCommentaire(Commentaire commentaire) {
-    this.commentaire.add(commentaire);
+    this.comments.add(commentaire);
   }
 
   /**
-   * Supprime un commentaire de la liste
+   * Supprime un comments de la liste
    *
-   * @param index Indice de la position du commentaire à supprimer
+   * @param index Indice de la position du comments à supprimer
    */
   public void supprimeCommentaire(int index) {
-    this.commentaire.remove(index);
+    this.comments.remove(index);
   }
 
   public void setExemplaires(ArrayList<Exemplaire> exemplaires) {
     for(int noExemplaire = 0; noExemplaire < exemplaires.size(); noExemplaire++) {
-      if(exemplaires.get(noExemplaire).estReserve())
+      if(exemplaires.get(noExemplaire).isReserved())
         enReservation.add(exemplaires.get(noExemplaire));
-      else if(exemplaires.get(noExemplaire).estVendu())
+      else if(exemplaires.get(noExemplaire).isSold())
         vendu.add(exemplaires.get(noExemplaire));
-      else if(exemplaires.get(noExemplaire).estRemis())
+      else if(exemplaires.get(noExemplaire).isPayed())
         argentRemis.add(exemplaires.get(noExemplaire));
       else
         enVente.add(exemplaires.get(noExemplaire));
@@ -233,7 +267,7 @@ public class Account {
    *
    * @param exemplaire Exemplaire à ajouter
    */
-  public void ajoutEnVente(Exemplaire exemplaire) {
+  public void addInStock(Exemplaire exemplaire) {
     enVente.add(exemplaire);
   }
 
@@ -242,7 +276,7 @@ public class Account {
    *
    * @param exemplaires Liste des exemplaires à ajouter
    */
-  public void ajoutEnVente(ArrayList<Exemplaire> exemplaires) {
+  public void addInStock(ArrayList<Exemplaire> exemplaires) {
     for (int noExemplaire = 0; noExemplaire < exemplaires.size(); noExemplaire++) {
       enVente.add(exemplaires.get(noExemplaire));
     }
@@ -280,7 +314,7 @@ public class Account {
    *
    * @param exemplaire L'exemplaire à ajouter
    */
-  public void ajoutVendu(Exemplaire exemplaire) {
+  public void addSold(Exemplaire exemplaire) {
     this.vendu.add(exemplaire);
   }
 
@@ -303,13 +337,13 @@ public class Account {
     this.argentRemis = argentRemis;
   }
 
-  public void ajoutArgentRemis(ArrayList<Exemplaire> exemplaires) {
+  public void addPayed(ArrayList<Exemplaire> exemplaires) {
     for (int noExemplaire = 0; noExemplaire < exemplaires.size(); noExemplaire++) {
       this.argentRemis.add(exemplaires.get(noExemplaire));
     }
   }
 
-  public void ajoutArgentRemis(Exemplaire exemplaire) {
+  public void addPayed(Exemplaire exemplaire) {
     this.argentRemis.add(exemplaire);
   }
 
@@ -357,7 +391,7 @@ public class Account {
   public void vendreReservation(int exemplaireVendu) {
     Exemplaire exemplaire = enReservation.remove(exemplaireVendu);
     vendu.add(exemplaire);
-    solde += exemplaire.getPrix();
+    solde += exemplaire.getPrice();
   }
 
   /**
@@ -368,7 +402,7 @@ public class Account {
   public void vendre(int exemplaireVendu) {
     Exemplaire exemplaire = enVente.remove(exemplaireVendu);
     vendu.add(exemplaire);
-    solde += exemplaire.getPrix();
+    solde += exemplaire.getPrice();
   }
 
   public boolean estActif() {
@@ -397,7 +431,7 @@ public class Account {
     double montant = 0;
 
     for (int noEnVente = 0; noEnVente < enVente.size(); noEnVente++) {
-      montant += enVente.get(noEnVente).getPrix();
+      montant += enVente.get(noEnVente).getPrice();
     }
     return montant;
   }
@@ -410,7 +444,7 @@ public class Account {
     double montant = 0;
 
     for (int noVendu = 0; noVendu < vendu.size(); noVendu++) {
-      montant += vendu.get(noVendu).getPrix();
+      montant += vendu.get(noVendu).getPrice();
     }
     return montant;
   }
@@ -423,7 +457,7 @@ public class Account {
     double montant = 0;
 
     for (int noRemis = 0; noRemis < argentRemis.size(); noRemis++) {
-      montant += argentRemis.get(noRemis).getPrix();
+      montant += argentRemis.get(noRemis).getPrice();
     }
     return montant;
   }
@@ -433,9 +467,9 @@ public class Account {
   }
 
   public Commentaire getComment(int id) {
-    for(int i = 0; i < commentaire.size(); i++) {
-      if (commentaire.get(i).getId() == id) {
-        return commentaire.get(i);
+    for(int i = 0; i < comments.size(); i++) {
+      if (comments.get(i).getId() == id) {
+        return comments.get(i);
       }
     }
 
@@ -444,19 +478,35 @@ public class Account {
 
   public void fromJSON(JSONObject json) {
     try {
-      if (json.has("inscription")) {
-
+      if (json.has("registration")) {
+        setDateCreation(json.getString("registration"));
       }
 
-      if(json.has("derniere_activite")) {
-
+      if(json.has("last_activity")) {
+        setDateDerniereActivite(json.getString("last_activity"));
       }
 
-      if (json.has("commentaire")) {
-        JSONArray comments = json.getJSONArray("commentaire");
+      if (json.has("comment")) {
+        JSONArray comments = json.getJSONArray("comment");
 
         for(int i = 0; i < comments.length(); i++) {
-          commentaire.add(new Commentaire(comments.getJSONObject(i)));
+          this.comments.add(new Commentaire(comments.getJSONObject(i)));
+        }
+      }
+
+      if (json.has("copies")) {
+        JSONArray copies = json.getJSONArray("copies");
+
+        for(int i = 0; i < copies.length(); i++) {
+          Exemplaire copy = new Exemplaire(copies.getJSONObject(i));
+
+          if(copy.isPayed()) {
+            addPayed(copy);
+          } else if(copy.isSold()) {
+            addSold(copy);
+          } else {
+            addInStock(copy);
+          }
         }
       }
     } catch (JSONException e) {

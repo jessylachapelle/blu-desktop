@@ -37,7 +37,7 @@
                                 <Label id="etudiant_tel2" prefWidth="165.0" text="Téléphone 2 :"/>
                                 <Label id="lbl_telephone2" fx:id="lbl_telephone2"/>
 
-                                <Label id="lbl_etat_compte"  text="État du compte" />
+                                <Label id="lbl_etat_compte"  text="État du account" />
 
                                 <Label id="etudiant_etat" prefWidth="165.0" text="État d'activation :"/>
                                 <Label id="lbl_etat" fx:id="lbl_etat"/>
@@ -54,7 +54,7 @@
                                 <Button id="btn_ajout_exemplaire" fx:id="btn_ajout_exemplaires" text="Ajouter des exemplaires" />
 
                                 <Label id="lbl_txt_comm" text="Notes et commentaires" />
-                                <Button id="btn_ajoutCom" fx:id="btn_ajoutCom" mnemonicParsing="false" text="Ajouter un commentaire" />
+                                <Button id="btn_ajoutCom" fx:id="btn_ajoutCom" mnemonicParsing="false" text="Ajouter un comments" />
 
                                 <TableView id="tbl_commentaire" fx:id="tbl_commentaire" prefHeight="135.0" prefWidth="570.0">
                                     <columns>

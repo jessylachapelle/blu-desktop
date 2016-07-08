@@ -1,5 +1,9 @@
 package model.article;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -17,6 +21,15 @@ public class UniteRangement {
    * Constructeur de base
    */
   public UniteRangement() {
+    init();
+  }
+
+  public UniteRangement(JSONObject json) {
+    init();
+    fromJson(json);
+  }
+
+  private void init() {
     code = "";
     contenu = new ArrayList<Article>();
   }
@@ -94,4 +107,21 @@ public class UniteRangement {
     contenu.clear();
   }
 
+  public void fromJson(JSONObject json) {
+    try {
+      if (json.has("code")) {
+        code = json.getString("code");
+      }
+
+      if (json.has("contenu")) {
+        JSONArray contents = json.getJSONArray("contenu");
+
+        for(int i = 0; i < contents.length(); i++) {
+          contenu.add(new Article(contents.getJSONObject(i)));
+        }
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+  }
 }

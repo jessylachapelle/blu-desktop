@@ -1,8 +1,11 @@
 package controller;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.ResourceBundle;
+
+import handler.CopyHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,12 +22,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import model.article.Article;
-import model.article.Exemplaire;
-import model.article.Objet;
-import model.article.Ouvrage;
-import hanlder.ItemHandler;
-import hanlder.MemberHandler;
+import model.article.*;
+import handler.ItemHandler;
+import handler.MemberHandler;
 import model.transaction.Transaction;
 import ressources.Dialogue;
 
@@ -233,15 +233,12 @@ public class ItemViewController extends Controller {
         String commentaireVieux = lbl_commentaire.getText();
         String commentaireNouveau = Dialogue.dialogueSaisie("Modifcation du commentaire", "Veuillez entrer le commentaire que vous souhaitez inscrire :", lbl_commentaire.getText());
 
-        if(!commentaireVieux.equals("") && commentaireNouveau.equals("")) {
-          if(gArticle.supprimeCommentaire(article.getNoArticle()))
-            lbl_commentaire.setText("");
-        } else if(!commentaireVieux.equals("") && !commentaireNouveau.equals("")) {
-          if(gArticle.modifieCommentaire(article.getNoArticle(), commentaireNouveau))
+        if(!commentaireVieux.equals(commentaireNouveau)) {
+          if(gArticle.updateComment(article.getId(), commentaireNouveau)) {
             lbl_commentaire.setText(commentaireNouveau);
-        } else {
-          if(gArticle.ajoutCommentaire(article.getNoArticle(), commentaireNouveau))
-            lbl_commentaire.setText(commentaireNouveau);
+          } else {
+            Dialogue.dialogueInformation("Une erreur est survenue");
+          }
         }
       }
     });
@@ -250,11 +247,11 @@ public class ItemViewController extends Controller {
       @Override
       public void handle(ActionEvent event) {
         if(((Ouvrage)article).getStatut().equals("Retiré")) {
-          if(gArticle.supprimeDateRetire(article.getNoArticle())) {
+          if(gArticle.supprimeDateRetire(article.getId())) {
             ((Ouvrage)article).setDateRetire("");
           }
         } else if(((Ouvrage)article).getStatut().equals("Désuet")) {
-          if(gArticle.supprimeDateDesuet(article.getNoArticle())) {
+          if(gArticle.supprimeDateDesuet(article.getId())) {
             ((Ouvrage)article).setDateDesuet("");
           }
         }
@@ -266,12 +263,12 @@ public class ItemViewController extends Controller {
       @Override
       public void handle(ActionEvent event) {
         if(((Ouvrage)article).getStatut().equals("Valide")) {
-          if(gArticle.ajoutDateDesuet(article.getNoArticle())) {
-            ((Ouvrage)article).setDateDesuet(new Date());
+          if(gArticle.ajoutDateDesuet(article.getId())) {
+            ((Ouvrage)article).setOutdated(new Date());
           }
         } else if(((Ouvrage)article).getStatut().equals("Désuet")) {
-          if(gArticle.ajoutDateRetire(article.getNoArticle())) {
-            ((Ouvrage)article).setDateRetire(new Date());
+          if(gArticle.ajoutDateRetire(article.getId())) {
+            ((Ouvrage)article).setRemoved(new Date());
           }
         }
         lbl_statut.setText(((Ouvrage)article).getStatut());
@@ -281,21 +278,21 @@ public class ItemViewController extends Controller {
     btn_rangement.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        String rangement = Dialogue.dialogueSaisie("Caisses de rangement", "Veuillez noter les caisses de rangement séparer par un \";\" :", lbl_rangement.getText());
-        rangement = rangement.replace(" ", "");
+        String storage = Dialogue.dialogueSaisie("Caisses de rangement", "Veuillez noter les caisses de rangement séparer par un \";\" :", lbl_rangement.getText());
+        String[] storageUnits = storage.replace(" ", "").split(";");
 
-        String[] caisses = rangement.split(";");
-        /*
-        if(!commentaireVieux.equals("") && commentaireNouveau.equals("")) {
-          if(gArticle.supprimeCommentaire(article.getNoArticle()))
-            lbl_commentaire.setText("");
-        } else if(!commentaireVieux.equals("") && !commentaireNouveau.equals("")) {
-          if(gArticle.modifieCommentaire(article.getNoArticle(), commentaireNouveau))
-            lbl_commentaire.setText(commentaireNouveau);
+        if(gArticle.updateStorage(article.getId(), storageUnits)) {
+          ArrayList<UniteRangement> rangements = new ArrayList<>();
+
+          for(int i = 0; i < storageUnits.length; i++) {
+            UniteRangement uniteRangement = new UniteRangement();
+            uniteRangement.setCode(storageUnits[i]);
+          }
+
+          article.setUniteRangement(rangements);
         } else {
-          if(gArticle.ajoutCommentaire(article.getNoArticle(), commentaireNouveau))
-            lbl_commentaire.setText(commentaireNouveau);
-        }*/
+          Dialogue.dialogueInformation("Une erreur est survenue");
+        }
       }
     });
 
@@ -312,14 +309,14 @@ public class ItemViewController extends Controller {
             noMembre = Integer.parseInt(saisie);
 
             MemberHandler gm = new MemberHandler();
-            isMembre = gm.membreExiste(noMembre);
+            //isMembre = gm.exist(noMembre);
           } catch(NumberFormatException e) {
             if(saisie.equals(""))
               return;
           }
         }
 
-        if(gArticle.ajoutDemandeReservation(noMembre, article.getNoArticle())) {
+        if(gArticle.ajoutDemandeReservation(noMembre, article.getId())) {
           Exemplaire e = new Exemplaire();
           Transaction t = new Transaction();
 
@@ -363,7 +360,7 @@ public class ItemViewController extends Controller {
           MenuItem vendre = new MenuItem("Vendre");
           MenuItem annuler = new MenuItem("Annuler réservation");
 
-          if(e.getNoExemplaire() == 0)
+          if(e.getId() == 0)
             contextMenu.getItems().addAll(annuler);
           else
             contextMenu.getItems().addAll(vendre, annuler);
@@ -373,30 +370,32 @@ public class ItemViewController extends Controller {
           vendre.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-              if(gArticle.vendreExemplaire(e.getMembre().getNoMembre(), e.getNoExemplaire(), true)) {
-                gArticle.supprimeReservation(e.getNoExemplaire());
+              int id = gArticle.addTransaction(e.getMembre().getNo(), e.getId(), 3);
 
-                Transaction t = new Transaction();
-                t.setDate(new Date());
-                t.setType(3);
+              // TODO: Fix transaction id
+              //if (id != 0) {
+              Transaction t = new Transaction();
+              //t.setId(id);
+              t.setType(3);
+              t.setDate(new Date());
 
-                article.getReserve().remove(e);
-                e.ajouterTransaction(t);
-                article.getVendu().add(e);
+              article.getReserve().remove(e);
+              e.ajouterTransaction(t);
+              article.getVendu().add(e);
 
-                afficheExemplaires();
-              }
+              afficheExemplaires();
+              //}
             }
           });
 
           annuler.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-              if(e.getNoExemplaire() == 0) {
-                gArticle.supprimeDemandeReservation(e.getParent().getNoMembre(), article.getNoArticle());
+              if(e.getId() == 0) {
+                gArticle.supprimeDemandeReservation(e.getParent().getNo(), article.getId());
                 article.getReserve().remove(e);
               } else {
-                gArticle.supprimeReservation(e.getNoExemplaire());
+                gArticle.supprimeReservation(e.getId());
                 article.getReserve().remove(e);
 
                 for(int noTransaction = 0; noTransaction < e.getTousTransactions().size(); noTransaction++)
@@ -450,34 +449,42 @@ public class ItemViewController extends Controller {
           vendre.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-              if(gArticle.vendreExemplaire(e.getMembre().getNoMembre(), e.getNoExemplaire())) {
-                Transaction t = new Transaction();
-                t.setDate(new Date());
-                t.setType(2);
+              int id = gArticle.addTransaction(e.getMembre().getNo(), e.getId(), 2);
 
-                article.getEnVente().remove(e);
-                e.ajouterTransaction(t);
-                article.getVendu().add(e);
+              // TODO: Fix transaction id
+              //if (id != 0) {
+              Transaction t = new Transaction();
+              //t.setId(id);
+              t.setType(2);
+              t.setDate(new Date());
 
-                afficheExemplaires();
-              }
+              article.getEnVente().remove(e);
+              e.ajouterTransaction(t);
+              article.getVendu().add(e);
+
+              afficheExemplaires();
+              //}
             }
           });
 
           vendreParent.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-              if(gArticle.vendreExemplaire(e.getMembre().getNoMembre(), e.getNoExemplaire(), true)) {
-                Transaction t = new Transaction();
-                t.setDate(new Date());
-                t.setType(3);
+              int id = gArticle.addTransaction(e.getMembre().getNo(), e.getId(), 3);
 
-                article.getEnVente().remove(e);
-                e.ajouterTransaction(t);
-                article.getVendu().add(e);
+              // TODO: Fix transaction id
+              //if (id != 0) {
+              Transaction t = new Transaction();
+              //t.setId(id);
+              t.setType(3);
+              t.setDate(new Date());
 
-                afficheExemplaires();
-              }
+              article.getEnVente().remove(e);
+              e.ajouterTransaction(t);
+              article.getVendu().add(e);
+
+              afficheExemplaires();
+              //}
             }
           });
 
@@ -485,27 +492,26 @@ public class ItemViewController extends Controller {
             @Override
             public void handle(ActionEvent event) {
               boolean estDouble = false;
-              double prix = e.getPrix();
+              double prix = e.getPrice();
 
               while (!estDouble) {
                 try {
-                  prix = Double.parseDouble(Dialogue.dialogueSaisie("Modification du prix", "Entrez le nouveau montant :", Double.toString(e.getPrix())));
-
-                  if (prix == 0)
-                    Dialogue.dialogueInformation("Vous devez entrer un montant valide");
-                  else
-                    estDouble = true;
+                  prix = Double.parseDouble(Dialogue.dialogueSaisie("Modification du prix", "Entrez le nouveau montant :", Double.toString(e.getPrice())));
+                  estDouble = true;
                 } catch (NumberFormatException e) {
                   Dialogue.dialogueInformation("Vous devez entrer un montant valide");
                 }
               }
 
-              if(gArticle.modifieExemplaire(e.getNoExemplaire(), prix)) {
+              CopyHandler ch = new CopyHandler();
+              if(ch.updateCopyPrice(e.getId(), prix)) {
                 article.getEnVente().remove(e);
-                e.setPrix(prix);
+                e.setPrice(prix);
                 article.getEnVente().add(e);
 
                 afficheExemplaires();
+              } else {
+                Dialogue.dialogueInformation("Une erreur est survenue");
               }
             }
           });
@@ -513,9 +519,12 @@ public class ItemViewController extends Controller {
           supprimer.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-              if(gArticle.retireExemplaire(e.getNoExemplaire())) {
+              CopyHandler ch = new CopyHandler();
+              if(ch.deleteCopy(e.getId())) {
                 article.getEnVente().remove(e);
                 afficheExemplaires();
+              } else {
+                Dialogue.dialogueInformation("Une erreur est survnue");
               }
             }
           });
@@ -554,12 +563,14 @@ public class ItemViewController extends Controller {
           annuler.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-              if(gArticle.annuleVente(e.getNoExemplaire())) {
+              if (gArticle.cancelSell(e.getId())) {
                 article.getVendu().remove(e);
 
-                for(int noTransaction = 0; noTransaction < e.getTousTransactions().size(); noTransaction++)
-                  if(e.getTousTransactions().get(noTransaction).getType() == 2 || e.getTousTransactions().get(noTransaction).getType() == 3)
+                for(int noTransaction = 0; noTransaction < e.getTousTransactions().size(); noTransaction++) {
+                  if(e.getTousTransactions().get(noTransaction).getType() == 2 || e.getTousTransactions().get(noTransaction).getType() == 3) {
                     e.getTousTransactions().remove(noTransaction);
+                  }
+                }
 
                 article.getEnVente().add(e);
                 afficheExemplaires();
@@ -603,7 +614,7 @@ public class ItemViewController extends Controller {
   }
 
   private void afficheArticle() {
-    lbl_titre.setText(article.getNom());
+    lbl_titre.setText(article.getName());
     lbl_matiere.setText(article.getMatiere().getNom());
     lbl_categorie.setText(article.getMatiere().getCategorie());
     lbl_code.setText(article.getCodeBar());
@@ -620,10 +631,10 @@ public class ItemViewController extends Controller {
   }
 
   private void afficheOuvrage() {
-    lbl_annee.setText(Integer.toString(((Ouvrage)article).getAnnee()));
-    lbl_auteur.setText(((Ouvrage)article).getAuteurToString());
-    lbl_editeur.setText(((Ouvrage)article).getEditeur());
-    lbl_edition.setText(Integer.toString(((Ouvrage)article).getNoEdition()));
+    lbl_annee.setText(Integer.toString(((Ouvrage)article).getPublication()));
+    lbl_auteur.setText(((Ouvrage)article).getAuthorString());
+    lbl_editeur.setText(((Ouvrage)article).getEditor());
+    lbl_edition.setText(Integer.toString(((Ouvrage)article).getEdition()));
     lbl_statut.setText(((Ouvrage)article).getStatut());
   }
 
