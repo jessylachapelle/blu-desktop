@@ -9,7 +9,7 @@
     <children>
         <Pane id="pane_ajout_article" prefHeight="500.0" prefWidth="615.0">
             <children>
-                <Label id="titre_ajout_article" text="Ajouter un article" />
+                <Label id="titre_ajout_article" text="Ajouter un item" />
                 <TabPane id="tabpane_ajout_article" tabClosingPolicy="UNAVAILABLE" prefHeight="440.0" >
                     <tabs>
                         <Tab text="Ouvrage">
@@ -17,10 +17,10 @@
                                 <AnchorPane prefWidth="580.0">
                                     <children>
                                         <Label text="Titre* :" id="titre_tabpane_ouvrage"/>
-                                        <TextField id="ouvrage_titre" fx:id="ouvrage_titre" />
+                                        <TextField id="ouvrage_titre" fx:id="txtTitle" />
 
                                         <Label id="lbl_ouvrage_no" text="Numéro d'édition :"  />
-                                        <TextField id="ouvrage_no_edition" fx:id="ouvrage_no_edition"   />
+                                        <TextField id="ouvrage_no_edition" fx:id="txtEdition"   />
 
                                         <Label id="lbl_ouvrage_auteur" text="Auteur"/>
 
@@ -30,8 +30,8 @@
                                         <Label id="lbl_ouvrage_nom" text="Nom* :"   />
                                         <TextField id="txtf_auteurNom_1" fx:id="txtf_auteurNom_1"   />
 
-                                        <Button id="btn_ajoutAuteur" fx:id="btn_ajoutAuteur" mnemonicParsing="false" text="+" />
-                                        <Button id="btn_retireAuteur" fx:id="btn_retireAuteur" mnemonicParsing="false" text=" -"  />
+                                        <Button id="btn_ajoutAuteur" fx:id="btnAddAuthor" mnemonicParsing="false" text="+" />
+                                        <Button id="btn_retireAuteur" fx:id="btnRemoveAuthor" mnemonicParsing="false" text=" -"  />
 
 
                                         <Label fx:id="lbl_auteurPrenom_2" text="Prénom :" visible="false"  />
@@ -55,19 +55,19 @@
                                         <TextField id="txtf_auteurNom_5" fx:id="txtf_auteurNom_5" visible="false"   />
 
                                         <Label id="lbl_ouvrage_editeur" text="Éditeur* :"  />
-                                        <TextField id="txtf_editeur" fx:id="editeur_nom"   />
+                                        <TextField id="txtf_editeur" fx:id="txtEditor"   />
 
                                         <Label id="lbl_ouvrage_annee" text="Année* :"  />
-                                        <TextField id="txtf_annee" fx:id="ouvrage_parution"   />
+                                        <TextField id="txtf_annee" fx:id="txtPublication"   />
 
                                         <Label id="lbl_ouvrage_codeEAN" text="Code EAN13* :"  />
-                                        <TextField id="txtf_code" fx:id="ouvrage_ean13"   />
-                                        <CheckBox id="cb_code" fx:id="cb_code" mnemonicParsing="false" text="Pas de code"   />
+                                        <TextField id="txtf_code" fx:id="txtEan13"   />
+                                        <CheckBox id="cb_code" fx:id="cbHasEan13" mnemonicParsing="false" text="Pas de code"   />
 
                                         <Label id="lbl_ouvrage_matiere" text="Matière* :"  />
-                                        <ComboBox id="cbb_matiere" fx:id="matiere" prefWidth="150.0"   />
+                                        <ComboBox id="cbb_matiere" fx:id="cbSubject" prefWidth="150.0"   />
 
-                                        <Button id="btn_ajoutOuvrage" fx:id="btn_ajoutOuvrage" mnemonicParsing="false" text="Ajouter l'ouvrage"/>
+                                        <Button id="btn_ajoutOuvrage" fx:id="btnAddBook" mnemonicParsing="false" text="Ajouter l'ouvrage"/>
                                     </children>
                                 </AnchorPane>
                             </content>
@@ -80,12 +80,12 @@
                                         <TextField id="txt_objet_nom" fx:id="name" />
 
                                         <Label id="lbl_objet_cat" text="Catégorie :" />
-                                        <ComboBox id="cbb_categorie" fx:id="categorie" prefWidth="150.0" />
+                                        <ComboBox id="cbb_categorie" fx:id="category" prefWidth="150.0" />
 
                                         <Label id="lbl_objet_comm" text="Commentaire :" />
                                         <TextArea id="ta_objet_comm" fx:id="comments"  prefHeight="100.0" prefWidth="400.0" />
 
-                                        <Button id="btn_ajoutObjet" fx:id="btn_ajoutObjet" mnemonicParsing="false" prefHeight="25.0" prefWidth="136.0" text="Ajouter l'objet" />
+                                        <Button id="btn_ajoutObjet" fx:id="btnAddItem" mnemonicParsing="false" prefHeight="25.0" prefWidth="136.0" text="Ajouter l'objet" />
                                     </children>
                                 </AnchorPane>
                             </content>

@@ -16,7 +16,7 @@ import javafx.scene.control.TextInputDialog;
  * @since 28/11/2015
  * @version 0.1
  */
-public class Dialogue {
+public class Dialog {
   /**
    * Ouvre une boîte de dialogue avec un champs de saisie
    * @param titre Le titre de la fenêtre de dialogue
@@ -24,7 +24,7 @@ public class Dialogue {
    * @param contenu Le contenu pré-rempli du champs
    * @return Le texte saisie ou une String vide
    */
-  public static String dialogueSaisie(String titre, String message, String contenu) {
+  public static String input(String titre, String message, String contenu) {
     TextInputDialog dialog = new TextInputDialog(contenu);
     dialog.setTitle(titre);
     dialog.setHeaderText(null);
@@ -43,8 +43,8 @@ public class Dialogue {
    * @param message Le message à afficher à l'utilisateur
    * @return Le texte saisie ou une String vide
    */
-  public static String dialogueSaisie(String titre, String message) {
-    return dialogueSaisie(titre, message, "");
+  public static String input(String titre, String message) {
+    return input(titre, message, "");
   }
 
   /**
@@ -69,15 +69,15 @@ public class Dialogue {
     alert.setContentText(message);
 
     Optional<ButtonType> result = alert.showAndWait();
-    return result.get() == ButtonType.OK;
+    return result.isPresent() && result.get() == ButtonType.OK;
   }  
 
   /**
    * Ouvre une boîte de dialogue informative
    * @param message Le message à afficher
    */
-  public static void dialogueInformation(String message) {
-    dialogueInformation("Information", message);
+  public static void information(String message) {
+    information("Information", message);
   }
   
   /**
@@ -85,7 +85,7 @@ public class Dialogue {
    * @param titre Le titre de la fenêtre de dialogue
    * @param message Le message à afficher
    */
-  public static void dialogueInformation(String titre, String message) {
+  public static void information(String titre, String message) {
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle(titre);
     alert.setHeaderText(null);

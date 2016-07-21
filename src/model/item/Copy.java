@@ -1,45 +1,47 @@
-package model.article;
+package model.item;
 
+import model.member.Member;
 import model.transaction.Transaction;
 import java.util.ArrayList;
-import java.util.Date;
 
-import model.membre.Membre;
-import model.membre.ParentEtudiant;
+import model.member.StudentParent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ressources.DateParser;
 
 /**
  * Classe exemplaire qui contient les informations spécifiques sur un
  * exemplaire. Un exemplaire est basé sur les informations générales d'un
- * article.
+ * item.
  *
- * @author Dereck
- * @date 30/10/2015
+ * @author Jessy Lachapelle
+ * @since 13/07/2016
+ * @version 1.1
  */
-public class Exemplaire {
+@SuppressWarnings({"unused"})
+public class Copy {
   private int id;
-  private Membre membre,
+  private Member member,
                  parent;
-  private Article article;
+  private Item item;
   private double price;
   private ArrayList<Transaction> transaction;
 
-  public Exemplaire() {
+  public Copy() {
     init();
   }
 
-  public Exemplaire(JSONObject json) {
+  public Copy(JSONObject json) {
     init();
     fromJSON(json);
   }
 
-  private void init() {
+  public void init() {
     id = 0;
-    membre = new Membre();
-    parent = new ParentEtudiant();
-    article = new Article();
+    member = new Member();
+    parent = new StudentParent();
+    item = new Item();
     price = 0;
     transaction = new ArrayList<>();
   }
@@ -63,37 +65,37 @@ public class Exemplaire {
   }
 
   /**
-   * Récupère l'article qui est lié à l'exemplaire
+   * Récupère l'item qui est lié à l'exemplaire
    *
-   * @return article L'objet article avec les caractéristiques
+   * @return item L'objet item avec les caractéristiques
    */
-  public Article getArticle() {
-    return article;
+  public Item getItem() {
+    return item;
   }
 
   /**
-   * Attribue un article à l'exemplaire
+   * Attribue un item à l'exemplaire
    *
-   * @param article Un objet article avec les caractéristiques
+   * @param item Un objet item avec les caractéristiques
    */
-  public void setArticle(Article article) {
-    this.article = article;
+  public void setItem(Item item) {
+    this.item = item;
   }
 
-  public Membre getMembre() {
-    return membre;
+  public Member getMember() {
+    return member;
   }
 
-  public void setMembre(Membre membre) {
-    this.membre = membre;
+  public void setMember(Member member) {
+    this.member = member;
   }
 
-  public ParentEtudiant getParent() {
-    return (ParentEtudiant)parent;
+  public StudentParent getParent() {
+    return (StudentParent)parent;
   }
 
-  public void setParent(Membre parent) {
-    this.parent = (ParentEtudiant) parent;
+  public void setParent(Member parent) {
+    this.parent = parent;
   }
 
   /**
@@ -110,7 +112,7 @@ public class Exemplaire {
    *
    * @return Le price en string
    */
-  public String getStrPrix() {
+  public String getPriceString() {
     if(price == 0)
       return "";
     return (int) price + " $";
@@ -125,32 +127,21 @@ public class Exemplaire {
     this.price = price;
   }
 
-  /**
-   * Récupère l'état de l'exemplaire
-   *
-   * @return 1 en vente, 2-3 vendu, 4 argent remis et 5 réservé
-   */
-  public int getEtat() {
-    int etat = 1;
-
-    for(int noTransaction = 0; noTransaction < transaction.size(); noTransaction++) {
-      if(transaction.get(noTransaction).getType() > etat)
-        etat = transaction.get(noTransaction).getType();
-    }
-
-    return etat;
-  }
-
   public String getState() {
-    boolean sold = false,
+    boolean soldRegular = false,
+            soldParent = false,
             payed = false;
 
-    for(int i = 0; i < transaction.size(); i++) {
-      if (transaction.get(i).getTypeCode().equals("SELL") || transaction.get(i).getTypeCode().equals("SELL_PARENT")) {
-        sold = true;
+    for (Transaction t : transaction) {
+      if (t.getType().equals("SELL")) {
+        soldRegular = true;
       }
 
-      if (transaction.get(i).getTypeCode().equals("PAY")) {
+      if (t.getType().equals("SELL_PARENT")) {
+        soldParent = true;
+      }
+
+      if (t.getType().equals("PAY")) {
         payed = true;
       }
     }
@@ -159,8 +150,12 @@ public class Exemplaire {
       return "PAYED";
     }
 
-    if (sold) {
-      return "SOLD";
+    if (soldRegular) {
+      return "SOLD_REGULAR";
+    }
+
+    if (soldParent) {
+      return "SOLD_PARENT";
     }
 
     return "ADDED";
@@ -171,7 +166,7 @@ public class Exemplaire {
    *
    * @param transaction Une transaction
    */
-  public void ajouterTransaction(Transaction transaction) {
+  public void addTransaction(Transaction transaction) {
     this.transaction.add(transaction);
   }
 
@@ -180,10 +175,8 @@ public class Exemplaire {
    *
    * @param transactions Les transactions à ajoutées
    */
-  public void ajouterTransactions(ArrayList<Transaction> transactions) {
-    for (int nbTransaction = 0; nbTransaction < transactions.size(); nbTransaction++) {
-      transaction.add(transaction.get(nbTransaction));
-    }
+  public void addTransactions(ArrayList<Transaction> transactions) {
+    this.transaction.addAll(transactions);
   }
 
   /**
@@ -201,7 +194,7 @@ public class Exemplaire {
    *
    * @return transaction Une liste des transactions
    */
-  public ArrayList<Transaction> getTousTransactions() {
+  public ArrayList<Transaction> getAllTransactions() {
     return transaction;
   }
 
@@ -210,31 +203,31 @@ public class Exemplaire {
    *
    * @param index L'index de la transaction
    */
-  public void supprimerTransaction(int index) {
+  public void removeTransaction(int index) {
     transaction.remove(index);
   }
 
   /**
    * Supprime toutes les transactions liées à un exemplaire
    */
-  public void supprimerTousTransactions() {
+  public void clearTransactions() {
     transaction.clear();
   }
 
   /**
    *
-   * @return Vrai si l'Exemplaire l'exemplaire est vendu
+   * @return Vrai si l'Copy l'exemplaire est vendu
    */
   public boolean isSold() {
-    return getState().equals("SOLD");
+    return isSoldRegular() || isSoldParent();
   }
 
-  public boolean estVenduReg() {
-    return getEtat() == 2;
+  public boolean isSoldRegular() {
+    return getState().equals("SOLD_REGULAR");
   }
 
-  public boolean estVenduRabais() {
-    return getEtat() == 3;
+  public boolean isSoldParent() {
+    return getState().equals("SOLD_PARENT");
   }
 
   /**
@@ -242,8 +235,8 @@ public class Exemplaire {
    * @return Vrai si l'exemplaire est réservé
    */
   public boolean isReserved() {
-    for(int i = 0; i < transaction.size(); i++) {
-      if (transaction.get(i).getTypeCode().equals("RESERVE")) {
+    for (Transaction t : transaction) {
+      if (t.getType().equals("RESERVE")) {
         return true;
       }
     }
@@ -259,22 +252,10 @@ public class Exemplaire {
     return getState().equals("PAYED");
   }
 
-  public String getDate(int type) {
-    for (int noTransaction = 0; noTransaction < transaction.size(); noTransaction++) {
-      if (transaction.get(noTransaction).getType() == type) {
-        Date date = new Date();
-        date = transaction.get(noTransaction).getDate();
-        return date.getDate() + "/" + (date.getMonth() + 1) + "/" + (date.getYear() + 1900);
-      }
-    }
-    return "";
-  }
-
   private String getDate(String type) {
-    for (int i = 0; i < transaction.size(); i++) {
-      if (transaction.get(i).getTypeCode().equals(type)) {
-        Date date = transaction.get(i).getDate();
-        return date.getDate() + "/" + (date.getMonth() + 1) + "/" + (date.getYear() + 1900);
+    for (Transaction t : transaction) {
+      if (t.getType().equals(type)) {
+        return DateParser.dateToString(t.getDate());
       }
     }
     return "";
@@ -299,12 +280,12 @@ public class Exemplaire {
   }
 
   public String getName() {
-    return article.getName();
+    return item.getName();
   }
 
   public String getEdition() {
-    if (article instanceof Ouvrage) {
-      int edition = ((Ouvrage) article).getEdition();
+    if (item instanceof Book) {
+      int edition = ((Book) item).getEdition();
 
       if (edition == 0) {
         return "";
@@ -316,8 +297,8 @@ public class Exemplaire {
   }
 
   public String getEditor() {
-    if (article instanceof Ouvrage) {
-      return ((Ouvrage) article).getEditor();
+    if (item instanceof Book) {
+      return ((Book) item).getEditor();
     }
     return "";
   }
@@ -333,17 +314,16 @@ public class Exemplaire {
       }
 
       if (json.has("member")) {
-        membre.fromJSON(json.getJSONObject("member"));
+        member.fromJSON(json.getJSONObject("member"));
       }
 
       if (json.has("item")) {
         JSONObject itemData = json.getJSONObject("item");
 
-        if (itemData.has("is_book") && itemData.getBoolean("is_book")) {
-          article = new Ouvrage(itemData);
+        if (itemData.has("isBook") && itemData.getBoolean("isBook")) {
+          item = new Book(itemData);
         } else {
-          article = new Objet();
-          ((Objet) article).fromJSON(itemData);
+          item = new Item(itemData);
         }
       }
 
@@ -354,19 +334,30 @@ public class Exemplaire {
           transaction.add(new Transaction(transactions.getJSONObject(i)));
         }
       }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+  }
 
-      // TODO: DELETE
-      if (json.has("prix")) {
-        price = json.getDouble("prix");
+  public JSONObject toJSON() {
+    JSONObject copy = new JSONObject();
+    JSONArray transaction = new JSONArray();
+
+    try {
+      copy.put("id", id);
+      copy.put("price", price);
+      copy.put("member", member.toJSON());
+      copy.put("item", item.toJSON());
+
+      for (Transaction t : this.transaction) {
+        transaction.put(t.toJSON());
       }
 
-      if (json.has("membre")) {
-        membre.fromJSON(json.getJSONObject("membre"));
-      }
+      copy.put("transaction", transaction);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
 
-      if (json.has("article")) {
-        article.fromJSON(json.getJSONObject("article"));
-      }
-    } catch (JSONException e) {}
+    return copy;
   }
 }

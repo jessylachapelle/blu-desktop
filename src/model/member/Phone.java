@@ -1,4 +1,4 @@
-package model.membre;
+package model.member;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +10,7 @@ import org.json.JSONObject;
  * @since 26/10/2015
  * @version 0.1
  */
+@SuppressWarnings("unused")
 public class Phone {
   private int id;
   private String number;
@@ -23,10 +24,11 @@ public class Phone {
   }
 
   public Phone(JSONObject json) {
-    fromJson(json, true);
+    init();
+    fromJSON(json);
   }
 
-  private void init() {
+  public void init() {
     id = 0;
     number = "";
     note = "";
@@ -39,7 +41,7 @@ public class Phone {
    */
   public Phone(String number) {
     setNumber(number);
-    note = null;
+    note = "";
   }
 
   /**
@@ -116,29 +118,35 @@ public class Phone {
     return phone;
   }
 
-  public void fromJson(JSONObject json) {
-    fromJson(json, false);
-  }
-
-  public void fromJson(JSONObject json, boolean reinitialize) {
-    if (reinitialize) {
-      init();
-    }
-
+  public void fromJSON(JSONObject phone) {
     try {
-      if (json.has("id")) {
-        id = json.getInt("id");
+      if (phone.has("id")) {
+        setId(phone.getInt("id"));
       }
 
-      if (json.has("number")) {
-        number = json.getString("number");
+      if (phone.has("number")) {
+        setNumber(phone.getString("number"));
       }
 
-      if (json.has("note")) {
-        note = json.getString("note");
+      if (phone.has("note")) {
+        setNote(phone.getString("note"));
       }
     } catch (JSONException e) {
       e.printStackTrace();
     }
+  }
+
+  public JSONObject toJSON() {
+    JSONObject phone = new JSONObject();
+
+    try {
+      phone.put("id", id);
+      phone.put("number", number);
+      phone.put("note", note);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return phone;
   }
 }

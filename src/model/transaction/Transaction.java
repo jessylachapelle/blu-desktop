@@ -2,6 +2,7 @@ package model.transaction;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import ressources.DateParser;
 
 import java.util.Date;
 
@@ -13,13 +14,13 @@ import java.util.Date;
  * @since 26/10/2015
  * @version 0.1
  */
+@SuppressWarnings("unused")
 public class Transaction {
   private int id,
-              type,
-              idExemplaire,
-              noMembre;
+              idCopy,
+              noMember;
   private Date date;
-  private String typeCode;
+  private String type;
 
   /**
    * Constructeur par défaut, crée une transaction aux valeurs null
@@ -35,10 +36,10 @@ public class Transaction {
 
   private void init() {
     id = 0;
-    type = 0;
-    idExemplaire = 0;
-    noMembre = 0;
-    typeCode = "";
+    type = "";
+    idCopy = 0;
+    noMember = 0;
+    type = "";
     date = new Date();
   }
 
@@ -47,40 +48,30 @@ public class Transaction {
    *
    * @param type Le type de transaction
    * @param date La date de la transaction
-   * @param idExemplaire L'exemplaire associé
-   * @param noMembre Le membre associé
+   * @param idCopy L'exemplaire associé
+   * @param noMember Le member associé
    */
-  public Transaction(int type, Date date, int idExemplaire, int noMembre) {
+  public Transaction(String type, Date date, int idCopy, int noMember) {
     this.type = type;
     this.date = date;
-    this.idExemplaire = idExemplaire;
-    this.noMembre = noMembre;
+    this.idCopy = idCopy;
+    this.noMember = noMember;
   }
 
-  /**
-   * Accède au type de transaction
-   *
-   * @return type Le type de transaction
-   */
-  public int getType() {
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public String getType() {
     return type;
   }
 
-  /**
-   * Modifie le type de transaction
-   *
-   * @param type Le type de transaction
-   */
-  public void setType(int type) {
+  public void setType(String type) {
     this.type = type;
-  }
-
-  public String getTypeCode() {
-    return typeCode;
-  }
-
-  public void setTypeCode(String typeCode) {
-    this.typeCode = typeCode;
   }
 
   /**
@@ -92,8 +83,8 @@ public class Transaction {
     return date;
   }
 
-  public String getDateStr() {
-    return (date.getYear() + 1900) + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+  public String getDateString() {
+    return DateParser.dateToString(date);
   }
 
   /**
@@ -107,55 +98,46 @@ public class Transaction {
 
   /**
    *
-   * @param strDate Date au format aaaa-mm-jj
+   * @param dateString Formatted date (YYYY-MM-DD)
    */
-  public void setDate(String strDate) {
-    Date date = new Date();
-
-    String annee = strDate.substring(0, 4);
-    String mois = strDate.substring(5, 7);
-    String jour = strDate.substring(8, 10);
-    date.setYear(Integer.parseInt(annee) - 1900);
-    date.setMonth(Integer.parseInt(mois) - 1);
-    date.setDate(Integer.parseInt(jour));
-
-    this.date = date;
+  public void setDate(String dateString) {
+    this.date = DateParser.dateFromString(dateString);
   }
 
   /**
    * Accède au numéro de l'exemplaire associé à la transaction
    *
-   * @return idExemplaire Le numéro de l'exemplaire
+   * @return idCopy Le numéro de l'exemplaire
    */
-  public int getIdExemplaire() {
-    return idExemplaire;
+  public int getIdCopy() {
+    return idCopy;
   }
 
   /**
    * Modifie le numéro d'exemplaire associé à la transaction
    *
-   * @param idExemplaire Le numéro d'exemplaire
+   * @param idCopy Le numéro d'exemplaire
    */
-  public void setIdExemplaire(int idExemplaire) {
-    this.idExemplaire = idExemplaire;
+  public void setIdCopy(int idCopy) {
+    this.idCopy = idCopy;
   }
 
   /**
-   * Accède au numéro du membre associé à la transaction
+   * Accède au numéro du member associé à la transaction
    *
-   * @return noMembre Le numéro du membre
+   * @return noMember Le numéro du member
    */
-  public int getNoMembre() {
-    return noMembre;
+  public int getNoMember() {
+    return noMember;
   }
 
   /**
-   * Modifie le numéro du membre associé à la transaction
+   * Modifie le numéro du member associé à la transaction
    *
-   * @param noMembre Le numéro du membre
+   * @param noMember Le numéro du member
    */
-  public void setNoMembre(int noMembre) {
-    this.noMembre = noMembre;
+  public void setNoMember(int noMember) {
+    this.noMember = noMember;
   }
 
   public void fromJSON(JSONObject json) {
@@ -169,29 +151,34 @@ public class Transaction {
       }
 
       if (json.has("copy")) {
-        idExemplaire = json.getInt("copy");
+        idCopy = json.getInt("copy");
       }
 
       if (json.has("member")) {
-        noMembre = json.getInt("member");
+        noMember = json.getInt("member");
       }
 
       if (json.has("code")) {
-        typeCode = json.getString("code");
+        type = json.getString("code");
       }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+  }
 
-      // TODO: DELETE
-      if (json.has("type")) {
-        type = json.getInt("type");
-      }
+  public JSONObject toJSON() {
+    JSONObject transaction = new JSONObject();
 
-      if (json.has("id_exemplaire")) {
-        idExemplaire = json.getInt("id_exemplaire");
-      }
+    try {
+      transaction.put("id", id);
+      transaction.put("copy", idCopy);
+      transaction.put("member", noMember);
+      transaction.put("date", getDateString());
+      transaction.put("type", type);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
 
-      if (json.has("no_membre")) {
-        noMembre = json.getInt("no_membre");
-      }
-    } catch (JSONException e) {}
+    return transaction;
   }
 }

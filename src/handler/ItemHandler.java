@@ -1,42 +1,31 @@
 package handler;
 
 import api.APIConnector;
-import bd.AccesBD;
-import model.article.*;
-
-import model.transaction.*;
-import static bd.ArticleSQL.*;
+import model.item.*;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import ressources.JsonParser;
 
 /**
  * Permet de récupérer des informations dans la Base de données et de les
  * transformer en objet. Gère les propriétés des objets et les actions reliées
  * en faisant le lien avec la BD.
  *
- * @author Dereck
- * @version 0.2
- * @since 2015/11/03
+ * @author Jessy
+ * @version 1.1
+ * @since 2016/19/07
  */
+@SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "unused"})
 public class ItemHandler {
 
-  // Le résulat d'une tentative d'insertion
-  private final int OP_ECHEC = 0;
-  private final int OP_EXISTE = -1;
-  private final int OP_SUCCES = 1;
-
-  private ArrayList<Article> articles;
-  private Article article;
+  private ArrayList<Item> items;
+  private Item item;
 
   public ItemHandler() {
-    article = null;
-    articles = new ArrayList<>();
+    item = null;
+    items = new ArrayList<>();
   }
 
   public boolean updateComment(int id, String comment) {
@@ -48,7 +37,7 @@ public class ItemHandler {
       data.put("comment", comment);
 
       json.put("function", "update_comment");
-      json.put("object", "article");
+      json.put("object", "item");
       json.put("data", data);
 
       JSONObject response = APIConnector.call(json).getJSONObject("data");
@@ -81,15 +70,15 @@ public class ItemHandler {
     JSONArray storagejson = new JSONArray();
 
     try {
-      for(int i = 0; i < storage.length; i++) {
-        storagejson.put(storage[i]);
+      for (String storageUnit : storage) {
+        storagejson.put(storageUnit);
       }
 
       data.put("id", id);
       data.put("storage", storagejson);
 
       json.put("function", "update_storage");
-      json.put("object", "article");
+      json.put("object", "item");
       json.put("data", data);
 
       JSONObject response = APIConnector.call(json).getJSONObject("data");
@@ -102,423 +91,117 @@ public class ItemHandler {
     return false;
   }
 
+  public Item getItem() {
+    return item;
+  }
 
-
-
-
-
-
-
-
-
-
-
-  public Article getArticle(){
-  return this.article;
-}
-  /**
-   * Méthode interne qui construit un objet Article à partir d'une map clé/valeur
-   *
-   * @param infoArticle La map contenant les clés/valeurs
-   * @return article L'objet contenant les informations
-   */
-  private Article construitArticle(HashMap<String, String> infoArticle) {
-    article = null;
-
-    String type = infoArticle.get("type_article");
-
-    switch (type) {
-      case "ouvrage":
-        article = new Ouvrage();
-
-        if(infoArticle.containsKey("ouvrage_titre"))
-          article.setName((String) infoArticle.get("ouvrage_titre"));
-
-        if(infoArticle.containsKey("ouvrage_ean13"))
-          article.setCodeBar((String) infoArticle.get("ouvrage_ean13"));
-
-        if(infoArticle.containsKey("ouvrage_parution"))
-          ((Ouvrage) article).setPublication(Integer.parseInt((String) infoArticle.get("ouvrage_parution")));
-
-        if(infoArticle.containsKey("editeur_nom"))
-          ((Ouvrage) article).setEditor((String) infoArticle.get("editeur_nom"));
-
-        if(infoArticle.containsKey("ouvrage_no_edition"))
-          ((Ouvrage) article).setEdition(Integer.parseInt((String) infoArticle.get("ouvrage_no_edition")));
-
-        if(infoArticle.containsKey("ouvrage_date_ajout"))
-          ((Ouvrage) article).setDateAjout((String) infoArticle.get("ouvrage_date_ajout"));
-
-        if(infoArticle.containsKey("ouvrage_date_desuet"))
-          ((Ouvrage) article).setDateDesuet((String) infoArticle.get("ouvrage_date_desuet"));
-
-        if(infoArticle.containsKey("ouvrage_date_retrait"))
-          ((Ouvrage) article).setDateRetire((String) infoArticle.get("ouvrage_date_retrait"));
-
-        for(int noAuteur = 1; noAuteur <= 5; noAuteur++)
-          if(infoArticle.containsKey("auteur_" + noAuteur) &&
-             !((String)infoArticle.get("auteur_" + noAuteur)).isEmpty())
-            ((Ouvrage) article).addAuthor((String) infoArticle.get("auteur_" + noAuteur));
-        break;
-      case "objet":
-        article = new Objet();
-        if(infoArticle.containsKey("description"))
-          ((Objet) article).setDescription((String) infoArticle.get("description"));
-        break;
-      default:
-        article = new Article();
-        break;
-    }
-
-    if(infoArticle.containsKey("id"))
-      article.setId(Integer.parseInt(((String) infoArticle.get("id")).replace("\n", "").replace("\r", "")));
-
-    if(infoArticle.containsKey("commentaire"))
-      article.setCommentaire((String) infoArticle.get("commentaire"));
-
-    if(infoArticle.containsKey("matiere"))
-      article.getMatiere().setNom((String) infoArticle.get("matiere"));
-
-    if(infoArticle.containsKey("categorie"))
-      article.getMatiere().setCategorie((String) infoArticle.get("categorie"));
-
-    return article;
+  public ArrayList<Item> getItems() {
+    return items;
   }
 
   /**
-   * Méthode qui permet l'ajout d'un nouvelle article
-   * @param infoArticle Les informations de l'Article
-   * @return Le résultat de l'opération -1 echec, 0 deja dans la bd, sinon l'id de l'insertion
+   * Add an item to the system or update it if already exists
+   * @param item The item's information
+   * @return The item
    */
-  public int ajouterArticle(HashMap<String, String> infoArticle){
-    article = construitArticle(infoArticle);
+  public Item addItem(JSONObject item) {
+    int id = 0;
 
-    if(infoArticle.get("type_article").equals("ouvrage")){
-      // On commence par vérifier si l'article est déjà existant dans la base de donnée
-      if(!articleExiste(article.getCodeBar())){
-        int idArticle = insertArticle(article);
-
-        // si plus grand que 0, on a un id d'article
-        if (idArticle > 0 ){
-          boolean succes = insertProprieteArticle(idArticle,1); // le type
-
-          if(succes){
-            // Si ca fonctionne,
-            if (insertToutAuteur(idArticle) == OP_SUCCES){
-              // matiere
-              if(insertmatiere(idArticle) == OP_SUCCES){
-                // editeur
-                if(insertEditeur(idArticle) == OP_SUCCES){
-                  // annee
-                  if(insertAnnee(idArticle) == OP_SUCCES){
-                    // edition
-                    if(insertEdition(idArticle) == OP_SUCCES){
-                      // ean13
-                      if(insertEAN13(idArticle) == OP_SUCCES) {
-                        // date_ajout
-                        if(insertDateAjout(idArticle) == OP_SUCCES){
-                          return OP_SUCCES;
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-          return consulterArticle(article.getCodeBar()).getId();
-        }
-       else return OP_ECHEC;
+    try {
+      if (item.has("id")) {
+        id = item.getInt("id");
       }
-      // le livre existe
-      else {
-        return OP_EXISTE;
-      }
-    }
-    // Insertion d'un objet
-    else {
-      if(consulterArticle(article.getName()) == null){
-        int succes = insertArticle(article);
-        article.setId(consulterArticle(article.getCodeBar()).getId());
-        if (succes == 1) return article.getId();
-        else return OP_ECHEC;
-      }
-      // Un objet avec le même nom existe
-      else {
-        return OP_EXISTE;
-      }
-    }
-  }
-
-
-  /**
-   * Insert tout les auteurs de la liste
-   * @param idArticle l'id de l'article déjà créée
-   * @return 1 si succes, sinon lid de lauteur qui a flanché
-   */
-  private int insertToutAuteur(int idArticle) {
-    for (int i = 0; i < ((Ouvrage)article).getAuthors().size(); i++){
-
-      HashMap auteur = null;
-      //pour chaque auteur, on vérifie s'il y a un nom identique dans la bd
-      for (int j = 0; j < 5; j++){
-        auteur = selectAuteur(((Ouvrage)article).getAuthor(i), j+1);
-
-        if (auteur != null){
-          break;
-        }
-      }
-      // l'auteur existe, donc on ne fait que faire une référence
-      if (auteur!= null){
-        if(insertProprieteArticle(idArticle, Integer.parseInt((String) auteur.get("id"))) == false)
-          return i+1;
-      }
-      // Nouvelle insertion, puis la référence
-      else {
-        if(insertPropriete(idArticle, i+2, ((Ouvrage)article).getAuthor(i)) == false)
-          return i+1;
-      }
-    }
-    return OP_SUCCES;
-  }
-
-    /**
-   * Insere une matiere dans la base de donnees
-   * @param idArticle l'id de l'article déjà créée
-   * @return 1 si succes, sinon 0
-   */
-  private int insertmatiere(int idArticle) {
-      HashMap matiere = null;
-      // on vérifie s'il y a un nom identique dans la bd
-      matiere = selectMatiere(article.getMatiere().getNom());
-
-      // si faux, on insere une nouvelle propriete
-      if (matiere == null){
-        if(insertPropriete(idArticle, 8, ((Ouvrage)article).getMatiere().getNom()) == false){
-          return OP_ECHEC;
-        }
-        matiere = selectMatiere(article.getMatiere().getNom());
-      }
-      // La référence
-      if(insertProprieteArticle(idArticle,Integer.parseInt((String) matiere.get("id"))) == false)
-          return OP_ECHEC;
-
-     return OP_SUCCES;
-  }
-
-   /**
-   * Insere un editeur dans la base de donnees
-   * @param idArticle l'id de l'article déjà créée
-   * @return 1 si succes, sinon 0
-   */
-  private int insertEditeur(int idArticle) {
-      HashMap editeur;
-      // on vérifie s'il y a un nom identique dans la bd
-      editeur = selectEditeur(((Ouvrage)article).getEditor());
-
-      // si faux, on insere une nouvelle propriete
-      if (editeur == null){
-        if(insertPropriete(idArticle, 9, ((Ouvrage)article).getEditor()) == false){
-          return OP_ECHEC;
-        }
-        editeur = selectEditeur(((Ouvrage)article).getEditor());
-      }
-      // La référence
-      if(insertProprieteArticle(idArticle, Integer.parseInt((String) editeur.get("id"))) == false)
-          return OP_ECHEC;
-
-     return OP_SUCCES;
-  }
-
-   /**
-   * Insere une annee dans la base de donnees
-   * @param idArticle l'id de l'article déjà créée
-   * @return 1 si succes, sinon 0
-   */
-  private int insertAnnee(int idArticle) {
-      HashMap annee;
-      // on vérifie s'il y a un nom identique dans la bd
-      annee = selectAnnee(Integer.toString(((Ouvrage)article).getPublication()));
-
-      // si faux, on insere une nouvelle propriete
-      if (annee == null){
-        if(insertPropriete(idArticle, 11, (Integer.toString(((Ouvrage)article).getPublication()))) == false){
-          return OP_ECHEC;
-        }
-        annee = selectAnnee(Integer.toString(((Ouvrage)article).getPublication()));
-      }
-
-      // La référence
-      if(insertProprieteArticle(idArticle, Integer.parseInt((String) annee.get("id"))) == false)
-          return OP_ECHEC;
-
-     return OP_SUCCES;
-  }
-
-    /**
-   * Insere un edition dans la base de donnees
-   * @param idArticle l'id de l'article déjà créée
-   * @return 1 si succes, sinon 0
-   */
-  private int insertEdition(int idArticle) {
-      HashMap edition;
-      // on vérifie s'il y a un nom identique dans la bd
-      edition = selectEdition(Integer.toString(((Ouvrage)article).getEdition()));
-
-      // si faux, on insere une nouvelle propriete
-      if (edition == null){
-        if(insertPropriete(idArticle, 12, (Integer.toString(((Ouvrage)article).getEdition()))) == false){
-          return OP_ECHEC;
-        }
-        edition = selectEdition(Integer.toString(((Ouvrage)article).getEdition()));
-      }
-
-      // La référence
-      if(insertProprieteArticle(idArticle, Integer.parseInt((String) edition.get("id"))) == false)
-          return OP_ECHEC;
-
-     return OP_SUCCES;
-  }
-
-    /**
-   * Insere un code barre dans la base de donnees
-   * @param idArticle l'id de l'article déjà créée
-   * @return 1 si succes, sinon 0
-   */
-  private int insertEAN13(int idArticle) {
-      HashMap ean13 = null;
-      // on vérifie s'il y a un nom identique dans la bd
-      ean13 = selectEAN13(((Ouvrage)article).getCodeBar());
-
-      // si faux, on insere une nouvelle propriete
-      if (ean13 == null){
-        if(insertPropriete(idArticle, 13, ((Ouvrage)article).getCodeBar()) == false){
-          return OP_ECHEC;
-        }
-        ean13 = selectEAN13(((Ouvrage)article).getCodeBar());
-      }
-
-      // La référence
-      if(insertProprieteArticle(idArticle, Integer.parseInt((String) ean13.get("id"))) == false)
-          return OP_ECHEC;
-
-     return OP_SUCCES;
-  }
-
-  /**
-   * Insere la date d'ajout dans la base de donnees
-   * @param idArticle l'id de l'article déjà créée
-   * @return 1 si succes, sinon 0
-   */
-  private int insertDateAjout(int idArticle) {
-    Date date = new Date();
-
-    if(insertPropriete(idArticle, 14, date.toString()) == false){
-      return OP_ECHEC;
-    }
-    HashMap dateAjout = selectDateAjout(date.toString());
-
-    // La référence
-    if(insertProprieteArticle(idArticle, Integer.parseInt((String) dateAjout.get("id"))) == false)
-        return OP_ECHEC;
-
-   return OP_SUCCES;
-  }
-
-  private ArrayList<Exemplaire> construitListeExemplaireArticle(ArrayList<HashMap> infoExemplaire) {
-    ArrayList<Exemplaire> exemplaires = new ArrayList<>();
-
-    for (int noExemplaire = 0; noExemplaire < infoExemplaire.size(); noExemplaire++)
-      exemplaires.add(construitExemplaireArticle(infoExemplaire.get(noExemplaire)));
-    return exemplaires;
-  }
-
-  private Exemplaire construitExemplaireArticle(HashMap infoExemplaire) {
-    Exemplaire exemplaire = new Exemplaire();
-
-    exemplaire.setId(Integer.parseInt((String) infoExemplaire.get("id")));
-    exemplaire.setPrice(Double.parseDouble((String) infoExemplaire.get("prix")));
-    exemplaire.getMembre().setNo(Integer.parseInt((String) infoExemplaire.get("no")));
-    exemplaire.getMembre().setFirstName((String) infoExemplaire.get("prenom"));
-    exemplaire.getMembre().setLastName((String) infoExemplaire.get("nom"));
-
-    Transaction transaction = new Transaction();
-    transaction.setType(1);
-    transaction.setDate((String)infoExemplaire.get("date_ajout"));
-    exemplaire.ajouterTransaction(transaction);
-
-    if(!((String)infoExemplaire.get("date_vente")).isEmpty()) {
-      Transaction t = new Transaction();
-      t.setType(2);
-      t.setDate((String)infoExemplaire.get("date_vente"));
-      exemplaire.ajouterTransaction(t);
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
 
-    if(!((String)infoExemplaire.get("date_remise")).isEmpty()) {
-      Transaction t = new Transaction();
-      t.setType(4);
-      t.setDate((String)infoExemplaire.get("date_remise"));
-      exemplaire.ajouterTransaction(t);
+    if (id > 0) {
+      return updateItem(item);
     }
 
-    if(!((String)infoExemplaire.get("date_reservation")).isEmpty()) {
-      Transaction t = new Transaction();
-      t.setType(5);
-      t.setDate((String)infoExemplaire.get("date_reservation"));
-      exemplaire.ajouterTransaction(t);
+    return insertItem(item);
+  }
+
+  public Item selectItem(int id) {
+    try {
+      JSONObject data = new JSONObject();
+      return _selectItem(data.put("id", id));
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
 
-    return exemplaire;
+    return null;
   }
 
-  private ArrayList<Exemplaire> construitDemandeReservation(ArrayList<HashMap> infoDemandes) {
-    ArrayList<Exemplaire> exemplaires = new ArrayList<>();
+  public Item selectItem(String ean13) {
+    try {
+      JSONObject data = new JSONObject();
+      return _selectItem(data.put("ean13", ean13));
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
 
-    for(int noDemande = 0; noDemande < infoDemandes.size(); noDemande++)
-      exemplaires.add(construitDemandeReservation(infoDemandes.get(noDemande)));
-    return exemplaires;
+    return null;
   }
 
-  private Exemplaire construitDemandeReservation(HashMap infoDemande) {
-    Exemplaire exemplaire = new Exemplaire();
-    Transaction transaction = new Transaction();
+  private Item _selectItem(JSONObject data) {
+    JSONObject json = new JSONObject();
 
-    transaction.setType(5);
-    transaction.setDate((String)infoDemande.get("date"));
+    try {
+      json.put("object", "item");
+      json.put("function", "select");
+      json.put("data", data);
 
-    exemplaire.getTousTransactions().add(transaction);
-    exemplaire.getParent().setNo(Integer.parseInt((String)infoDemande.get("no")));
-    exemplaire.getParent().setFirstName((String)infoDemande.get("prenom"));
-    exemplaire.getParent().setLastName((String)infoDemande.get("nom"));
+      JSONObject response = APIConnector.call(json);
+      JSONObject itemData = response.getJSONObject("data");
 
-    return exemplaire;
+      if (itemData.has("isBook") && itemData.getBoolean("isBook")) {
+        item = new Book(itemData);
+      } else {
+        item = new Item(itemData);
+      }
+
+      return item;
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return null;
   }
 
+  public Item insertItem(JSONObject item) {
+    JSONObject json = new JSONObject();
 
-  /**
-   * Accède a un Article et à ses propriétés
-   * @param idArticle Le numéro de l'article à consulter
-   * @return L'article à consulter
-   */
-  public Article consulteArticle(int idArticle) {
-    String[][] params = {{"idArticle", Integer.toString(idArticle)}};
+    try {
+      json.put("object", "item");
+      json.put("function", "insert");
+      json.put("data", item);
 
-    construitArticle(JsonParser.toHashMap(AccesBD.executeFunction("selectArticle", params)).get(0));
-    article.setExemplaires(consulteExemplairesArticle(idArticle));
+      JSONObject res = APIConnector.call(json);
+      JSONObject data = res.getJSONObject("data");
+      item.put("id", data.getInt("id"));
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
 
-    //article.setUniteRangement(consulteUniteRangement(idArticle));
-
-    return article;
+    return new Item(item);
   }
 
-  /**
-   * Accède a un Article et à ses propriétés
-   * @param ean13 Le code à barres associé à l'article
-   * @return L'article à consulter
-   */
-  public Article consulterArticle(String ean13) {
-    return consulteArticle(selectIdArticle(ean13));
+  public Item updateItem(JSONObject item) {
+    JSONObject json = new JSONObject();
+
+    try {
+      json.put("object", "item");
+      json.put("function", "update");
+      json.put("data", item);
+
+      JSONObject res = APIConnector.call(json);
+      JSONObject data = res.getJSONObject("data");
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return new Item(item);
   }
 
   /**
@@ -526,31 +209,31 @@ public class ItemHandler {
    * @param search The search query
    * @return A list of items
    */
-  public ArrayList<Article> searchItem(String search, boolean outdated) {
-    ArrayList<Article> items = new ArrayList<>();
+  public ArrayList<Item> searchItem(String search, boolean outdated) {
+    ArrayList<Item> items = new ArrayList<>();
     JSONObject json = new JSONObject();
     JSONObject data = new JSONObject();
 
     try {
       data.put("search", search);
 
-      if(outdated) {
-        data.put("outdated", outdated);
+      if (outdated) {
+        data.put("outdated", true);
       }
 
       json.put("function", "search");
-      json.put("object", "article");
+      json.put("object", "item");
       json.put("data", data);
 
       JSONArray itemArray = APIConnector.call(json).getJSONArray("data");
 
-      for(int i = 0; i < itemArray.length(); i++) {
+      for (int i = 0; i < itemArray.length(); i++) {
         JSONObject item = itemArray.getJSONObject(i);
 
         if (item.has("is_book") && item.getBoolean("is_book")) {
-          items.add(new Ouvrage(itemArray.getJSONObject(i)));
+          items.add(new Book(item));
         } else {
-          items.add(new Objet(itemArray.getJSONObject(i)));
+          items.add(new Item(item));
         }
       }
     } catch (JSONException e) {
@@ -565,53 +248,142 @@ public class ItemHandler {
    *
    * @return TOUTE LES MATIÈRES
    */
-  public ArrayList<HashMap> getAllMatiere() {
-    return selectAllMatiere();
+  public ArrayList<Subject> getSubjects() {
+    JSONObject req = new JSONObject();
+    ArrayList<Subject> subjects = new ArrayList<>();
+
+    try {
+      req.put("object", "subject");
+      req.put("function", "select");
+
+      JSONObject res = APIConnector.call(req);
+      JSONArray data = res.getJSONArray("data");
+
+      for (int i = 0; i < data.length(); i++) {
+        subjects.add(new Subject(data.getJSONObject(i)));
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return subjects;
   }
 
-  public boolean ajoutDemandeReservation(int noMembre, int idArticle) {
-    return insertDemandeReservation(noMembre, idArticle);
+  public int addItemReservation(int memberNo, int itemId) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
+    int id = 0;
+
+    try {
+      data.put("member", memberNo);
+      data.put("item", itemId);
+
+      req.put("object", "reservation");
+      req.put("function", "insert");
+      req.put("data", data);
+
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+      id = data.getInt("id");
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return id;
   }
 
-  public boolean supprimeDemandeReservation(int noMembre, int idArticle) {
-    return deleteDemandeReservation(noMembre, idArticle);
+  public int addCopyReservation(int memberNo, int copyId) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
+    int id = 0;
+
+    try {
+      data.put("member", memberNo);
+      data.put("copy", copyId);
+      data.put("type", "RESERVE");
+
+      req.put("object", "transaction");
+      req.put("function", "insert");
+      req.put("data", data);
+
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+      id = data.getInt("id");
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return id;
+  }
+
+  public boolean deleteReservation(int memberNo, int itemId) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("member", memberNo);
+      data.put("item", itemId);
+
+      req.put("object", "reservation");
+      req.put("function", "delete");
+      req.put("data", data);
+
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+
+      return data.has("code") && data.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return false;
   }
 
   /**
-   * Supprime la réservation pour un exemplaire et un membre dans la BD
-   * @param idExemplaire Le id de l'exemplaire
+   * Supprime la réservation pour un exemplaire et un member dans la BD
+   * @param copyId Le id de l'exemplaire
    * @return Vrai si la supression est un succès
    */
-  public boolean supprimeReservation(int idExemplaire) {
-    return deleteReservation(idExemplaire);
+  public boolean deleteReservation(int copyId) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("copy", copyId);
+      data.put("type", "RESERVE");
+
+      req.put("object", "transaction");
+      req.put("function", "delete");
+      req.put("data", data);
+
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+
+      return data.has("code") && data.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return false;
   }
 
-  public ArrayList<Exemplaire> consulteExemplairesArticle(int idArticle) {
-    ArrayList<Exemplaire> exemplaires = construitListeExemplaireArticle(selectExemplairesArticle(idArticle));
-    exemplaires.addAll(construitDemandeReservation(selectDemandesReservation(idArticle)));
+  public boolean setStatus(int id, String status) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
 
-    return exemplaires;
-  }
+    try {
+      data.put("id", id);
+      data.put("status", status.toUpperCase());
 
-  public boolean ajoutDateDesuet(int idArticle) {
-    Date date = new Date();
-    String strDate = (date.getYear() + 1900) + "/" + (date.getMonth() + 1) + "/" + date.getDate();
+      req.put("object", "item");
+      req.put("function", "setStatus");
+      req.put("data", data);
 
-    return insertDateDesuet(idArticle, strDate);
-  }
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+      return data.has("code") && data.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
 
-  public boolean supprimeDateDesuet(int idArticle) {
-    return deleteDateDesuet(idArticle);
-  }
-
-  public boolean ajoutDateRetire(int idArticle) {
-    Date date = new Date();
-    String strDate = (date.getYear() + 1900) + "/" + (date.getMonth() + 1) + "/" + date.getDate();
-
-    return insertDateRetire(idArticle, strDate);
-  }
-
-  public boolean supprimeDateRetire(int idArticle) {
-    return deleteDateRetire(idArticle);
+    return false;
   }
 }

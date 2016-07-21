@@ -1,33 +1,24 @@
 package controller;
 
+import handler.MemberHandler;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
+import model.item.Copy;
+import model.member.Comment;
+import model.member.Member;
+import model.member.StudentParent;
+import model.transaction.Transaction;
+import ressources.Dialog;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.ResourceBundle;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import model.article.Exemplaire;
-import handler.MemberHandler;
-import model.membre.Commentaire;
-import model.membre.Membre;
-import model.membre.ParentEtudiant;
-import model.transaction.Transaction;
-import ressources.Dialogue;
 
 /**
  *
@@ -39,519 +30,468 @@ public class MemberViewController extends Controller {
 
   private MemberHandler memberHandler;
 
-  @FXML private Button btn_modif;
-  @FXML private Button btn_suppMem;
+  @FXML private Button btnUpdate;
+  @FXML private Button btnDelete;
 
-  @FXML private Label lbl_nom;
-  @FXML private Label lbl_no;
-  @FXML private Label lbl_adresse;
-  @FXML private Label lbl_courriel;
-  @FXML private Label lbl_telephone1;
-  @FXML private Label lbl_telephone2;
+  @FXML private Label lblName;
+  @FXML private Label lblNo;
+  @FXML private Label lblAddress;
+  @FXML private Label lblEmail;
+  @FXML private Label lblPhone1;
+  @FXML private Label lblPhone2;
 
-  @FXML private Label lbl_etat;
-  @FXML private Label lbl_inscription;
-  @FXML private Label lbl_derniereActivite;
-  @FXML private Label lbl_desactivation;
+  @FXML private Label lblState;
+  @FXML private Label lblRegistration;
+  @FXML private Label lblLastActivity;
+  @FXML private Label lblDeactivation;
 
-  @FXML private TableView tbl_commentaire;
-  @FXML private TableColumn<Commentaire, String> col_commentaire;
-  @FXML private TableColumn<Commentaire, String> col_commentaire_date;
+  @FXML private TableView<Comment> tblComments;
+  @FXML private TableColumn<Comment, String> colComment;
+  @FXML private TableColumn<Comment, String> colCommentDate;
 
-  @FXML private Button btn_ajout_exemplaires;
-  @FXML private Button btn_renouv;
-  @FXML private Button btn_ajoutCom;
-  @FXML private Button btn_remboursement;
+  @FXML private Button btnAddCopy;
+  @FXML private Button btnRenew;
+  @FXML private Button btnAddComment;
+  @FXML private Button btnPay;
 
-  @FXML private Button btn_reservation;
-  @FXML private TableView tbl_reservation;
+  @FXML private Button btnAddReservation;
+  @FXML private TableView tblReservation;
 
-  @FXML private Button btn_aVendre;
-  @FXML private TableView tbl_aVendre;
-  @FXML private TableColumn<Exemplaire, String> col_aVendre_titre;
-  @FXML private TableColumn<Exemplaire, String> col_aVendre_editeur;
-  @FXML private TableColumn<Exemplaire, String> col_aVendre_edition;
-  @FXML private TableColumn<Exemplaire, String> col_aVendre_date;
-  @FXML private TableColumn<Exemplaire, String> col_aVendre_prix;
+  @FXML private Button btnAvailable;
+  @FXML private TableView<Copy> tblAvailable;
+  @FXML private TableColumn<Copy, String> colAvailableTitle;
+  @FXML private TableColumn<Copy, String> colAvailableEditor;
+  @FXML private TableColumn<Copy, String> colAvailableEdition;
+  @FXML private TableColumn<Copy, String> colAvailableDateAdded;
+  @FXML private TableColumn<Copy, String> colAvailablePrice;
 
-  @FXML private Button btn_vendu;
-  @FXML private TableView tbl_vendu;
-  @FXML private TableColumn<Exemplaire, String> col_vendu_titre;
-  @FXML private TableColumn<Exemplaire, String> col_vendu_editeur;
-  @FXML private TableColumn<Exemplaire, String> col_vendu_edition;
-  @FXML private TableColumn<Exemplaire, String> col_vendu_dateAjout;
-  @FXML private TableColumn<Exemplaire, String> col_vendu_dateVente;
-  @FXML private TableColumn<Exemplaire, String> col_vendu_prix;
+  @FXML private Button btnSold;
+  @FXML private TableView<Copy> tblSold;
+  @FXML private TableColumn<Copy, String> colSoldTitle;
+  @FXML private TableColumn<Copy, String> colSoldEditor;
+  @FXML private TableColumn<Copy, String> colSoldEdition;
+  @FXML private TableColumn<Copy, String> colSoldDateAdded;
+  @FXML private TableColumn<Copy, String> colSoldDateSold;
+  @FXML private TableColumn<Copy, String> colSoldPrice;
 
-  @FXML private Button btn_argentRemis;
-  @FXML private TableView tbl_argentRemis;
-  @FXML private TableColumn<Exemplaire, String> col_argentRemis_titre;
-  @FXML private TableColumn<Exemplaire, String> col_argentRemis_editeur;
-  @FXML private TableColumn<Exemplaire, String> col_argentRemis_edition;
-  @FXML private TableColumn<Exemplaire, String> col_argentRemis_dateAjout;
-  @FXML private TableColumn<Exemplaire, String> col_argentRemis_dateVente;
-  @FXML private TableColumn<Exemplaire, String> col_argentRemis_dateRemise;
-  @FXML private TableColumn<Exemplaire, String> col_argentRemis_prix;
+  @FXML private Button btnPaid;
+  @FXML private TableView<Copy> tblPaid;
+  @FXML private TableColumn<Copy, String> colPaidTitle;
+  @FXML private TableColumn<Copy, String> colPaidEditor;
+  @FXML private TableColumn<Copy, String> colPaidEdition;
+  @FXML private TableColumn<Copy, String> colPaidDateAdded;
+  @FXML private TableColumn<Copy, String> colPaidDateSold;
+  @FXML private TableColumn<Copy, String> colPaidDatePaid;
+  @FXML private TableColumn<Copy, String> colPaidPrice;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     memberHandler = new MemberHandler();
-    eventHandlers();
-    dataBinding();
-    tbl_vendu.setVisible(false);
-    tbl_argentRemis.setVisible(false);
+    _eventHandlers();
+    _dataBinding();
   }
 
   public void loadMember(int memberNo) {
     memberHandler.setMember(memberNo);
-    displayMember();
+    _displayMember();
   }
 
-  public void loadMember(Membre member) {
+  public void loadMember(Member member) {
     memberHandler.setMember(member);
-    displayMember();
+    _displayMember();
   }
 
   public Button getEditButton() {
-    return btn_modif;
+    return btnUpdate;
   }
 
   public Button getAddCopyButton() {
-    return btn_ajout_exemplaires;
+    return btnAddCopy;
   }
 
   public TableView[] getCopyTables() {
-    TableView[] tbl = {tbl_reservation, tbl_aVendre, tbl_vendu, tbl_argentRemis};
-    return tbl;
+    return new TableView[]{tblReservation, tblAvailable, tblSold, tblPaid};
   }
 
-  public Membre getMember() {
+  public Member getMember() {
     return memberHandler.getMember();
   }
 
-  private void eventHandlers() {
-    tbl_aVendre.setOnMouseClicked(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent event) {
-        Node node = ((Node) event.getTarget()).getParent();
-        TableRow row;
+  @SuppressWarnings("unchecked")
+  private void _eventHandlers() {
+    tblAvailable.setOnMouseClicked(event -> {
+      Node node = ((Node) event.getTarget()).getParent();
+      TableRow<Copy> row;
 
-        if(node instanceof TableRow) {
-          row = (TableRow) node;
-        } else {
-          row = (TableRow) node.getParent();
-        }
-
-        final Exemplaire e = (Exemplaire) row.getItem();
-
-        if(event.isPrimaryButtonDown()) {
-          @SuppressWarnings("rawtypes")
-          TablePosition pos = (TablePosition) tbl_aVendre.getSelectionModel().getSelectedCells().get(0);
-          int col = pos.getColumn();
-
-          if(col == 1) {
-            System.out.println("Exemplaire de " + e.getName() + " vendu à " + e.getStrPrix());
-          }
-        } else if(event.getButton() == MouseButton.SECONDARY) {
-          final ContextMenu contextMenu = new ContextMenu();
-          MenuItem vendre = new MenuItem("Vendre");
-          MenuItem vendreParent = new MenuItem("Vendre à 50%");
-          MenuItem reserver = new MenuItem("Réserver");
-          MenuItem modifier = new MenuItem("Modifier le prix");
-          MenuItem supprimer = new MenuItem("Supprimer");
-          contextMenu.getItems().addAll(vendre, vendreParent, reserver, modifier, supprimer);
-          row.setContextMenu(contextMenu);
-
-          vendre.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              int id = memberHandler.addTransaction(e.getId(), 2);
-
-              // TODO: Fix transaction id
-              //if (id != 0) {
-                Transaction t = new Transaction();
-                //t.setId(id);
-                t.setType(2);
-                t.setDate(new Date());
-
-                getMember().getAccount().getEnVente().remove(e);
-                e.ajouterTransaction(t);
-                getMember().getAccount().addSold(e);
-
-                displayCopy();
-              //}
-            }
-          });
-
-          vendreParent.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              int id = memberHandler.addTransaction(e.getId(), 2);
-
-              // TODO: Fix transaction id
-              //if (id != 0) {
-              Transaction t = new Transaction();
-              //t.setId(id);
-              t.setType(2);
-              t.setDate(new Date());
-
-              getMember().getAccount().getEnVente().remove(e);
-              e.ajouterTransaction(t);
-              getMember().getAccount().addSold(e);
-
-              displayCopy();
-              //}
-            }
-          });
-
-          // TODO: Handle reservations
-          reserver.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {}
-          });
-
-          modifier.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              boolean estDouble = false;
-              double prix = e.getPrice();
-
-              while(!estDouble) {
-                try {
-                  prix = Double.parseDouble(Dialogue.dialogueSaisie("Modification du prix", "Entrez le nouveau montant :", Double.toString(prix)));
-                  estDouble = true;
-                } catch (NumberFormatException e) {
-                  Dialogue.dialogueInformation("Vous devez entrer un montant valide");
-                }
-              }
-
-              if (memberHandler.updateCopyPrice(e.getId(), prix)) {
-                getMember().getAccount().getEnVente().remove(e);
-
-                e.setPrice(prix);
-                getMember().getAccount().getEnVente().add(e);
-                displayCopy();
-              } else {
-                Dialogue.dialogueInformation("Une erreur est survenue lors de la mise à jour de l'exemplaire");
-              }
-            }
-          });
-
-          supprimer.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              if(memberHandler.deleteCopy(e.getId())) {
-                getMember().getAccount().getEnVente().remove(e);
-                displayCopy();
-              } else {
-                Dialogue.dialogueInformation("Une erreur est survenue lors de la supression de l'exemplaire");
-              }
-            }
-          });
-        }
+      if(node instanceof TableRow) {
+        row = (TableRow<Copy>) node;
+      } else {
+        row = (TableRow<Copy>) node.getParent();
       }
-    });
 
-    tbl_vendu.setOnMouseClicked(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent event) {
-        Node node = ((Node) event.getTarget()).getParent();
-        TableRow row;
+      final Copy copy = row.getItem();
 
-        if(node instanceof TableRow) {
-          row = (TableRow) node;
-        } else {
-          row = (TableRow) node.getParent();
-        }
+      if(event.getButton() == MouseButton.SECONDARY) {
+        final ContextMenu contextMenu = new ContextMenu();
 
-        final Exemplaire e = (Exemplaire) row.getItem();
+        MenuItem sell = new MenuItem("Vendre");
+        MenuItem sellParent = new MenuItem("Vendre à 50%");
+        MenuItem reserve = new MenuItem("Réserver");
+        MenuItem updatePrice = new MenuItem("Modifier le prix");
+        MenuItem delete = new MenuItem("Supprimer");
 
-        if(event.getButton() == MouseButton.SECONDARY) {
-          final ContextMenu contextMenu = new ContextMenu();
-          MenuItem annuler = new MenuItem("Annuler la vente");
+        contextMenu.getItems().addAll(sell, sellParent, reserve, updatePrice, delete);
+        row.setContextMenu(contextMenu);
 
-          contextMenu.getItems().addAll(annuler);
-          row.setContextMenu(contextMenu);
-
-          annuler.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              if(memberHandler.cancelSell(e.getId())) {
-                getMember().getAccount().getVendu().remove(e);
-
-                for(int noTransaction = 0; noTransaction < e.getTousTransactions().size(); noTransaction++) {
-                  if(e.getTousTransactions().get(noTransaction).getType() == 2 || e.getTousTransactions().get(noTransaction).getType() == 3) {
-                    e.getTousTransactions().remove(noTransaction);
-                  }
-                }
-
-                getMember().getAccount().getEnVente().add(e);
-                displayCopy();
-              } else {
-                Dialogue.dialogueInformation("Une erreur est survenue lors de l'annulation de la vente");
-              }
-            }
-          });
-        }
-      }
-    });
-
-    tbl_commentaire.setOnMouseClicked(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent event) {
-        Node node = ((Node) event.getTarget()).getParent();
-        TableRow row = null;
-
-        if (node instanceof TableRow) {
-          row = (TableRow) node;
-        } else if (node.getParent() instanceof TableRow) {
-          row = (TableRow) node.getParent();
-        }
-
-        if (row != null) {
-          final Commentaire c = (Commentaire) row.getItem();
-
-          if (event.getButton() == MouseButton.SECONDARY) {
-            final ContextMenu contextMenu = new ContextMenu();
-            MenuItem modifier = new MenuItem("Modifier");
-            MenuItem supprimer = new MenuItem("Supprimer");
-            MenuItem ajouter = new MenuItem("Ajouter");
-
-            contextMenu.getItems().addAll(modifier, supprimer, ajouter);
-            row.setContextMenu(contextMenu);
-
-            modifier.setOnAction(new EventHandler<ActionEvent>() {
-              @Override
-              public void handle(ActionEvent event) {
-                String str = Dialogue.dialogueSaisie("Commentaire", "Saisissez votre commentaire :", c.getComment());
-
-                if (!str.isEmpty()) {
-                  int id = c.getId();
-
-                  if (memberHandler.editComment(id, str)) {
-                    getMember().getAccount().getComment(id).setDate(new Date());
-                    getMember().getAccount().getComment(id).setComment(str);
-                    displayComment();
-                  } else {
-                    Dialogue.dialogueInformation("Une erreur est survenues lors de la modification du commentaire");
-                  }
-                }
-              }
-            });
-
-            supprimer.setOnAction(new EventHandler<ActionEvent>() {
-              @Override
-              public void handle(ActionEvent event) {
-                if (Dialogue.dialogueConfirmation("Voulez-vous vraiment supprimer ce commentaire ?")) {
-                  if (memberHandler.deleteComment(c.getId())) {
-                    getMember().getAccount().getComments().remove(c);
-                    displayComment();
-                  } else {
-                    Dialogue.dialogueInformation("Une erreur est survenue lors de la supression du commentaire");
-                  }
-                }
-              }
-            });
-
-            ajouter.setOnAction(new EventHandler<ActionEvent>() {
-              @Override
-              public void handle(ActionEvent event) {
-                String str = Dialogue.dialogueSaisie("Commentaire", "Saisissez votre commentaire :");
-
-                if (!str.isEmpty()) {
-                  int id = memberHandler.addComment(str);
-
-                  if (id != 0) {
-                    Commentaire commentaire = new Commentaire();
-
-                    commentaire.setId(id);
-                    commentaire.setComment(str);
-                    commentaire.setDate(new Date());
-
-                    getMember().getAccount().ajoutCommentaire(commentaire);
-                    displayComment();
-                  } else {
-                    Dialogue.dialogueInformation("Une erreur est survenue lors de la création du commentaire");
-                  }
-                }
-              }
-            });
-          }
-        }
-      }
-    });
-
-    btn_remboursement.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        int montant = (int) getMember().getAccount().montantDu();
-
-        if(montant != 0) {
-          String message = "Veuillez remettre " + montant + "$ à " + getMember().getFirstName();
-
-          if(Dialogue.dialogueConfirmation(message)) {
-            int[] copyId = new int[getMember().getAccount().getVendu().size()];
-
-            for(int i = 0; i < getMember().getAccount().getVendu().size(); i++) {
-              copyId[i] = getMember().getAccount().getVendu().get(i).getId();
-            }
-
-            memberHandler.addTransaction(copyId, 4);
-
-            getMember().getAccount().addPayed((ArrayList<Exemplaire>) getMember().getAccount().getVendu().clone());
-            getMember().getAccount().getVendu().clear();
-            displayCopy();
-          }
-        } else {
-          String message = "Le solde de " + getMember().getFirstName() + " est à 0$";
-          Dialogue.dialogueInformation(message);
-        }
-      }
-    });
-
-    btn_renouv.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        if(memberHandler.renewAccount(getMember().getNo())) {
-          Date date = new Date();
-          getMember().getAccount().setDateDerniereActivite(date);
-          displayAccount();
-          Dialogue.dialogueInformation("Le compte a été renouvelé");
-        } else {
-          Dialogue.dialogueInformation("Une erreur empêche le compte d'être renouvelé");
-        }
-      }
-    });
-
-    btn_ajoutCom.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        String str = Dialogue.dialogueSaisie("Commentaire", "Saisissez votre commentaire :");
-
-        if(!str.isEmpty()) {
-          int id = memberHandler.addComment(str);
+        sell.setOnAction(e -> {
+          int id = memberHandler.addTransaction(copy.getId(), 2);
 
           if (id != 0) {
-            Commentaire commentaire = new Commentaire();
+            Transaction t = new Transaction();
+            t.setId(id);
+            t.setType("SELL");
+            t.setDate(new Date());
 
-            commentaire.setComment(str);
-            commentaire.setDate(new Date());
-            commentaire.setId(id);
+            getMember().getAccount().getAvailable().remove(copy);
+            copy.addTransaction(t);
+            getMember().getAccount().addSold(copy);
 
-            getMember().getAccount().ajoutCommentaire(commentaire);
-            displayComment();
-          } else {
-            Dialogue.dialogueInformation("Une erreur est survenue lors de la création du commentaire");
+            _displayCopies();
           }
+        });
+
+        sellParent.setOnAction(e -> {
+          int id = memberHandler.addTransaction(copy.getId(), 2);
+
+          if (id != 0) {
+            Transaction t = new Transaction();
+            t.setId(id);
+            t.setType("SELL");
+            t.setDate(new Date());
+
+            getMember().getAccount().getAvailable().remove(copy);
+            copy.addTransaction(t);
+            getMember().getAccount().addSold(copy);
+
+            _displayCopies();
+          }
+        });
+
+        // TODO: Handle reservations
+        reserve.setOnAction(e -> {});
+
+        updatePrice.setOnAction(e -> {
+          boolean isDouble = false;
+          double price = copy.getPrice();
+
+          while(!isDouble) {
+            try {
+              price = Double.parseDouble(Dialog.input("Modification du prix", "Entrez le nouveau montant :", Double.toString(price)));
+              isDouble = true;
+            } catch (NumberFormatException ex) {
+              Dialog.information("Vous devez entrer un montant valide");
+            }
+          }
+
+          if (memberHandler.updateCopyPrice(copy.getId(), price)) {
+            getMember().getAccount().getAvailable().remove(copy);
+
+            copy.setPrice(price);
+            getMember().getAccount().getAvailable().add(copy);
+            _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue lors de la mise à jour de l'exemplaire");
+          }
+        });
+
+        delete.setOnAction(e -> {
+          if(memberHandler.deleteCopy(copy.getId())) {
+            getMember().getAccount().getAvailable().remove(copy);
+            _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue lors de la supression de l'exemplaire");
+          }
+        });
+      }
+    });
+
+    tblSold.setOnMouseClicked(event -> {
+      Node node = ((Node) event.getTarget()).getParent();
+      TableRow<Copy> row;
+
+      if (node instanceof TableRow) {
+        row = (TableRow<Copy>) node;
+      } else {
+        row = (TableRow<Copy>) node.getParent();
+      }
+
+      final Copy copy = row.getItem();
+
+      if(event.getButton() == MouseButton.SECONDARY) {
+        final ContextMenu contextMenu = new ContextMenu();
+        MenuItem cancel = new MenuItem("Annuler la vente");
+
+        contextMenu.getItems().addAll(cancel);
+        row.setContextMenu(contextMenu);
+
+        cancel.setOnAction(e -> {
+          if(memberHandler.cancelSell(copy.getId())) {
+            getMember().getAccount().getSold().remove(copy);
+
+            for (int i = 0; i < copy.getAllTransactions().size(); i++) {
+              if (copy.getAllTransactions().get(i).getType().equals("SELL") || copy.getAllTransactions().get(i).getType().equals("SELL_PARENT")) {
+                copy.getAllTransactions().remove(i);
+              }
+            }
+
+            getMember().getAccount().getAvailable().add(copy);
+            _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue lors de l'annulation de la vente");
+          }
+        });
+      }
+    });
+
+    tblComments.setOnMouseClicked(event -> {
+      Node node = ((Node) event.getTarget()).getParent();
+      TableRow<Comment> row = null;
+
+      if (node instanceof TableRow) {
+        row = (TableRow<Comment>) node;
+      } else if (node.getParent() instanceof TableRow) {
+        row = (TableRow<Comment>) node.getParent();
+      }
+
+      if (row != null) {
+        final Comment comment = row.getItem();
+
+        if (event.getButton() == MouseButton.SECONDARY) {
+          final ContextMenu contextMenu = new ContextMenu();
+
+          MenuItem update = new MenuItem("Modifier");
+          MenuItem delete = new MenuItem("Supprimer");
+          MenuItem add = new MenuItem("Ajouter");
+
+          contextMenu.getItems().addAll(update, delete, add);
+          row.setContextMenu(contextMenu);
+
+          update.setOnAction(e -> {
+            String str = Dialog.input("Comment", "Saisissez votre commentaire :", comment.getComment());
+
+            if (!str.isEmpty()) {
+              int id = comment.getId();
+
+              if (memberHandler.editComment(id, str)) {
+                getMember().getAccount().getComment(id).setDate(new Date());
+                getMember().getAccount().getComment(id).setComment(str);
+                _displayComment();
+              } else {
+                Dialog.information("Une erreur est survenues lors de la modification du commentaire");
+              }
+            }
+          });
+
+          delete.setOnAction(e -> {
+            if (Dialog.dialogueConfirmation("Voulez-vous vraiment delete ce commentaire ?")) {
+              if (memberHandler.deleteComment(comment.getId())) {
+                getMember().getAccount().getComments().remove(comment);
+                _displayComment();
+              } else {
+                Dialog.information("Une erreur est survenue lors de la supression du commentaire");
+              }
+            }
+          });
+
+          add.setOnAction(e -> {
+            String str = Dialog.input("Comment", "Saisissez votre commentaire :");
+
+            if (!str.isEmpty()) {
+              int id = memberHandler.addComment(str);
+
+              if (id != 0) {
+                Comment c = new Comment();
+
+                c.setId(id);
+                c.setComment(str);
+                c.setDate(new Date());
+
+                getMember().getAccount().addComment(c);
+                _displayComment();
+              } else {
+                Dialog.information("Une erreur est survenue lors de la création du commentaire");
+              }
+            }
+          });
         }
       }
     });
 
-    btn_reservation.setOnAction(event -> tbl_reservation.setVisible(!tbl_reservation.isVisible()));
+    btnPay.setOnAction(event -> {
+      int amount = (int) getMember().getAccount().amountSold();
 
-    btn_aVendre.setOnAction(event -> tbl_aVendre.setVisible(!tbl_aVendre.isVisible()));
+      if(amount != 0) {
+        String message = "Veuillez remettre " + amount + "$ à " + getMember().getFirstName();
 
-    btn_vendu.setOnAction(event -> tbl_vendu.setVisible(!tbl_vendu.isVisible()));
+        if(Dialog.dialogueConfirmation(message)) {
+          int[] copyId = new int[getMember().getAccount().getSold().size()];
 
-    btn_argentRemis.setOnAction(event -> tbl_argentRemis.setVisible(!tbl_argentRemis.isVisible()));
+          for(int i = 0; i < getMember().getAccount().getSold().size(); i++) {
+            copyId[i] = getMember().getAccount().getSold().get(i).getId();
+          }
 
-    btn_suppMem.setOnAction(event -> {
-      if (Dialogue.dialogueConfirmation("Êtes-vous certain.e de vouloir supprimer ce member ?")) {
+          memberHandler.addTransaction(copyId, 4);
+
+          getMember().getAccount().addPayed((ArrayList<Copy>) getMember().getAccount().getSold().clone());
+          getMember().getAccount().getSold().clear();
+          _displayCopies();
+        }
+      } else {
+        String message = "Le solde de " + getMember().getFirstName() + " est à 0$";
+        Dialog.information(message);
+      }
+    });
+
+    btnRenew.setOnAction(event -> {
+      if(memberHandler.renewAccount(getMember().getNo())) {
+        Date date = new Date();
+        getMember().getAccount().setLastActivity(date);
+        _displayAccount();
+        Dialog.information("Le compte a été renouvelé");
+      } else {
+        Dialog.information("Une erreur empêche le compte d'être renouvelé");
+      }
+    });
+
+    btnAddComment.setOnAction(event -> {
+      String string = Dialog.input("Comment", "Saisissez votre commentaire :");
+
+      if(!string.isEmpty()) {
+        int id = memberHandler.addComment(string);
+
+        if (id != 0) {
+          Comment comment = new Comment();
+
+          comment.setComment(string);
+          comment.setDate(new Date());
+          comment.setId(id);
+
+          getMember().getAccount().addComment(comment);
+          _displayComment();
+        } else {
+          Dialog.information("Une erreur est survenue lors de la création du commentaire");
+        }
+      }
+    });
+
+    btnAddReservation.setOnAction(event -> tblReservation.setVisible(!tblReservation.isVisible()));
+
+    btnAvailable.setOnAction(event -> tblAvailable.setVisible(!tblAvailable.isVisible()));
+
+    btnSold.setOnAction(event -> tblSold.setVisible(!tblSold.isVisible()));
+
+    btnPaid.setOnAction(event -> tblPaid.setVisible(!tblPaid.isVisible()));
+
+    btnDelete.setOnAction(event -> {
+      if (Dialog.dialogueConfirmation("Êtes-vous certain.e de vouloir supprimer ce member ?")) {
         String message = "Erreur lors de la suppression";
 
         if (memberHandler.deleteMember()) {
           message = "Suppression réussie";
         }
 
-        Dialogue.dialogueInformation(message);
+        Dialog.information(message);
       }
     });
   }
 
-  private void dataBinding() {
-    col_commentaire.setCellValueFactory(new PropertyValueFactory<Commentaire, String>("comment"));
-    col_commentaire_date.setCellValueFactory(new PropertyValueFactory<Commentaire, String>("date"));
+  private void _dataBinding() {
+    colComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
+    colCommentDate.setCellValueFactory(new PropertyValueFactory<>("date"));
 
-    col_aVendre_titre.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("name"));
-    col_aVendre_edition.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("edition"));
-    col_aVendre_editeur.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("editor"));
-    col_aVendre_date.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateAdded"));
-    col_aVendre_prix.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("strPrix"));
+    colAvailableTitle.setCellValueFactory(new PropertyValueFactory<>("name"));
+    colAvailableEdition.setCellValueFactory(new PropertyValueFactory<>("edition"));
+    colAvailableEditor.setCellValueFactory(new PropertyValueFactory<>("editor"));
+    colAvailableDateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colAvailablePrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
 
-    col_vendu_titre.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("name"));
-    col_vendu_edition.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("edition"));
-    col_vendu_editeur.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("editor"));
-    col_vendu_dateAjout.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateAdded"));
-    col_vendu_dateVente.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateSold"));
-    col_vendu_prix.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("strPrix"));
+    colSoldTitle.setCellValueFactory(new PropertyValueFactory<>("name"));
+    colSoldEdition.setCellValueFactory(new PropertyValueFactory<>("edition"));
+    colSoldEditor.setCellValueFactory(new PropertyValueFactory<>("editor"));
+    colSoldDateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colSoldDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
+    colSoldPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
 
-    col_argentRemis_titre.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("name"));
-    col_argentRemis_editeur.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("editor"));
-    col_argentRemis_edition.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("edition"));
-    col_argentRemis_dateAjout.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateAdded"));
-    col_argentRemis_dateVente.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateSold"));
-    col_argentRemis_dateRemise.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("datePaid"));
-    col_argentRemis_prix.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("strPrix"));
+    colPaidTitle.setCellValueFactory(new PropertyValueFactory<>("name"));
+    colPaidEditor.setCellValueFactory(new PropertyValueFactory<>("editor"));
+    colPaidEdition.setCellValueFactory(new PropertyValueFactory<>("edition"));
+    colPaidDateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colPaidDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
+    colPaidDatePaid.setCellValueFactory(new PropertyValueFactory<>("datePaid"));
+    colPaidPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
   }
 
-  private void displayMember() {
-    if(getMember() instanceof ParentEtudiant) {
-
+  @SuppressWarnings("StatementWithEmptyBody")
+  private void _displayMember() {
+    if (getMember() instanceof StudentParent) {
+      // TODO: Handle StudentParent
     } else {
-      btn_reservation.setVisible(false);
-      tbl_reservation.setVisible(false);
+      btnAddReservation.setVisible(false);
+      tblReservation.setVisible(false);
     }
 
-    lbl_nom.setText(getMember().getFirstName() + " " + getMember().getLastName());
-    lbl_no.setText(Integer.toString(getMember().getNo()));
-    lbl_adresse.setText(getMember().getAddressStr());
-    lbl_courriel.setText(getMember().getEmail());
+    lblName.setText(getMember().getFirstName() + " " + getMember().getLastName());
+    lblNo.setText(Integer.toString(getMember().getNo()));
+    lblAddress.setText(getMember().getAddressString());
+    lblEmail.setText(getMember().getEmail());
 
-    if(getMember().getPhone(0) != null) {
-      lbl_telephone1.setText(getMember().getPhone(0).toString());
-    }
-    if(getMember().getPhone(1) != null) {
-      lbl_telephone2.setText(getMember().getPhone(1).toString());
+    if (getMember().getPhone(0) != null) {
+      lblPhone1.setText(getMember().getPhone(0).toString());
     }
 
-    displayAccount();
-    displayComment();
-    displayCopy();
+    if (getMember().getPhone(1) != null) {
+      lblPhone2.setText(getMember().getPhone(1).toString());
+    }
+
+    _displayAccount();
+    _displayComment();
+    _displayCopies();
   }
 
-  private void displayAccount() {
+  @SuppressWarnings("deprecation")
+  private void _displayAccount() {
     Date today = new Date();
-    Date desactivation = (Date) getMember().getAccount().getDateDerniereActivite().clone();
-    desactivation.setYear(desactivation.getYear() + 1);
-    String etat = "Compte actif";
+    Date deactivation = (Date) getMember().getAccount().getLastActivity().clone();
+    deactivation.setYear(deactivation.getYear() + 1);
+    String state = "Compte actif";
 
-    if(desactivation.before(today)) {
-      etat = "Compte désactivé";
+    if (deactivation.before(today)) {
+      state = "Compte désactivé";
     }
 
     // TODO: Inside account class
-    String inscription = getMember().getAccount().getDateCreation().getDate() + "/" + (getMember().getAccount().getDateCreation().getMonth() + 1) + "/" + (getMember().getAccount().getDateCreation().getYear() + 1900);
-    String derniereActivite = getMember().getAccount().getDateDerniereActivite().getDate() + "/" + (getMember().getAccount().getDateDerniereActivite().getMonth() + 1) + "/" + (getMember().getAccount().getDateDerniereActivite().getYear() + 1900);
-    String strDesactivation = desactivation.getDate() + "/" + (desactivation.getMonth() + 1) + "/" + (desactivation.getYear() + 1900);
+    String registration = getMember().getAccount().getRegistration().getDate() + "/" + (getMember().getAccount().getRegistration().getMonth() + 1) + "/" + (getMember().getAccount().getRegistration().getYear() + 1900);
+    String lastActivity = getMember().getAccount().getLastActivity().getDate() + "/" + (getMember().getAccount().getLastActivity().getMonth() + 1) + "/" + (getMember().getAccount().getLastActivity().getYear() + 1900);
+    String deactivationString = deactivation.getDate() + "/" + (deactivation.getMonth() + 1) + "/" + (deactivation.getYear() + 1900);
 
-    lbl_etat.setText(etat);
-    lbl_inscription.setText(inscription);
-    lbl_derniereActivite.setText(derniereActivite);
-    lbl_desactivation.setText(strDesactivation);
+    lblState.setText(state);
+    lblRegistration.setText(registration);
+    lblLastActivity.setText(lastActivity);
+    lblDeactivation.setText(deactivationString);
   }
 
-  private void displayCopy() {
-    ObservableList<Exemplaire> aVendre = FXCollections.observableArrayList(getMember().getAccount().getEnVente());
-    ObservableList<Exemplaire> vendu = FXCollections.observableArrayList(getMember().getAccount().getVendu());
-    ObservableList<Exemplaire> argentRemis = FXCollections.observableArrayList(getMember().getAccount().getArgentRemis());
+  private void _displayCopies() {
+    ObservableList<Copy> available = FXCollections.observableArrayList(getMember().getAccount().getAvailable());
+    ObservableList<Copy> sold = FXCollections.observableArrayList(getMember().getAccount().getSold());
+    ObservableList<Copy> paid = FXCollections.observableArrayList(getMember().getAccount().getPaid());
 
-    tbl_aVendre.setItems(aVendre);
-    tbl_vendu.setItems(vendu);
-    tbl_argentRemis.setItems(argentRemis);
+    tblAvailable.setItems(available);
+    tblSold.setItems(sold);
+    tblPaid.setItems(paid);
   }
 
-  private void displayComment() {
-    ObservableList<Commentaire> commentaire = FXCollections.observableArrayList(getMember().getAccount().getComments());
-    tbl_commentaire.setItems(commentaire);
+  private void _displayComment() {
+    ObservableList<Comment> comment = FXCollections.observableArrayList(getMember().getAccount().getComments());
+    tblComments.setItems(comment);
   }
 }

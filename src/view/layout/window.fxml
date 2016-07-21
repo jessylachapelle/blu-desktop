@@ -37,7 +37,7 @@
                   <Image url="@../../files/logo.png" />
                </image>
             </ImageView>
-            <Button id="btn_recherche" fx:id="btn_recherche" alignment="TOP_LEFT" layoutY="132.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" text="Recherche" textFill="WHITE" wrapText="true">
+            <Button id="btn_recherche" fx:id="btnSearch" alignment="TOP_LEFT" layoutY="132.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" text="Recherche" textFill="WHITE" wrapText="true">
                <font>
                   <Font size="24.0" />
                </font>
@@ -45,17 +45,17 @@
                   <Insets />
                </opaqueInsets>
             </Button>
-            <Button id="btn_articles" fx:id="btn_articles" alignment="TOP_LEFT" layoutY="182.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="200.0" text="Articles" textFill="WHITE" wrapText="true">
+            <Button id="btn_articles" fx:id="btnItemForm" alignment="TOP_LEFT" layoutY="182.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="200.0" text="Articles" textFill="WHITE" wrapText="true">
                <font>
                   <Font size="24.0" />
                </font>
             </Button>
-            <Button id="btn_membres" fx:id="btn_membres" alignment="TOP_LEFT" layoutY="232.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="200.0" text="Membres" textFill="WHITE">
+            <Button id="btn_membres" fx:id="btnMemberForm" alignment="TOP_LEFT" layoutY="232.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="200.0" text="Membres" textFill="WHITE">
                <font>
                   <Font size="24.0" />
                </font>
             </Button>
-            <Button id="btn_admin" fx:id="btn_admin" alignment="TOP_LEFT" layoutY="282.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="200.0" text="Administration" textFill="WHITE">
+            <Button id="btn_admin" fx:id="btnAdmin" alignment="TOP_LEFT" layoutY="282.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="200.0" text="Administration" textFill="WHITE">
                <font>
                   <Font size="24.0" />
                </font>
@@ -64,7 +64,7 @@
       </Pane>
    </left>
    <center>
-      <AnchorPane fx:id="centreDroit" prefHeight="923.0" prefWidth="1344.0" BorderPane.alignment="TOP_LEFT">
+      <AnchorPane fx:id="mainPanel" prefHeight="923.0" prefWidth="1344.0" BorderPane.alignment="TOP_LEFT">
          <fx:include source="search.fxml"/>
       </AnchorPane>
    </center>

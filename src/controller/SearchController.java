@@ -1,14 +1,10 @@
 package controller;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -17,13 +13,12 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
-import model.article.Article;
-import model.article.Ouvrage;
+import model.item.Item;
+import model.item.Book;
 import handler.SearchHandler;
-import model.membre.Membre;
+import model.member.Member;
 
 /**
  *
@@ -31,48 +26,32 @@ import model.membre.Membre;
  * @since 19/11/2015
  * @version 0.1
  */
+@SuppressWarnings("unused")
 public class SearchController extends Controller {
 
   private SearchHandler searchHandler;
 
-  @FXML
-  private Label titre_recherche;
-  @FXML
-  private ToggleGroup type_recherche;
-  @FXML
-  private TextField txtf_recherche;
-  @FXML
-  private Button btn_recherche;
-  @FXML
-  private RadioButton rb_membre;
-  @FXML
-  private RadioButton rb_article;
-  @FXML
-  private CheckBox cb_desactive;
-  @FXML
-  private Button btn_add;
-  @FXML
-  private Label lb_message;
-  @FXML
-  private TableView resultat_membre;
-  @FXML
-  private TableColumn<Membre, Integer> col_no;
-  @FXML
-  private TableColumn<Membre, String> col_prenom;
-  @FXML
-  private TableColumn<Membre, String> col_nom;
-  @FXML
-  private TableView resultat_article;
-  @FXML
-  private TableColumn<Article, String> col_titre;
-  @FXML
-  private TableColumn<Ouvrage, Integer> col_edition;
-  @FXML
-  private TableColumn<Ouvrage, String> col_editeur;
-  @FXML
-  private TableColumn<Ouvrage, Integer> col_annee;
-  @FXML
-  private TableColumn<Ouvrage, String> col_auteur;
+  @FXML private Label lblTitle;
+  @FXML private ToggleGroup type;
+  @FXML private TextField txtSearch;
+  @FXML private Button btnSearch;
+  @FXML private RadioButton rbMembers;
+  @FXML private RadioButton rbItems;
+  @FXML private CheckBox cbDeactivated;
+  @FXML private Button btnAdd;
+  @FXML private Label lblMessage;
+
+  @FXML private TableView<Member> tblMemberResults;
+  @FXML private TableColumn<Member, Integer> colNo;
+  @FXML private TableColumn<Member, String> colFirstName;
+  @FXML private TableColumn<Member, String> colLastName;
+
+  @FXML private TableView<Item> tblItemResults;
+  @FXML private TableColumn<Item, String> colTitle;
+  @FXML private TableColumn<Book, Integer> colEdition;
+  @FXML private TableColumn<Book, String> colEditor;
+  @FXML private TableColumn<Book, String> colPublication;
+  @FXML private TableColumn<Book, String> colAuthors;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -80,156 +59,134 @@ public class SearchController extends Controller {
     dataBinding();
     eventHandlers();
 
-    rb_membre.setSelected(true);
+    rbMembers.setSelected(true);
     resetSearch(false);
   }
 
   private void dataBinding() {
-    col_no.setCellValueFactory(new PropertyValueFactory<Membre, Integer>("no"));
-    col_prenom.setCellValueFactory(new PropertyValueFactory<Membre, String>("firstName"));
-    col_nom.setCellValueFactory(new PropertyValueFactory<Membre, String>("lastName"));
+    // Member results
+    colNo.setCellValueFactory(new PropertyValueFactory<>("no"));
+    colFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+    colLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
 
-    col_titre.setCellValueFactory(new PropertyValueFactory<Article, String>("name"));
-    col_edition.setCellValueFactory(new PropertyValueFactory<Ouvrage, Integer>("edition"));
-    col_editeur.setCellValueFactory(new PropertyValueFactory<Ouvrage, String>("editor"));
-    col_annee.setCellValueFactory(new PropertyValueFactory<Ouvrage, Integer>("publication"));
-    col_auteur.setCellValueFactory(new PropertyValueFactory<Ouvrage, String>("authorString"));
+    // Item results
+    colTitle.setCellValueFactory(new PropertyValueFactory<>("name"));
+    colEdition.setCellValueFactory(new PropertyValueFactory<>("edition"));
+    colEditor.setCellValueFactory(new PropertyValueFactory<>("editor"));
+    colPublication.setCellValueFactory(new PropertyValueFactory<>("publication"));
+    colAuthors.setCellValueFactory(new PropertyValueFactory<>("authorString"));
   }
 
   private void eventHandlers() {
-    txtf_recherche.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        recherche();
-      }
-    });
+    txtSearch.setOnAction(event -> _search());
 
-    btn_recherche.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        recherche();
-      }
-    });
+    btnSearch.setOnAction(event -> _search());
 
-    type_recherche.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-      @Override
-      public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
-        if (type_recherche.getSelectedToggle() != null) {
-          String data = type_recherche.getSelectedToggle().getUserData().toString();
+    type.selectedToggleProperty().addListener((ov, old_toggle, new_toggle) -> {
+      if (type.getSelectedToggle() != null) {
+        String data = type.getSelectedToggle().getUserData().toString();
 
-          if (data.matches("membre")) {
-            searchHandler.setMemberSearch();
-            cb_desactive.setDisable(false);
-            resetSearch(true);
-          } else {
-            searchHandler.setItemSearch();
-            cb_desactive.setSelected(false);
-            cb_desactive.setDisable(true);
-            resetSearch(true);
-          }
-        }
-      }
-    });
-
-    cb_desactive.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        if (cb_desactive.isSelected()) {
-          searchHandler.setSearchArchives();
+        if (data.matches("member")) {
+          searchHandler.setMemberSearch();
+          cbDeactivated.setDisable(false);
+          resetSearch(true);
         } else {
-          searchHandler.setSearchActive();
+          searchHandler.setItemSearch();
+          cbDeactivated.setSelected(false);
+          cbDeactivated.setDisable(true);
+          resetSearch(true);
         }
-        recherche();
+      }
+    });
+
+    cbDeactivated.setOnAction(event -> {
+      searchHandler.setSearchArchives(cbDeactivated.isSelected());
+
+      if (!txtSearch.getText().isEmpty()) {
+        _search();
       }
     });
   }
 
-  private void recherche() {
-    searchHandler.setSearchQuery(txtf_recherche.getText());
+  private void _search() {
+    searchHandler.setSearchQuery(txtSearch.getText());
 
-    if (type_recherche.getSelectedToggle().getUserData().toString().matches("membre"))
-      rechercheMembre();
-    else
-      rechercheArticle();
-  }
-
-  private void rechercheMembre() {
-    ObservableList<Membre> membres = FXCollections.observableArrayList(searchHandler.searchMembers());
-
-    if (!membres.isEmpty()) {
-      resultat_membre.setItems(membres);
-      lb_message.setVisible(false);
-      resultat_membre.setVisible(true);
+    if (searchHandler.isItemSearch()) {
+      _searchItems();
     } else {
-      lb_message.setVisible(true);
-      resultat_membre.setVisible(false);
+      _searchMembers();
     }
   }
 
-  private void rechercheArticle() {
-    ObservableList<Article> articles = FXCollections.observableArrayList(searchHandler.searchItems());
+  private void _searchMembers() {
+    ObservableList<Member> members = FXCollections.observableArrayList(searchHandler.searchMembers());
 
-    if (!articles.isEmpty()) {
-      resultat_article.setItems(articles);
-      lb_message.setVisible(false);
-      resultat_article.setVisible(true);
+    if (members.isEmpty()) {
+      lblMessage.setVisible(true);
+      tblMemberResults.setVisible(false);
     } else {
-      lb_message.setVisible(true);
-      resultat_article.setVisible(false);
+      tblMemberResults.setItems(members);
+      lblMessage.setVisible(false);
+      tblMemberResults.setVisible(true);
     }
   }
 
-  public TableView getMemberResults() {
-    return resultat_membre;
-  }
+  private void _searchItems() {
+    ObservableList<Item> items = FXCollections.observableArrayList(searchHandler.searchItems());
 
-  public TableView getItemResults() {
-    return resultat_article;
-  }
-
-  public void resetSearch(boolean effaceRecherche) {
-    lb_message.setVisible(true);
-    resultat_membre.setVisible(false);
-    resultat_article.setVisible(false);
-
-    if (effaceRecherche) {
-      txtf_recherche.setText("");
+    if (items.isEmpty()) {
+      lblMessage.setVisible(true);
+      tblItemResults.setVisible(false);
+    } else {
+      tblItemResults.setItems(items);
+      lblMessage.setVisible(false);
+      tblItemResults.setVisible(true);
     }
   }
 
-  public void setSearchBoth() {
-    rb_membre.setSelected(true);
-    titre_recherche.setText("Recherche dans le système");
+  public TableView<Member> getTblMemberResults() {
+    return tblMemberResults;
+  }
+
+  public TableView<Item> getTblItemResults() {
+    return tblItemResults;
+  }
+
+  public void resetSearch(boolean eraseTxtSearch) {
+    lblMessage.setVisible(true);
+    tblMemberResults.setVisible(false);
+    tblItemResults.setVisible(false);
+
+    if (eraseTxtSearch) {
+      txtSearch.setText("");
+    }
+  }
+
+  public void setSearchAll() {
+    rbMembers.setSelected(true);
+    lblTitle.setText("Recherche dans le système");
     toggleFilters(true);
   }
 
-  public void setSearchItemOnly() {
-    rb_article.setSelected(true);
-    titre_recherche.setText("Recherche d'articles");
+  public void setSearchItems() {
+    rbItems.setSelected(true);
+    lblTitle.setText("Recherche d'articles");
     toggleFilters(false);
   }
 
-  public void setSearchMemberOnly() {
-    rb_membre.setSelected(true);
-    titre_recherche.setText("Recherche de membres");
+  public void setSearchMembers() {
+    rbMembers.setSelected(true);
+    lblTitle.setText("Recherche de membres");
     toggleFilters(false);
   }
 
   public Button getBtnAdd() {
-    return btn_add;
-  }
-
-  public boolean isMemberSearch() {
-    return rb_membre.isSelected();
-  }
-
-  public boolean isItemSearch() {
-    return rb_article.isSelected();
+    return btnAdd;
   }
 
   private void toggleFilters(boolean visible) {
-    rb_article.setVisible(visible);
-    rb_membre.setVisible(visible);
-    cb_desactive.setVisible(visible);
+    rbItems.setVisible(visible);
+    rbMembers.setVisible(visible);
+    cbDeactivated.setVisible(visible);
   }
 }

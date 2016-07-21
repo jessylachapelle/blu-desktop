@@ -15,6 +15,7 @@ import java.util.ArrayList;
  * @since 12/11/2015
  * @version 0.2
  */
+@SuppressWarnings("unused")
 public class TransactionHandler {
   // private Transaction transaction;
   private ArrayList<Transaction> transactions;

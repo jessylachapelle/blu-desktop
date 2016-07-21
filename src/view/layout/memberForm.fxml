@@ -8,56 +8,56 @@
     <children>
         <Pane id="main_pane_ajout_membre" prefHeight="580.0" prefWidth="615.0">
             <children>
-                <Label id="lbl_ajout" fx:id="lbl_ajout" text="Ajouter un membre"/>
+                <Label id="lbl_ajout" fx:id="lblAdd" text="Ajouter un member"/>
 
                 <Label id="lbl_prenom" text="Prénom* :" />
-                <TextField id="prenom" fx:id="prenom"/>
+                <TextField id="prenom" fx:id="txtFirstName"/>
 
                 <Label id="lbl_nom" text="Nom* :" />
                 <TextField id="name" fx:id="name"/>
 
                 <Label id="lbl_noEtudiant" text="Numéro Étudiant* :" />
-                <TextField id="no" fx:id="no"/>
+                <TextField id="no" fx:id="txtNo"/>
 
-                <CheckBox id="cb_numDA" fx:id="cb_numDA" mnemonicParsing="false" text="Générer un numéro étudiant" />
+                <CheckBox id="cb_numDA" fx:id="cbGenerateMemberNo" mnemonicParsing="false" text="Générer un numéro étudiant" />
 
                 <Label id="lbl_addr_postal" text="Adresse postale" />
 
                 <Label id="lbl_address" text="Adresse :" />
-                <TextField id="address" fx:id="address"/>
+                <TextField id="address" fx:id="txtAddress"/>
 
                 <Label id="lbl_codePostal" text="Code Postal :" />
-                <TextField id="code_postal" fx:id="code_postal"/>
+                <TextField id="code_postal" fx:id="txtZip"/>
 
                 <Label id="lbl_ville" text="Ville :" />
-                <TextField id="ville" fx:id="ville"/>
+                <TextField id="ville" fx:id="txtCity"/>
 
                 <Label id="lbl_province" text="Province :" />
-                <ComboBox id="province" fx:id="province">
+                <ComboBox id="province" fx:id="cbState">
                     <value>
                         <String fx:value="QC" />
                     </value>
                 </ComboBox>
 
                 <Label id="lbl_email" text="Adresse email* :" />
-                <TextField id="courriel" fx:id="courriel"/>
+                <TextField id="courriel" fx:id="txtEmail"/>
 
                 <Label id="lbl_tel1" text="Téléphone 1 :" />
-                <TextField id="numero1" fx:id="numero1"/>
+                <TextField id="numero1" fx:id="txtPhoneNumber1"/>
 
                 <Label id="lbl_tel2" text="Telephone 2 :" />
-                <TextField id="numero2" fx:id="numero2"/>
+                <TextField id="numero2" fx:id="txtPhoneNumber2"/>
 
                 <Label id="lbl_note1" text="Note :" />
-                <TextField id="note1" fx:id="note1" />
+                <TextField id="note1" fx:id="txtPhoneNote1" />
                 <Label id="lbl_note2" text="Note :" />
-                <TextField id="note2" fx:id="note2" />
+                <TextField id="note2" fx:id="txtPhoneNote2" />
 
-                <Label id="lbl_commentaire" fx:id="lbl_commentaire" text="Commentaires :" />
-                <TextArea id="commentaire" fx:id="commentaire"/>
+                <Label id="lbl_commentaire" fx:id="lblComment" text="Commentaires :" />
+                <TextArea id="comment" fx:id="txtComment"/>
 
-                <Button id="btn_annuler" fx:id="btn_annuler" mnemonicParsing="false"  text="Annuler"/>
-                <Button id="btn_ajout" fx:id="btn_ajout" mnemonicParsing="false" text="Ajouter"/>
+                <Button id="btn_annuler" fx:id="btnCancel" mnemonicParsing="false" text="Annuler"/>
+                <Button id="btn_ajout" fx:id="btnAdd" mnemonicParsing="false" text="Ajouter"/>
             </children>
         </Pane>
     </children>

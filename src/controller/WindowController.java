@@ -8,28 +8,24 @@ package controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableRow;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import model.article.Article;
-import model.article.Exemplaire;
+import model.item.Copy;
+import model.item.Item;
 import handler.ItemHandler;
 import handler.MemberHandler;
-import model.membre.Membre;
-import ressources.Dialogue;
+import model.member.Member;
+import ressources.Dialog;
 
 /**
  * Cette classe controller prend en charge le panneau de gauche.
@@ -37,72 +33,62 @@ import ressources.Dialogue;
  *
  * @author Marc
  */
+@SuppressWarnings({"ConstantConditions", "unused"})
 public class WindowController extends Controller {
-
-  @FXML
-  private AnchorPane centreDroit;
-  @FXML
-  private Button btn_recherche;
-  @FXML
-  private Button btn_articles;
-  @FXML
-  private Button btn_membres;
-  @FXML
-  private Button btn_admin;
-  @FXML
-  private BorderPane rootLayout;
-
   private Pane panel;
   private Controller controller;
 
+  @FXML private BorderPane rootLayout;
+  @FXML private AnchorPane mainPanel;
+
+  @FXML private Button btnSearch;
+  @FXML private Button btnItemForm;
+  @FXML private Button btnMemberForm;
+  @FXML private Button btnAdmin;
+
+
   @Override
   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-    assertInjection();
-    eventHandlers();
-    affichePanelRecherche();
+    _setText();
+    _eventHandlers();
+    _displaySearchPanel();
   }
 
   /**
    * Affiche le panel dans la fenetre de droite
    */
-  private SearchController affichePanelRecherche() {
+  private SearchController _displaySearchPanel() {
     try {
       FXMLLoader loader = new FXMLLoader();
       loader.setLocation(WindowController.class.getClassLoader().getResource("view/layout/search.fxml"));
-      panel = (Pane) loader.load();
+      panel = loader.load();
       controller = (SearchController) loader.getController();
-      centreDroit.getChildren().clear();
-      centreDroit.getChildren().add(panel);
-      setEventHandlersRecherche();
+      mainPanel.getChildren().clear();
+      mainPanel.getChildren().add(panel);
+      _setSearchEventHandlers();
 
       return (SearchController) controller;
     } catch (IOException e) {
-      System.out.println(e);
+      e.printStackTrace();
       return null;
     }
   }
 
-  private CopyFormController affichePanelAjoutExemplaire() {
+  private CopyFormController displayCopyFormPanel() {
     try {
       FXMLLoader loader = new FXMLLoader();
       loader.setLocation(WindowController.class.getClassLoader().getResource("view/layout/copyForm.fxml"));
-      panel = (Pane) loader.load();
+      panel = loader.load();
       controller = (CopyFormController) loader.getController();
-      centreDroit.getChildren().clear();
-      centreDroit.getChildren().add(panel);
+      mainPanel.getChildren().clear();
+      mainPanel.getChildren().add(panel);
 
-      ((CopyFormController) controller).getNomMembre().setOnMouseClicked(new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(MouseEvent event) {
-          Membre m = ((CopyFormController) controller).getMembre();
-          affichePanelFicheMembre().loadMember(m);
-        }
-      });
+      ((CopyFormController) controller).getMemberName().setOnMouseClicked(event -> displayMemberViewPanel().loadMember(((CopyFormController) controller).getMember()));
 
 
       return (CopyFormController) controller;
     } catch (IOException e) {
-      System.out.println(e);
+      e.printStackTrace();
       return null;
     }
   }
@@ -110,55 +96,40 @@ public class WindowController extends Controller {
   /**
    * Affiche le panel dans la fenetre de droite
    */
-  private MemberViewController affichePanelFicheMembre() {
+  private MemberViewController displayMemberViewPanel() {
     try {
       FXMLLoader loader = new FXMLLoader();
       loader.setLocation(WindowController.class.getClassLoader().getResource("view/layout/memberView.fxml"));
-      panel = (Pane) loader.load();
+      panel = loader.load();
       controller = (MemberViewController) loader.getController();
-      centreDroit.getChildren().clear();
-      centreDroit.getChildren().add(panel);
+      mainPanel.getChildren().clear();
+      mainPanel.getChildren().add(panel);
 
-      ((MemberViewController) controller).getEditButton().setOnAction(new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent event) {
-          Membre m = ((MemberViewController) controller).getMember();
-          displayMemberView().loadMember(m);
-        }
-      });
+      ((MemberViewController) controller).getEditButton().setOnAction(event -> displayMemberFormPanel().loadMember(((MemberViewController) controller).getMember()));
 
-      ((MemberViewController) controller).getAddCopyButton().setOnAction(new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent event) {
-          Membre m = ((MemberViewController) controller).getMember();
-          affichePanelAjoutExemplaire().loadMembre(m);
-        }
-      });
+      ((MemberViewController) controller).getAddCopyButton().setOnAction(event -> displayCopyFormPanel().loadMembre(((MemberViewController) controller).getMember()));
 
       for (int noTbl = 0; noTbl < ((MemberViewController) controller).getCopyTables().length; noTbl++) {
-        ((MemberViewController) controller).getCopyTables()[noTbl].setOnMousePressed(new EventHandler<MouseEvent>() {
-          @Override
-          public void handle(MouseEvent event) {
-            if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
-              Node node = ((Node) event.getTarget()).getParent();
-              TableRow row;
+        ((MemberViewController) controller).getCopyTables()[noTbl].setOnMousePressed(event -> {
+          if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+            Node node = ((Node) event.getTarget()).getParent();
+            TableRow row;
 
-              if (node instanceof TableRow) {
-                row = (TableRow) node;
-              } else {
-                row = (TableRow) node.getParent();
-              }
-
-              Exemplaire e = (Exemplaire) row.getItem();
-              affichePanelFicheArticle().loadArticle(e.getArticle().getId());
+            if (node instanceof TableRow) {
+              row = (TableRow) node;
+            } else {
+              row = (TableRow) node.getParent();
             }
+
+            Copy c = (Copy) row.getItem();
+            displayItemViewPanel().loadItem(c.getItem().getId());
           }
         });
       }
 
       return ((MemberViewController) controller);
     } catch (IOException e) {
-      System.out.println(e);
+      e.printStackTrace();
       return null;
     }
   }
@@ -166,256 +137,172 @@ public class WindowController extends Controller {
   /**
    * Affiche le panel dans la fenetre de droite selon un numMembre
    *
-   * @param noMembre le numéro du membre a afficher;
+   * @param memberNo le numéro du member a afficher;
    */
-  private void affichePanelFicheMembre(int noMembre) {
-    affichePanelFicheMembre().loadMember(noMembre);
+  private void displayMemberViewPanel(int memberNo) {
+    displayMemberViewPanel().loadMember(memberNo);
   }
 
-  private MemberFormController displayMemberView() {
+  private MemberFormController displayMemberFormPanel() {
     try {
       FXMLLoader loader = new FXMLLoader();
       loader.setLocation(WindowController.class.getClassLoader().getResource("view/layout/memberForm.fxml"));
-      panel = (Pane) loader.load();
+      panel = loader.load();
       controller = (MemberFormController) loader.getController();
-      centreDroit.getChildren().clear();
-      centreDroit.getChildren().add(panel);
-      setEventHandlersAjoutMembre();
+      mainPanel.getChildren().clear();
+      mainPanel.getChildren().add(panel);
+      setEventHandlersMemberForm();
 
       return (MemberFormController) controller;
     } catch (IOException e) {
-      System.out.println(e);
+      e.printStackTrace();
       return null;
     }
   }
 
-  private ItemFormController affichePanelAjoutArticle() {
+  private ItemFormController displayItemFormPanel() {
     try {
       FXMLLoader loader = new FXMLLoader();
       loader.setLocation(WindowController.class.getClassLoader().getResource("view/layout/itemForm.fxml"));
-      panel = (Pane) loader.load();
+      panel = loader.load();
       controller = (ItemFormController) loader.getController();
-      centreDroit.getChildren().clear();
-      centreDroit.getChildren().add(panel);
-      setEventHandlersAjoutArticle();
+      mainPanel.getChildren().clear();
+      mainPanel.getChildren().add(panel);
+      setEventHandlersItemForm();
 
       return (ItemFormController) controller;
     } catch (IOException e) {
-      System.out.println(e);
+      e.printStackTrace();
       return null;
     }
   }
 
-  private ItemViewController affichePanelFicheArticle() {
+  private ItemViewController displayItemViewPanel() {
     try {
       FXMLLoader loader = new FXMLLoader();
       loader.setLocation(WindowController.class.getClassLoader().getResource("view/layout/itemView.fxml"));
-      panel = (Pane) loader.load();
+      panel = loader.load();
       controller = (ItemViewController)loader.getController();
-      centreDroit.getChildren().clear();
-      centreDroit.getChildren().add(panel);
+      mainPanel.getChildren().clear();
+      mainPanel.getChildren().add(panel);
 
-      ((ItemViewController) controller).getButtonModifier().setOnAction(new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent event) {
-          Article a = ((ItemViewController) controller).getArticle();
-          affichePanelAjoutArticle().loadArticle(a);
-        }
-      });
+      ((ItemViewController) controller).getBtnUpdate().setOnAction(event -> displayItemFormPanel().loadItem(((ItemViewController) controller).getItem()));
 
-      for(int noTbl = 0; noTbl < ((ItemViewController) controller).getTableauxExemplaires().length; noTbl++) {
-        ((ItemViewController) controller).getTableauxExemplaires()[noTbl].setOnMousePressed(new EventHandler<MouseEvent>() {
-          @Override
-          public void handle(MouseEvent event) {
-            if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
-              Node node = ((Node) event.getTarget()).getParent();
-              TableRow row;
+      for (int noTbl = 0; noTbl < ((ItemViewController) controller).getCopyTables().length; noTbl++) {
+        ((ItemViewController) controller).getCopyTables()[noTbl].setOnMousePressed(event -> {
+          if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+            Node node = ((Node) event.getTarget()).getParent();
+            TableRow row;
 
-              if (node instanceof TableRow)
-                row = (TableRow) node;
-              else
-                row = (TableRow) node.getParent();
+            if (node instanceof TableRow)
+              row = (TableRow) node;
+            else
+              row = (TableRow) node.getParent();
 
-              Exemplaire e = (Exemplaire) row.getItem();
-              affichePanelFicheMembre().loadMember(e.getMembre().getNo());
-            }
+            Copy c = (Copy) row.getItem();
+            displayMemberViewPanel().loadMember(c.getMember().getNo());
           }
         });
       }
 
       return (ItemViewController) controller;
     } catch (IOException e) {
-      System.out.println(e);
+      e.printStackTrace();
       return null;
     }
   }
 
-  private AdminController affichePanelAdmin() {
+  private AdminController displayAdminPanel() {
     try {
       FXMLLoader loader = new FXMLLoader();
       loader.setLocation(WindowController.class.getClassLoader().getResource("view/layout/admin.fxml"));
-      panel = (Pane) loader.load();
+      panel = loader.load();
       controller = (AdminController) loader.getController();
-      centreDroit.getChildren().clear();
-      centreDroit.getChildren().add(panel);
+      mainPanel.getChildren().clear();
+      mainPanel.getChildren().add(panel);
 
       return (AdminController) controller;
     } catch (IOException e) {
-      System.out.println(e);
+      e.printStackTrace();
       return null;
     }
   }
 
-  /**
-   * Affiche le panel dans la fenetre de droite
-   *
-   * @param panelPath Le chemin de la vue
-   */
-  private void affichePanel(String panelPath) {
-    try {
-      FXMLLoader loader = new FXMLLoader();
-      loader.setLocation(WindowController.class.getClassLoader().getResource(panelPath));
-      panel = (Pane) loader.load();
-      centreDroit.getChildren().clear();
-      centreDroit.getChildren().add(panel);
-    } catch (IOException e) {
-      System.out.println(e);
-    }
-  }
+  private void _setSearchEventHandlers() {
+    ((SearchController) controller).getTblMemberResults().setOnMousePressed(event -> {
+      if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+        Node node = ((Node) event.getTarget()).getParent();
+        TableRow row;
 
-  /**
-   * S'assure que tout nos élément utilisé dans le codes ont été injecté
-   */
-  private void assertInjection() {
-    assert centreDroit != null : "fx:id=\"centreDroit\" was not injected: check your FXML file 'simple.fxml'.";
-    assert btn_recherche != null : "fx:id=\"btn_articles\" was not injected: check your FXML file 'simple.fxml'.";
-    assert btn_articles != null : "fx:id=\"btn_articles\" was not injected: check your FXML file 'simple.fxml'.";
-    assert btn_membres != null : "fx:id=\"btn_membres\" was not injected: check your FXML file 'simple.fxml'.";
-    assert btn_admin != null : "fx:id=\"btn_admin\" was not injected: check your FXML file 'simple.fxml'.";
-  }
-
-  private void setEventHandlersRecherche() {
-    ((SearchController) controller).getMemberResults().setOnMousePressed(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent event) {
-        if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
-          Node node = ((Node) event.getTarget()).getParent();
-          TableRow row;
-
-          if (node instanceof TableRow)
-            row = (TableRow) node;
-          else
-            row = (TableRow) node.getParent();
-
-          Membre m = (Membre) row.getItem();
-          affichePanelFicheMembre().loadMember(m.getNo());
+        if (node instanceof TableRow) {
+          row = (TableRow) node;
+        } else {
+          row = (TableRow) node.getParent();
         }
+
+        Member m = (Member) row.getItem();
+        displayMemberViewPanel().loadMember(m.getNo());
       }
     });
 
-    ((SearchController) controller).getItemResults().setOnMousePressed(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent event) {
-        if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
-          Node node = ((Node) event.getTarget()).getParent();
-          TableRow row;
+    ((SearchController) controller).getTblItemResults().setOnMousePressed(event -> {
+      if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+        Node node = ((Node) event.getTarget()).getParent();
+        TableRow row;
 
-          if (node instanceof TableRow) {
-            row = (TableRow) node;
-          } else {
-            row = (TableRow) node.getParent();
-          }
-
-          Article a = (Article) row.getItem();
-          affichePanelFicheArticle().loadArticle(a.getId());
+        if (node instanceof TableRow) {
+          row = (TableRow) node;
+        } else {
+          row = (TableRow) node.getParent();
         }
+
+        Item i = (Item) row.getItem();
+        displayItemViewPanel().loadItem(i.getId());
       }
     });
   }
 
   /**
-   * Appelle la fenêtre fiche membre seulement si MemberFormController a
+   * Appelle la fenêtre fiche member seulement si MemberFormController a
    * finit ses tâches
    */
-  private void setEventHandlersAjoutMembre() {
-    ((MemberFormController) controller).getSuccess().addListener(new ChangeListener<Boolean>() {
-
-      @Override
-      public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-        if (newValue == true) {
-          int m = ((MemberFormController) controller).getNoValue();
-          affichePanelFicheMembre().loadMember(m);
-        }
+  private void setEventHandlersMemberForm() {
+    ((MemberFormController) controller).getSuccess().addListener((observable, oldValue, newValue) -> {
+      if (newValue) {
+        displayMemberViewPanel().loadMember(((MemberFormController) controller).getNo());
       }
     });
 
-    ((MemberFormController) controller).getCancelButton().setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        Membre m = ((MemberFormController) controller).getMember();
-        affichePanelFicheMembre().loadMember(m);
-      }
+    ((MemberFormController) controller).getCancelButton().setOnAction(event -> displayMemberViewPanel().loadMember(((MemberFormController) controller).getMember()));
 
-    });
-
-    ((MemberFormController) controller).getAddButton().setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        Membre membre = ((MemberFormController) controller).saveMember();
-        affichePanelFicheMembre().loadMember(membre);
-      }
-    });
+    ((MemberFormController) controller).getAddButton().setOnAction(event -> displayMemberViewPanel().loadMember(((MemberFormController) controller).saveMember()));
 
   }
 
-  private void setEventHandlersAjoutArticle(){
-     ((ItemFormController) controller).getSuccess().addListener(new ChangeListener<Boolean>() {
-
-       @Override
-       public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-         Article a = ((ItemFormController) controller).getArticle();
-         affichePanelFicheArticle().loadArticle(a);
-       }
-      });
+  private void setEventHandlersItemForm(){
+     ((ItemFormController) controller).getSuccess().addListener((observable, oldValue, newValue) -> {
+       displayItemViewPanel().loadItem(((ItemFormController) controller).getArticle());
+     });
   }
 
-  private void eventHandlers() {
+  private void _eventHandlers() {
     setScanner();
 
-    btn_recherche.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        affichePanelRecherche();
-      }
-    });
+    btnSearch.setOnAction(event -> _displaySearchPanel());
 
-    btn_articles.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        affichePanelAjoutArticle();
-      }
-    });
+    btnItemForm.setOnAction(event -> displayItemFormPanel());
 
-    btn_membres.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        displayMemberView();
-      }
-    });
+    btnMemberForm.setOnAction(event -> displayMemberFormPanel());
 
-    btn_admin.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        affichePanelAdmin();
-      }
-    });
+    btnAdmin.setOnAction(event -> displayAdminPanel());
   }
 
   /**
    * Rajoute le listener global pour le scanner
    */
+  @SuppressWarnings({"ConstantIfStatement", "StatementWithEmptyBody", "unused"})
   private void setScanner() {
-    ListView<String> console = new ListView<String>(FXCollections.<String>observableArrayList());
+    ListView<String> console = new ListView<>(FXCollections.<String>observableArrayList());
     // on s'assure ici de clearer le buffer dans le cas de trop de changement
     console.getItems().addListener((ListChangeListener.Change<? extends String> change) -> {
       while (change.next()) {
@@ -425,76 +312,82 @@ public class WindowController extends Controller {
       }
     });
 
-    rootLayout.setOnKeyPressed(new EventHandler<javafx.scene.input.KeyEvent>() {
-      @Override
-      public void handle(javafx.scene.input.KeyEvent ke) {
-        boolean article = true;
-        String code = "";
-        console.getItems().add(ke.getText());
+    rootLayout.setOnKeyPressed(ke -> {
+      boolean isItem = true;
+      String code = "";
+      console.getItems().add(ke.getText());
 
-        // Si le premier caractère n'est pas < ce n'est pas une saisie de code barre
-        if (!console.getItems().get(0).equals("à")) {
-          console.getItems().clear();
-          return;
-        } else if (ke.getText().equals("À") && console.getItems().size() == 13) {   // Numéro étudiant
-          article = false;
-          code = console.getItems().toString().replaceAll("[\\D]", "");
-          code = "2" + code.substring(1, 9);
-          console.getItems().clear();
+      // Si le premier caractère n'est pas < ce n'est pas une saisie de code barre
+      if (!console.getItems().get(0).equals("à")) {
+        console.getItems().clear();
+        return;
+      } else if (ke.getText().equals("À") && console.getItems().size() == 13) {   // Numéro étudiant
+        isItem = false;
+        code = console.getItems().toString().replaceAll("[\\D]", "");
+        code = "2" + code.substring(1, 9);
+        console.getItems().clear();
 
+        MemberHandler gm = new MemberHandler();
+        int noMembre = Integer.parseInt(code);
+
+        if(gm.exist(noMembre)) {         // Member existe
+          displayMemberViewPanel().loadMember(noMembre);
+        } else {                                // Nouveau member
+          displayMemberFormPanel().loadMember(noMembre);
+        }
+
+        return;
+      } else if (ke.getText().equals("À") && console.getItems().size() == 16) {   // Code EAN13
+        code = console.getItems().toString().replaceAll("[\\D]", "");
+        console.getItems().clear();
+      } else if(ke.getText().equals("À")) {                                       // Code non supporté
+        console.getItems().clear();
+        Dialog.information("Erreur de code", "Le code saisie n'est pas pris en charge");
+        return;
+      }
+
+      // TODO complété puis décommenter les fonctions en commentaire
+      if (controller instanceof MemberFormController || controller instanceof ItemFormController) {
+
+      } else if(controller instanceof CopyFormController) {     // Si le panel d'ajout d'exemplaire est ouvert
+        ItemHandler ga = new ItemHandler();
+
+        if (isItem) {   // ga.itemExists(code) C'est un item existant
+          // TODO Créer un exemplaire de l'item et permettre la saisie du prix
+        } else if (isItem) {                      // C'est un nouvel item
+          // TODO ouvrir un formulaire d'ajout d'item puis retour à l'ajout d'exemplaire
+        } else {                                  // Ce n'est pas un item
+          Dialog.information("Erreur de code", "Le code saisie n'est pas pris en charge");
+        }
+      } else {
+        if(isItem) {                             // C'est un item
+          ItemHandler ga = new ItemHandler();
+
+          if (true) { //ga.itemExists(code)            // L'item existe
+            displayItemViewPanel().loadItem(code);
+          } else {                                // Nouvel item
+            displayItemFormPanel().loadItem(code);
+          }
+        } else {                                  // Member
           MemberHandler gm = new MemberHandler();
           int noMembre = Integer.parseInt(code);
 
-          if(gm.exist(noMembre)) {         // Membre existe
-            affichePanelFicheMembre().loadMember(noMembre);
-          } else {                                // Nouveau membre
-            displayMemberView().loadMember(noMembre);
-          }
-
-          return;
-        } else if (ke.getText().equals("À") && console.getItems().size() == 16) {   // Code EAN13
-          code = console.getItems().toString().replaceAll("[\\D]", "");
-          console.getItems().clear();
-        } else if(ke.getText().equals("À")) {                                       // Code non supporté
-          console.getItems().clear();
-          Dialogue.dialogueInformation("Erreur de code", "Le code saisie n'est pas pris en charge");
-          return;
-        }
-
-        // TODO complété puis décommenter les fonctions en commentaire
-        if(controller instanceof MemberFormController || controller instanceof ItemFormController) {
-
-        } else if(controller instanceof CopyFormController) {     // Si le panel d'ajout d'exemplaire est ouvert
-          ItemHandler ga = new ItemHandler();
-
-          if(article) {   // ga.articleExiste(code) C'est un article existant
-            // TODO Créer un exemplaire de l'article et permettre la saisie du prix
-          } else if(article) {                      // C'est un nouvel article
-            // TODO ouvrir un formulaire d'ajout d'article puis retour à l'ajout d'exemplaire
-          } else {                                  // Ce n'est pas un article
-            Dialogue.dialogueInformation("Erreur de code", "Le code saisie n'est pas pris en charge");
-          }
-        } else {
-          if(article) {                             // C'est un article
-            ItemHandler ga = new ItemHandler();
-
-            if(true) { //ga.articleExiste(code)            // L'article existe
-              affichePanelFicheArticle().loadArticle(code);
-            } else {                                // Nouvel article
-              affichePanelAjoutArticle().loadArticle(code);
-            }
-          } else {                                  // Membre
-            MemberHandler gm = new MemberHandler();
-            int noMembre = Integer.parseInt(code);
-
-            if(gm.exist(noMembre)) {         // Membre existe
-              affichePanelFicheMembre().loadMember(noMembre);
-            } else {                                // Nouveau membre
-              displayMemberView().loadMember(noMembre);
-            }
+          if(gm.exist(noMembre)) {         // Member existe
+            displayMemberViewPanel().loadMember(noMembre);
+          } else {                                // Nouveau member
+            displayMemberFormPanel().loadMember(noMembre);
           }
         }
       }
     });
+  }
+
+  private void _setText() {
+    super.initI18n();
+
+    btnSearch.setText(i18n.getString("menu.search"));
+    btnItemForm.setText(i18n.getString("menu.item"));
+    btnMemberForm.setText(i18n.getString("menu.member"));
+    btnAdmin.setText(i18n.getString("menu.admin"));
   }
 }

@@ -11,6 +11,7 @@ import javafx.scene.web.WebView;
  * @author Jessy
  */
 public class AdminController extends Controller {
+  @SuppressWarnings("FieldCanBeLocal")
   private final String URL = "http://jessylachapelle.no-ip.biz/blu/htdocs/admin/admin.php";
 
   @FXML

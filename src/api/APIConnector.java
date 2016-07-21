@@ -1,5 +1,8 @@
 package api;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,9 +10,6 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Calls API
@@ -61,7 +61,9 @@ public class APIConnector {
   private static JSONObject addAPIKey(JSONObject json) {
     try {
       json.put("apikey", API_KEY);
-    } catch (JSONException e) {}
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
 
     return json;
   }
@@ -74,7 +76,9 @@ public class APIConnector {
       errorData.put("code", code);
       errorData.put("message", message);
       error.put("data", errorData);
-    } catch (JSONException e) {}
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
 
     return error;
   }

@@ -7,14 +7,11 @@ package controller;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -24,242 +21,237 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.RowConstraints;
-import model.article.Article;
-import model.article.Ouvrage;
+import model.item.Item;
+import model.item.Book;
 import handler.ItemHandler;
+import model.item.Subject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
- * Il s'agit du controller responsable de l'ajout d'un article
+ * Il s'agit du controller responsable de l'ajout d'un item
  * @author Marc
  */
 public class ItemFormController extends Controller {
 
-  private ItemHandler gArticle;
-  @FXML
-  private RowConstraints row_auteur_2;
-  @FXML
-  private RowConstraints row_auteur_3;
-  @FXML
-  private RowConstraints row_auteur_4;
-  @FXML
-  private RowConstraints row_auteur_5;
-  @FXML
-  private TextField ouvrage_titre;
-  @FXML
-  private TextField ouvrage_no_edition;
-  @FXML
-  private TextField txtf_auteurPrenom_1;
-  @FXML
-  private TextField txtf_auteurNom_1;
-  @FXML
-  private Button btn_retireAuteur;
-  @FXML
-  private Button btn_ajoutAuteur;
-  @FXML
-  private Label lbl_auteurPrenom_2;
-  @FXML
-  private TextField txtf_auteurPrenom_2;
-  @FXML
-  private Label lbl_auteurNom_2;
-  @FXML
-  private TextField txtf_auteurNom_2;
-  @FXML
-  private Label lbl_auteurPrenom_3;
-  @FXML
-  private TextField txtf_auteurPrenom_3;
-  @FXML
-  private Label lbl_auteurNom_3;
-  @FXML
-  private TextField txtf_auteurNom_3;
-  @FXML
-  private Label lbl_auteurPrenom_4;
-  @FXML
-  private TextField txtf_auteurPrenom_4;
-  @FXML
-  private Label lbl_auteurNom_4;
-  @FXML
-  private TextField txtf_auteurNom_4;
-  @FXML
-  private Label lbl_auteurPrenom_5;
-  @FXML
-  private TextField txtf_auteurPrenom_5;
-  @FXML
-  private Label lbl_auteurNom_5;
-  @FXML
-  private TextField txtf_auteurNom_5;
-  @FXML
-  private TextField editeur_nom;
-  @FXML
-  private TextField ouvrage_parution;
-  @FXML
-  private TextField ouvrage_ean13;
-  @FXML
-  private CheckBox cb_code;
-  @FXML
-  private ComboBox<KeyValuePair> matiere;
-  @FXML
-  private Button btn_ajoutOuvrage;
-  @FXML
-  private TextField nom;
-  @FXML
-  private TextArea commentaire;
-  @FXML
-  private ComboBox<?> categorie;
-  @FXML
-  private Button btn_ajoutObjet;
+  private ItemHandler itemHandler;
 
-  private final int MAX_AUTEUR = 4; // le nombre maximale d'auteur que l'ont peut ajouter ou retirer
+  private final int MAX_AUTHOR = 5; // le nombre maximale d'auteur que l'ont peut ajouter ou retirer
   private final double ROW_HEIGHT = 30;  // La grandeur d'une row
-  private int auteurCount;          // L'index auquel le compte d'auteur est rendu
-  private Control[][] auteurControles;    // Le tableau de controle pour lajout d'auteurs
-  private RowConstraints[] auteurRang;  // La rangé dans lequel se retrouve les contrôles auteurs
+  private int authorCount;          // L'index auquel le compte d'auteur est rendu
+  private Control[][] authorControls;    // Le tableau de controle pour lajout d'auteurs
+  private RowConstraints[] authorRow;  // La rangé dans lequel se retrouve les contrôles auteurs
   private BooleanProperty success;
+
+  @FXML private RowConstraints authorRow2;
+  @FXML private RowConstraints authorRow3;
+  @FXML private RowConstraints authorRow4;
+  @FXML private RowConstraints authorRow5;
+  @FXML private Button btnRemoveAuthor;
+  @FXML private Button btnAddAuthor;
+  @FXML private TextField txtf_auteurPrenom_1;
+  @FXML private TextField txtf_auteurNom_1;
+  @FXML private Label lbl_auteurPrenom_2;
+  @FXML private TextField txtf_auteurPrenom_2;
+  @FXML private Label lbl_auteurNom_2;
+  @FXML private TextField txtf_auteurNom_2;
+  @FXML private Label lbl_auteurPrenom_3;
+  @FXML private TextField txtf_auteurPrenom_3;
+  @FXML private Label lbl_auteurNom_3;
+  @FXML private TextField txtf_auteurNom_3;
+  @FXML private Label lbl_auteurPrenom_4;
+  @FXML private TextField txtf_auteurPrenom_4;
+  @FXML private Label lbl_auteurNom_4;
+  @FXML private TextField txtf_auteurNom_4;
+  @FXML private Label lbl_auteurPrenom_5;
+  @FXML private TextField txtf_auteurPrenom_5;
+  @FXML private Label lbl_auteurNom_5;
+  @FXML private TextField txtf_auteurNom_5;
+
+  @FXML private TextField txtTitle;
+  @FXML private TextField txtEdition;
+  @FXML private TextField txtEditor;
+  @FXML private TextField txtPublication;
+  @FXML private TextField txtEan13;
+  @FXML private CheckBox cbHasEan13;
+  @FXML private ComboBox<KeyValuePair> cbSubject;
+  @FXML private Button btnAddBook;
+  @FXML private TextField txtItemName;
+  @FXML private TextArea txtComment;
+  @FXML private ComboBox<?> cbCategories;
+  @FXML private Button btnAddItem;
 
   @Override
   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-     this.success = new SimpleBooleanProperty(false);
-    gArticle = new ItemHandler();
-    eventHandlers();
+    this.success = new SimpleBooleanProperty(false);
+    itemHandler = new ItemHandler();
+    _eventHandlers();
 
-    auteurCount = 0;
-    initControlArray();
-    initMatiere();
+    authorCount = 0;
+    _initControlArray();
+    _initSubjectList();
   }
 
   /**
    * Initialise notre combobox matière à partir de la bd
    */
-  private void initMatiere() {
+  private void _initSubjectList() {
+    ObservableList<KeyValuePair> options = FXCollections.observableArrayList(new KeyValuePair("0", "Aucune sélection"));
+    ArrayList<Subject> subjects = itemHandler.getSubjects();
 
-    ObservableList<KeyValuePair> options;
-    options = FXCollections.observableArrayList(new KeyValuePair("0", "Aucune sélection"));
+    for (Subject subject : subjects) {
+      JSONObject json = subject.toJSON();
+      int id = 0;
+      String name = "";
 
-    ArrayList<HashMap> allMatiere = gArticle.getAllMatiere();
+      try {
+        id = json.getInt("id");
+        name = json.getString("name");
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
 
-    for (HashMap<String, String> hashMap : allMatiere) {
-       options.add(new KeyValuePair(hashMap.get("id"), hashMap.get("valeur") ));
+      options.add(new KeyValuePair(Integer.toString(id), name));
     }
 
-
-    matiere.setItems(options);
-    matiere.getSelectionModel().select(0);
+    cbSubject.setItems(options);
+    cbSubject.getSelectionModel().select(0);
   }
 
-  public void loadArticle(String code) {
-    ouvrage_ean13.setText(code);
+  public void loadItem(String ean13) {
+    txtEan13.setText(ean13);
   }
 
   // TODO Finir le remplissage des champs
-  public void loadArticle(Article article) {
-    ouvrage_ean13.setText(article.getCodeBar());
+  public void loadItem(Item item) {
+    txtEan13.setText(item.getEan13());
   }
 
-  private void initControlArray() {
-   auteurControles = new Control[][]{
-     {lbl_auteurPrenom_2, txtf_auteurPrenom_2, lbl_auteurNom_2, txtf_auteurNom_2},
-     {lbl_auteurPrenom_3, txtf_auteurPrenom_3, lbl_auteurNom_3, txtf_auteurNom_3},
-     {lbl_auteurPrenom_4, txtf_auteurPrenom_4, lbl_auteurNom_4, txtf_auteurNom_4},
-     {lbl_auteurPrenom_5, txtf_auteurPrenom_5, lbl_auteurNom_5, txtf_auteurNom_5},};
-   auteurRang = new RowConstraints[]{row_auteur_2, row_auteur_3, row_auteur_4, row_auteur_5};
+  private void _initControlArray() {
+    authorRow = new RowConstraints[] { authorRow2, authorRow3, authorRow4, authorRow5 };
+    authorControls = new Control[][] {
+        {lbl_auteurPrenom_2, txtf_auteurPrenom_2, lbl_auteurNom_2, txtf_auteurNom_2},
+        {lbl_auteurPrenom_3, txtf_auteurPrenom_3, lbl_auteurNom_3, txtf_auteurNom_3},
+        {lbl_auteurPrenom_4, txtf_auteurPrenom_4, lbl_auteurNom_4, txtf_auteurNom_4},
+        {lbl_auteurPrenom_5, txtf_auteurPrenom_5, lbl_auteurNom_5, txtf_auteurNom_5}
+    };
   }
   /**
    * Vérifie que les champs nécessaire sont remplit
    * @return vrai si on peut insérer
    */
-  private boolean peutInserer(){
-    if( "".equals(ouvrage_titre.getText()) ||
-        "".equals(editeur_nom.getText()) ||
-        "".equals(ouvrage_parution.getText()) ||
-        matiere.getValue().toString().equals("0") ||
-            // TODO fix this
-       // ("".equals(ouvrage_ean13.getText()) && cb_code.selectedProperty().get()) ||
-        "".equals(txtf_auteurPrenom_1.getText()) ||
-        "".equals(txtf_auteurNom_1.getText())){
-      return false;
-    }
-    else
-      return true;
+  private boolean _canAdd(){
+    return !txtTitle.getText().isEmpty() && !txtEditor.getText().isEmpty() && !txtPublication.getText().isEmpty() &&
+           !cbSubject.getValue().toString().equals("0") && !txtf_auteurNom_1.getText().isEmpty() &&
+           (!txtEan13.getText().isEmpty() || cbHasEan13.selectedProperty().get());
   }
 
   /**
    * Récupere les valeurs des contrôle pour l'ajout
    * @return Un hashmap contenant toute les infos
    */
-  private HashMap<String, String> retrieveValues(){
-    HashMap<String, String> infoArticle = new HashMap();
-    infoArticle.put("type_article", "ouvrage");
-    infoArticle.put("ouvrage_titre", ouvrage_titre.getText());
-    if(!ouvrage_no_edition.getText().equals(""))
-      infoArticle.put("ouvrage_no_edition", ouvrage_no_edition.getText());
-    infoArticle.put("editeur_nom", editeur_nom.getText() );
-    infoArticle.put("ouvrage_parution", ouvrage_parution.getText());
-    infoArticle.put("matiere", matiere.getValue().toString());
-    infoArticle.put("ouvrage_ean13", ouvrage_ean13.getText());
-    infoArticle.put("auteur_1", txtf_auteurPrenom_1.getText() + " " + txtf_auteurNom_1.getText() );
-    if(!txtf_auteurPrenom_2.getText().equals("") && !txtf_auteurNom_2.getText().equals(""))
-      infoArticle.put("auteur_2", txtf_auteurPrenom_2.getText() + " " + txtf_auteurNom_2.getText() );
-    if(!txtf_auteurPrenom_3.getText().equals("") && !txtf_auteurNom_3.getText().equals(""))
-      infoArticle.put("auteur_3", txtf_auteurPrenom_3.getText() + " " + txtf_auteurNom_3.getText() );
-    if(!txtf_auteurPrenom_4.getText().equals("") && !txtf_auteurNom_4.getText().equals(""))
-      infoArticle.put("auteur_4", txtf_auteurPrenom_4.getText() + " " + txtf_auteurNom_4.getText() );
-    if(!txtf_auteurPrenom_5.getText().equals("") && !txtf_auteurNom_5.getText().equals(""))
-      infoArticle.put("auteur_5", txtf_auteurPrenom_5.getText() + " " + txtf_auteurNom_5.getText() );
-    return infoArticle;
+  private JSONObject getBookData() {
+    JSONObject formData = new JSONObject();
+    JSONArray authors = new JSONArray();
+
+    try {
+      formData.put("is_book", true);
+      formData.put("name", txtTitle.getText());
+      formData.put("edition", txtEdition.getText());
+      formData.put("editor", txtEditor.getText());
+      formData.put("publication", txtPublication.getText());
+      formData.put("subject", cbSubject.getValue().toString());
+      formData.put("ean13", txtEan13.getText());
+
+      if (!txtf_auteurPrenom_1.getText().equals("") && !txtf_auteurNom_1.getText().equals("")) {
+        JSONObject author = new JSONObject();
+        author.put("first_name", txtf_auteurPrenom_1.getText());
+        author.put("last_name", txtf_auteurNom_1.getText());
+        authors.put(author);
+      }
+
+      if (!txtf_auteurPrenom_2.getText().equals("") && !txtf_auteurNom_2.getText().equals("")) {
+        JSONObject author = new JSONObject();
+        author.put("first_name", txtf_auteurPrenom_2.getText());
+        author.put("last_name", txtf_auteurNom_2.getText());
+        authors.put(author);
+      }
+
+      if (!txtf_auteurPrenom_3.getText().equals("") && !txtf_auteurNom_3.getText().equals("")) {
+        JSONObject author = new JSONObject();
+        author.put("first_name", txtf_auteurPrenom_3.getText());
+        author.put("last_name", txtf_auteurNom_3.getText());
+        authors.put(author);
+      }
+
+      if (!txtf_auteurPrenom_4.getText().equals("") && !txtf_auteurNom_4.getText().equals("")) {
+        JSONObject author = new JSONObject();
+        author.put("first_name", txtf_auteurPrenom_4.getText());
+        author.put("last_name", txtf_auteurNom_4.getText());
+        authors.put(author);
+      }
+
+      if (!txtf_auteurPrenom_5.getText().equals("") && !txtf_auteurNom_5.getText().equals("")) {
+        JSONObject author = new JSONObject();
+        author.put("first_name", txtf_auteurPrenom_5.getText());
+        author.put("last_name", txtf_auteurNom_5.getText());
+        authors.put(author);
+      }
+
+      formData.put("author", authors);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return formData;
   }
 
   public BooleanProperty getSuccess() {
     return success;
   }
 
-  private void eventHandlers() {
-    btn_ajoutAuteur.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        if (auteurCount < MAX_AUTEUR) { // si on n'a pas atteint le max dauteur de 5
-          for (int i = 0; i < 4; i++) {
-            auteurControles[auteurCount][i].setVisible(true);
-          }
-          auteurRang[auteurCount].setPrefHeight(ROW_HEIGHT);
-          auteurCount++;
+  @SuppressWarnings("StatementWithEmptyBody")
+  private void _eventHandlers() {
+    btnAddAuthor.setOnAction(event -> {
+      if (authorCount < MAX_AUTHOR) { // si on n'a pas atteint le max dauteur de 5
+        for (int i = 0; i < 4; i++) {
+          authorControls[authorCount][i].setVisible(true);
         }
+
+        authorRow[authorCount].setPrefHeight(ROW_HEIGHT);
+        authorCount++;
       }
     });
 
-     btn_retireAuteur.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        if (auteurCount > 0) { // si on n'a pas atteint le minimum d'auteur
-          for (int i = 0; i < 4; i++) {
-            auteurControles[auteurCount-1][i].setVisible(false);
+     btnRemoveAuthor.setOnAction(event -> {
+       if (authorCount > 0) { // si on n'a pas atteint le minimum d'auteur
+         for (int i = 0; i < 4; i++) {
+           authorControls[authorCount -1][i].setVisible(false);
+         }
 
-          }
-          // on met la valeur des textfield a null
-          ((TextField)auteurControles[auteurCount-1][1]).setText("");
-          ((TextField)auteurControles[auteurCount-1][3]).setText("");
+         // on met la valeur des textfield a null
+         ((TextField) authorControls[authorCount -1][1]).setText("");
+         ((TextField) authorControls[authorCount -1][3]).setText("");
 
-          auteurRang[auteurCount-1].setPrefHeight(0);
-          auteurCount--;
-        }
-      }
-    });
+         authorRow[authorCount -1].setPrefHeight(0);
+         authorCount--;
+       }
+     });
 
-    btn_ajoutOuvrage.setOnAction(new EventHandler<ActionEvent>() {
-
-      @Override
-      public void handle(ActionEvent event) {
-
-        if(peutInserer()){
-          if(gArticle.ajouterArticle(retrieveValues()) > 0)
-            success.set(true);
-        }
-        // TODO afficher a l'utilisateur qu'il manque des infos dans un else
+    btnAddBook.setOnAction(event -> {
+      if (_canAdd()) {
+        itemHandler.addItem(getBookData());
+        success.set(true);
+      } else {
+        // TODO: Display a l'utilisateur qu'il manque des info dans un else
       }
     });
 
   }
 
-  public Article getArticle() {
-    return gArticle.getArticle();
+  public Item getArticle() {
+    return itemHandler.getItem();
   }
 
   /**
@@ -267,43 +259,47 @@ public class ItemFormController extends Controller {
    *
    * http://stackoverflow.com/questions/15554715/how-do-i-populate-a-javafx-choicebox-with-data-from-the-database
    */
+  @SuppressWarnings("unused")
   public class KeyValuePair {
-     private final String key;
-     private final String value;
+    private final String key;
+    private final String value;
 
-     public KeyValuePair(String key, String value) {
-     this.key = key;
-     this.value = value;
-     }
+    public KeyValuePair(String key, String value) {
+      this.key = key;
+      this.value = value;
+    }
 
-    public String getKey()   {    return key;    }
+    public String toString() {
+      return value;
+    }
 
-    public String toString() {    return value;  }
+    public String getKey() {
+      return key;
+    }
   }
   public Button getBtnAjoutOuvrage() {
-    return btn_ajoutOuvrage;
+    return btnAddBook;
   }
 
   public Button getBtnAjoutObjet() {
-    return btn_ajoutObjet;
+    return btnAddItem;
   }
 
-  private boolean estOuvrage() {
-    //TODO retour selon la tab sélectionné
-    return true;
+  private boolean _isBook() {
+    return itemHandler.getItem() instanceof Book;
   }
 
-  public Article ajoutArticle() {
-    //TODO création de l'article et envoie au serveur
-    // return contient l'article au complet incluant le id après insertion
-    Article article;
+  public Item addItem() {
+    //TODO création de l'item et envoie au serveur
+    // return contient l'item au complet incluant le id après insertion
+    Item item;
 
-    if(estOuvrage()) {
-      article = new Ouvrage();
+    if (_isBook()) {
+      item = new Book();
     } else {
-      article = new Article();
+      item = new Item();
     }
 
-    return article;
+    return item;
   }
 }

@@ -1,18 +1,18 @@
-package model.membre;
+package model.member;
 
-import model.article.Exemplaire;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Un membre de la BLU, contenant ses coordonnées
+ * Un member de la BLU, contenant ses coordonnées
  *
  * @author Jessy Lachapelle
  * @since 26/10/2015
  * @version 0.2
  */
-public class Membre {
+@SuppressWarnings("unused")
+public class Member {
   private int no;
   private Account account;
   private Phone[] phone;
@@ -27,13 +27,13 @@ public class Membre {
   private String stateCode;
 
   /**
-   * Constructeur par défaut, crée un membre aux valeurs null
+   * Constructeur par défaut, crée un member aux valeurs null
    */
-  public Membre() {
+  public Member() {
     init();
   }
 
-  public Membre(JSONObject json) {
+  public Member(JSONObject json) {
     init();
     fromJSON(json);
   }
@@ -54,36 +54,36 @@ public class Membre {
   }
 
   /**
-   * Accède au numéro du membre
+   * Accède au numéro du member
    *
-   * @return no Le numéro du membre
+   * @return no Le numéro du member
    */
   public int getNo() {
     return no;
   }
 
   /**
-   * Modifie le numéro du membre
+   * Modifie le numéro du member
    *
-   * @param no Le numéro du membre
+   * @param no Le numéro du member
    */
   public void setNo(int no) {
     this.no = no;
   }
 
   /**
-   * Accède au account du membre
+   * Accède au account du member
    *
-   * @return account Le account du membre
+   * @return account Le account du member
    */
   public Account getAccount() {
     return account;
   }
 
   /**
-   * Défini le account du membre
+   * Défini le account du member
    *
-   * @param account Le account du membre
+   * @param account Le account du member
    */
   public void setAccount(Account account) {
     this.account = account;
@@ -118,54 +118,54 @@ public class Membre {
   }
 
   /**
-   * Accède au prénom du membre
+   * Accède au prénom du member
    *
-   * @return nom Le prénom du membre
+   * @return nom Le prénom du member
    */
   public String getFirstName() {
     return firstName;
   }
 
   /**
-   * Modifie le prénom du membre
+   * Modifie le prénom du member
    *
-   * @param firstName Le prénom du membre
+   * @param firstName Le prénom du member
    */
   public void setFirstName(String firstName) {
     this.firstName = firstName;
   }
 
   /**
-   * Accède au nom du membre
+   * Accède au nom du member
    *
-   * @return nom Le nom du membre
+   * @return nom Le nom du member
    */
   public String getLastName() {
     return lastName;
   }
 
   /**
-   * Modifie le lastName du membre
+   * Modifie le lastName du member
    *
-   * @param lastName Le lastName du membre
+   * @param lastName Le lastName du member
    */
   public void setLastName(String lastName) {
     this.lastName = lastName;
   }
 
   /**
-   * Accède au email du membre
+   * Accède au email du member
    *
-   * @return email Courriel du membre
+   * @return email Courriel du member
    */
   public String getEmail() {
     return email;
   }
 
   /**
-   * Modifie le email du membre
+   * Modifie le email du member
    *
-   * @param email Le email du membre
+   * @param email Le email du member
    */
   public void setEmail(String email) {
     this.email = email;
@@ -189,7 +189,7 @@ public class Membre {
     this.address = address;
   }
 
-  public String getAddressStr() {
+  public String getAddressString() {
     return address + ", " + city + " (" + stateCode + ") " + zip;
   }
 
@@ -235,7 +235,7 @@ public class Membre {
    * @return zip Le code postal
    */
   public String getZip() {
-    return String.valueOf(zip);
+    return zip;
   }
 
   /**
@@ -263,34 +263,34 @@ public class Membre {
     return stateCode;
   }
 
-  public void fromJSON(JSONObject json) {
+  public void fromJSON(JSONObject member) {
     try {
-      if (json.has("no")) {
-        no = json.getInt("no");
+      if (member.has("no")) {
+        no = member.getInt("no");
       }
 
-      if (json.has("first_name")) {
-        firstName =json.getString("first_name");
+      if (member.has("first_name")) {
+        firstName = member.getString("first_name");
       }
 
-      if (json.has("last_name")) {
-        lastName = json.getString("last_name");
+      if (member.has("last_name")) {
+        lastName = member.getString("last_name");
       }
 
-      if (json.has("email")) {
-        email = json.getString("email");
+      if (member.has("email")) {
+        email = member.getString("email");
       }
 
-      if (json.has("address")) {
-        address = json.getString("address");
+      if (member.has("address")) {
+        address = member.getString("address");
       }
 
-      if (json.has("zip")) {
-        zip = json.getString("zip");
+      if (member.has("zip")) {
+        zip = member.getString("zip");
       }
 
-      if (json.has("city")) {
-        JSONObject city = json.getJSONObject("city");
+      if (member.has("city")) {
+        JSONObject city = member.getJSONObject("city");
         JSONObject state = city.getJSONObject("state");
 
         this.city = city.getString("name");
@@ -299,17 +299,53 @@ public class Membre {
         stateCode = state.getString("code");
       }
 
-      if (json.has("account")) {
-        account.fromJSON(json.getJSONObject("account"));
+      if (member.has("account")) {
+        account.fromJSON(member.getJSONObject("account"));
       }
 
-      if (json.has("phone")) {
-        JSONArray phones = json.getJSONArray("phone");
+      if (member.has("phone")) {
+        JSONArray phones = member.getJSONArray("phone");
 
         for(int i = 0; i < phones.length() && i < this.phone.length; i++) {
           phone[i] = new Phone(phones.getJSONObject(i));
         }
       }
-    } catch (JSONException e) {}
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public JSONObject toJSON() {
+    JSONObject member = new JSONObject();
+
+    try {
+      JSONArray phoneArray = new JSONArray();
+      for (Phone phone : this.phone) {
+        if (!phone.getNumber().isEmpty()) {
+          phoneArray.put(phone.toJSON());
+        }
+      }
+
+      JSONObject city = new JSONObject();
+      JSONObject state = new JSONObject();
+      state.put("name", this.state);
+      state.put("code", stateCode);
+      city.put("name", this.city);
+      city.put("id", cityId);
+      city.put("state", state);
+
+      member.put("no", no);
+      member.put("account", account.toJSON());
+      member.put("first_name", firstName);
+      member.put("last_name", lastName);
+      member.put("email", email);
+      member.put("address", address);
+      member.put("phone", phoneArray);
+      member.put("city", city);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return member;
   }
 }
