@@ -1,82 +1,47 @@
 package handler;
 
-import api.APIConnector;
-import model.transaction.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.ArrayList;
+
+import api.APIConnector;
 
 /**
- * Permet de reprendre des resultset et de les transformer en objet et de
- * transféré des objets de type Transaction à des requêtes de BD
+ * Handles API calls to insert or delete transactions
  *
  * @author Jessy Lachapelle
- * @since 12/11/2015
- * @version 0.2
+ * @since 2016/07/24
+ * @version 1.0
  */
-@SuppressWarnings("unused")
 public class TransactionHandler {
-  // private Transaction transaction;
-  private ArrayList<Transaction> transactions;
 
   /**
-   * Constructeur par défaut
+   * Default Constructor
    */
-  public TransactionHandler() {
-    transactions = new ArrayList<>();
-  }
+  public TransactionHandler() {}
 
-
-  public ArrayList<Transaction> insert(int member, int copy, int type) {
-    int[] copies = new int[1];
-    copies[0] = copy;
-    return insert(member, copies, type);
-  }
-
-  public ArrayList<Transaction> insert(int member, int[] copy, int type) {
-    transactions.clear();
-    JSONObject json = new JSONObject();
+  /**
+   * Delete a transaction
+   * @param copyId The id of the copy associated with the transaction
+   * @param type The type of the transaction to delete
+   * @return true If deletion is successful
+   */
+  public boolean delete(int copyId, String type) {
+    JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
-    JSONArray copies = new JSONArray();
 
     try {
-      for (int aCopy : copy) {
-        copies.put(aCopy);
-      }
-      data.put("member", member);
-      data.put("copies", copies);
+      data.put("copy", copyId);
       data.put("type", type);
 
-      json.put("function", "insert");
-      json.put("object", "transaction");
-      json.put("data", data);
+      req.put("function", "delete");
+      req.put("object", "transaction");
+      req.put("data", data);
 
-      JSONArray response = APIConnector.call(json).getJSONArray("data");
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
 
-      for (int i = 0; i < response.length(); i++) {
-        transactions.add(new Transaction(response.getJSONObject(i)));
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    return transactions;
-  }
-
-  public boolean delete(int id) {
-    JSONObject json = new JSONObject();
-    JSONObject data = new JSONObject();
-
-    try {
-      data.put("id", id);
-      json.put("function", "delete");
-      json.put("object", "transaction");
-      json.put("data", data);
-
-      JSONObject response = APIConnector.call(json).getJSONObject("data");
-
-      return response.has("code") && response.getInt("code") == 200;
+      return data.has("code") && data.getInt("code") == 200;
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -84,21 +49,48 @@ public class TransactionHandler {
     return false;
   }
 
-  public boolean delete(int copyId, int type) {
-    JSONObject json = new JSONObject();
+  /**
+   * Insert a transaction
+   * @param memberNo The no of the member associated with the transaction
+   * @param copyId The id of the copy associated with the transaction
+   * @param type The type of transaction to insert
+   * @return true If insert is successful
+   */
+  public boolean insert(int memberNo, int copyId, String type) {
+    int[] copies = new int[1];
+    copies[0] = copyId;
+    return insert(memberNo, copies, type);
+  }
+
+  /**
+   * Insert transactions on multiple copies
+   * @param memberNo The no of the member associated with the transaction
+   * @param copyIds The id of the copies associated with the transactions
+   * @param type The type of transaction to insert
+   * @return true If insert is successful
+   */
+  public boolean insert(int memberNo, int[] copyIds, String type) {
+    JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
+    JSONArray copies = new JSONArray();
 
     try {
-      data.put("copy_id", copyId);
+      for (int copyId : copyIds) {
+        copies.put(copyId);
+      }
+
+      data.put("member", memberNo);
+      data.put("copies", copies);
       data.put("type", type);
 
-      json.put("function", "delete");
-      json.put("object", "transaction");
-      json.put("data", data);
+      req.put("function", "insert");
+      req.put("object", "transaction");
+      req.put("data", data);
 
-      JSONObject response = APIConnector.call(json).getJSONObject("data");
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
 
-      return response.has("code") && response.getInt("code") == 200;
+      return data.has("code") && data.getInt("code") == 200;
     } catch (JSONException e) {
       e.printStackTrace();
     }

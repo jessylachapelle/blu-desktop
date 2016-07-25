@@ -32,10 +32,31 @@ public class Comment {
     fromJSON(comment);
   }
 
+  public Comment(int id, String comment) {
+    init();
+    this.id = id;
+    this.comment = comment;
+  }
+
+  public Comment(int id, String comment, String updatedBy) {
+    init();
+    this.id = id;
+    this.comment = comment;
+    this.updatedBy = updatedBy;
+  }
+
+  public Comment(int id, String comment, Date date, String updatedBy) {
+    init();
+    this.id = id;
+    this.comment = comment;
+    this.date = date;
+    this.updatedBy = updatedBy;
+  }
+
   private void init() {
     id = 0;
     comment = "";
-    date = null;
+    date = new Date();
     updatedBy = "";
   }
 

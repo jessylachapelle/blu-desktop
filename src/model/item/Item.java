@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Classe item qui contient les informations de base d'un item
@@ -21,11 +22,8 @@ public class Item {
   private String ean13;
   private ArrayList<Storage> storage;
   private String description;
-  private ArrayList<Copy> available,
-                          sold,
-                          paid,
-                          reserved;
-
+  private ArrayList<Copy> copies;
+  private ArrayList<Reservation> reservations;
   /**
    * Constructeur sans paramètre de la classe Item
    */
@@ -45,10 +43,8 @@ public class Item {
     ean13 = "";
     storage = new ArrayList<>();
     description = "";
-    available = new ArrayList<>();
-    sold = new ArrayList<>();
-    paid = new ArrayList<>();
-    reserved = new ArrayList<>();
+    copies = new ArrayList<>();
+    reservations = new ArrayList<>();
   }
 
   /**
@@ -186,65 +182,34 @@ public class Item {
     }
   }
 
-  public void setCopies(ArrayList<Copy> copies) {
-    copies.forEach(this::addCopy);
+  public void addCopies(ArrayList<Copy> copies) {
+    this.copies.addAll(copies);
   }
 
   public void addCopy(Copy copy) {
-    if (copy.isReserved()) {
-      reserved.add(copy);
-    } else if (copy.isSold()) {
-      sold.add(copy);
-    } else if (copy.isPayed()) {
-      paid.add(copy);
-    } else {
-      available.add(copy);
-    }
+    copies.add(copy);
   }
 
    /**
    * Accède à la liste des exemplaires en vente
    *
-   * @return available La liste des exemplaires en vente
+   * @return copies La liste des exemplaires en vente
    */
-  public ArrayList<Copy> getAvailable() {
-    return available;
+  public ArrayList<Copy> getCopies() {
+    return copies;
   }
 
   /**
    * Défini la liste des exemplaires en vente
    *
-   * @param available Liste des exemplaires en vente
+   * @param copies Liste des exemplaires en vente
    */
-  public void setAvailable(ArrayList<Copy> available) {
-    this.available = available;
+  public void setCopies(ArrayList<Copy> copies) {
+    this.copies = copies;
   }
 
-  /**
-   * Ajout d'un copy à la liste en vente
-   *
-   * @param copy Copy à ajouter
-   */
-  public void addAvailable(Copy copy) {
-    available.add(copy);
-  }
-
-  /**
-   * Ajout de plusieurs copies à la liste en vente
-   *
-   * @param copies Liste des copies à ajouter
-   */
-  public void addAvailable(ArrayList<Copy> copies) {
-    available.addAll(copies);
-  }
-
-  /**
-   * Supprime en exemplaire de la liste available
-   *
-   * @param index Indice de l'exemplaire à supprimer
-   */
-  public void removeAvailableCopy(int index) {
-    available.remove(index);
+  public ArrayList<Copy> getAvailable() {
+    return copies.stream().filter(Copy::isAvailable).collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
@@ -253,25 +218,7 @@ public class Item {
    * @return sold La liste des exemplaires sold
    */
   public ArrayList<Copy> getSold() {
-    return sold;
-  }
-
-  /**
-   * Défini la liste des exemplaires vendus
-   *
-   * @param sold Les des exemplaires vendus
-   */
-  public void setSold(ArrayList<Copy> sold) {
-    this.sold = sold;
-  }
-
-  /**
-   * Ajout d'un copy à la liste des exemplaires vendus
-   *
-   * @param copy L'copy à ajouter
-   */
-  public void addSold(Copy copy) {
-    this.sold.add(copy);
+    return copies.stream().filter(Copy::isSold).collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
@@ -281,24 +228,7 @@ public class Item {
    * member
    */
   public ArrayList<Copy> getPaid() {
-    return paid;
-  }
-
-  /**
-   * Défini la liste des exemplaires dont l'argent est remis
-   *
-   * @param paid Liste des exemplaires que l'argent a été remis au member
-   */
-  public void setPaid(ArrayList<Copy> paid) {
-    this.paid = paid;
-  }
-
-  public void addPaid(ArrayList<Copy> copies) {
-    this.paid.addAll(copies);
-  }
-
-  public void addPaid(Copy copy) {
-    this.paid.add(copy);
+    return copies.stream().filter(Copy::isPaid).collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
@@ -307,91 +237,86 @@ public class Item {
    * @return reserved Liste des exemplaires en réservation
    */
   public ArrayList<Copy> getReserved() {
-    return reserved;
-  }
-
-  /**
-   * Défini la liste des exemplaires mis en réservation
-   *
-   * @param reserved Liste des exemplaires en réservation
-   */
-  public void setReserved(ArrayList<Copy> reserved) {
-    this.reserved = reserved;
-  }
-
-  /**
-   * Ajout d'un copy à la liste mis en réservation
-   *
-   * @param copy Copy à ajouter
-   */
-  public void addReserved(Copy copy) {
-    reserved.add(copy);
-  }
-
-  /**
-   * Annulation d'une réservation et remise en vente d'un exemplaire
-   *
-   * @param reservationIndex L'exemplaire à remettre en vente
-   */
-  public void cancelReservation(int reservationIndex) {
-    available.add(reserved.remove(reservationIndex));
-  }
-
-  /**
-   * Prend un exeplaire en réservation et le met dans la liste sold
-   *
-   * @param reservationIndex L'exemplaire sold
-   */
-  public void sellReservation(int reservationIndex) {
-    sold.add(reserved.remove(reservationIndex));
-  }
-
-  /**
-   * Prend un exemplaire de available et le met dans sold
-   *
-   * @param copyIndex Copy sold
-   */
-  public void sell(int copyIndex) {
-    sold.add(available.remove(copyIndex));
+    return copies.stream().filter(Copy::isReserved).collect(Collectors.toCollection(ArrayList::new));
   }
 
   public double amountAvailable() {
     double amount = 0;
 
-    for (Copy copy : available) {
-      amount += copy.getPrice();
+    for (Copy copy : copies) {
+      if (copy.isAvailable()) {
+        amount += copy.getPrice();
+      }
     }
+
     return amount;
   }
 
   public int quantityAvailable() {
-    return available.size();
+    return getAvailable().size();
   }
 
   public double amountSold() {
     double amount = 0;
 
-    for (Copy copy : sold) {
-      amount += copy.getPrice();
+    for (Copy copy : copies) {
+      if (copy.isSold()) {
+        amount += copy.getPrice();
+      }
     }
+
     return amount;
   }
 
   public int quantitySold() {
-    return sold.size();
+    return getSold().size();
   }
 
   public double amountPaid() {
     double amount = 0;
 
-    for (Copy copy : paid) {
-      amount += copy.getPrice();
+    for (Copy copy : copies) {
+      if (copy.isPaid()) {
+        amount += copy.getPrice();
+      }
     }
+
     return amount;
   }
 
   public int quantityPaid() {
-    return paid.size();
+    return getPaid().size();
+  }
+
+  public void setReservations(ArrayList<Reservation> reservations) {
+    this.reservations = reservations;
+  }
+
+  public void addReservation(ArrayList<Reservation> reservations) {
+    this.reservations.addAll(reservations);
+  }
+
+  public void addReservation(Reservation reservation) {
+    reservations.add(reservation);
+  }
+
+  public Reservation getReservation(int memberNo) {
+    for (Reservation reservation : reservations) {
+      if (reservation.getMember().getNo() == memberNo) {
+        return  reservation;
+      }
+    }
+
+    return null;
+  }
+
+  public void removeReservation(int memberNo) {
+    for (int i = 0; i < reservations.size(); i++) {
+      if (reservations.get(i).getMember().getNo() == memberNo) {
+        reservations.remove(i);
+        break;
+      }
+    }
   }
 
   public void fromJSON(JSONObject json) {
@@ -431,6 +356,14 @@ public class Item {
           addCopy(new Copy(copies.getJSONObject(i)));
         }
       }
+
+      if (json.has("reservation")) {
+        JSONArray reservations = json.getJSONArray("reservation");
+
+        for (int i = 0; i < reservations.length(); i++) {
+          addReservation(new Reservation(reservations.getJSONObject(i)));
+        }
+      }
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -440,26 +373,19 @@ public class Item {
     JSONObject item = new JSONObject();
     JSONArray storage = new JSONArray();
     JSONArray copies = new JSONArray();
+    JSONArray reservations = new JSONArray();
 
     try {
       for (Storage storageUnit : this.storage) {
         storage.put(storageUnit.toJSON());
       }
 
-      for (Copy copy : this.available) {
+      for (Copy copy : this.copies) {
         copies.put(copy.toJSON());
       }
 
-      for (Copy copy : this.sold) {
-        copies.put(copy.toJSON());
-      }
-
-      for (Copy copy : this.paid) {
-        copies.put(copy.toJSON());
-      }
-
-      for (Copy copy : this.reserved) {
-        copies.put(copy.toJSON());
+      for (Reservation reservation : this.reservations) {
+        reservations.put(reservation.toJSON());
       }
 
       item.put("id", id);
@@ -469,6 +395,7 @@ public class Item {
       item.put("description", description);
       item.put("storage", storage);
       item.put("copies", copies);
+      item.put("reservations", reservations);
     } catch (JSONException e) {
       e.printStackTrace();
     }

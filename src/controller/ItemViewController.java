@@ -14,7 +14,6 @@ import model.item.Book;
 import model.item.Copy;
 import model.item.Item;
 import model.item.Storage;
-import model.transaction.Transaction;
 import ressources.Dialog;
 
 import java.net.URL;
@@ -201,18 +200,7 @@ public class ItemViewController extends Controller {
         }
       }
 
-      int id = itemHandler.addItemReservation(memberNo, item.getId());
-
-      if (id > 0) {
-        Copy e = new Copy();
-        Transaction t = new Transaction();
-
-        t.setId(id);
-        t.setType("RESERVE");
-        t.setDate(new Date());
-        e.addTransaction(t);
-
-        item.addReserved(e);
+      if (itemHandler.addItemReservation(memberNo)) {
         _displayCopies();
       }
     });
@@ -229,52 +217,42 @@ public class ItemViewController extends Controller {
         row = (TableRow) node.getParent();
       }
 
-      final Copy e = (Copy) row.getItem();
+      final Copy copy = (Copy) row.getItem();
 
       if (event.getButton() == MouseButton.SECONDARY) {
         final ContextMenu contextMenu = new ContextMenu();
 
-        MenuItem vendre = new MenuItem("Vendre");
-        MenuItem annuler = new MenuItem("Annuler réservation");
+        MenuItem sell = new MenuItem("Vendre");
+        MenuItem cancel = new MenuItem("Annuler réservation");
 
-        if(e.getId() == 0)
-          contextMenu.getItems().addAll(annuler);
-        else
-          contextMenu.getItems().addAll(vendre, annuler);
+        if (copy.getId() == 0) {
+          contextMenu.getItems().addAll(cancel);
+        } else {
+          contextMenu.getItems().addAll(sell, cancel);
+        }
 
         row.setContextMenu(contextMenu);
 
-        vendre.setOnAction(event1 -> {
-          int id = itemHandler.addTransaction(e.getMember().getNo(), e.getId(), 3);
-
-          if (id != 0) {
-            Transaction t = new Transaction();
-            t.setId(id);
-            t.setType("SELL");
-            t.setDate(new Date());
-
-            item.getReserved().remove(e);
-            e.addTransaction(t);
-            item.getSold().add(e);
-
+        sell.setOnAction(e -> {
+          if (itemHandler.addTransaction(copy.getMember().getNo(), copy.getId(), "SELL")) {
             _displayCopies();
           }
         });
 
-        annuler.setOnAction(event12 -> {
-          if(e.getId() == 0) {
-            itemHandler.deleteReservation(e.getParent().getNo(), item.getId());
-            item.getReserved().remove(e);
+        cancel.setOnAction(event12 -> {
+          if(copy.getId() == 0) {
+            itemHandler.deleteReservation(copy.getParent().getNo(), item.getId());
+            item.getReserved().remove(copy);
           } else {
-            itemHandler.deleteReservation(e.getId());
-            item.getReserved().remove(e);
+            itemHandler.deleteReservation(copy.getId());
+            item.getReserved().remove(copy);
 
-            for (int noTransaction = 0; noTransaction < e.getAllTransactions().size(); noTransaction++) {
-              if (e.getAllTransactions().get(noTransaction).getType().equals("RESERVE")) {
-                e.getAllTransactions().remove(noTransaction);
+            for (int noTransaction = 0; noTransaction < copy.getAllTransactions().size(); noTransaction++) {
+              if (copy.getAllTransactions().get(noTransaction).getType().equals("RESERVE")) {
+                copy.getAllTransactions().remove(noTransaction);
               }
             }
-            item.getAvailable().add(e);
+            item.getCopies().add(copy);
           }
 
           _displayCopies();
@@ -294,71 +272,49 @@ public class ItemViewController extends Controller {
         row = (TableRow) node.getParent();
       }
 
-      final Copy c = (Copy) row.getItem();
+      final Copy copy = (Copy) row.getItem();
 
       if (event.getButton() == MouseButton.SECONDARY) {
         final ContextMenu contextMenu = new ContextMenu();
 
-        MenuItem vendre = new MenuItem("Vendre");
-        MenuItem vendreParent = new MenuItem("Vendre à 50%");
-        MenuItem modifier = new MenuItem("Modifier le prix");
-        MenuItem supprimer = new MenuItem("Supprimer");
+        MenuItem sell = new MenuItem("Vendre");
+        MenuItem sellParent = new MenuItem("Vendre à 50%");
+        MenuItem update = new MenuItem("Modifier le prix");
+        MenuItem delete = new MenuItem("Supprimer");
 
-        contextMenu.getItems().addAll(vendre, vendreParent, modifier, supprimer);
+        contextMenu.getItems().addAll(sell, sellParent, update, delete);
         row.setContextMenu(contextMenu);
 
-        vendre.setOnAction(event13 -> {
-          int id = itemHandler.addTransaction(c.getMember().getNo(), c.getId(), 2);
-
-          if (id != 0) {
-            Transaction t = new Transaction();
-            t.setId(id);
-            t.setType("SELL");
-            t.setDate(new Date());
-
-            item.getAvailable().remove(c);
-            c.addTransaction(t);
-            item.getSold().add(c);
-
+        sell.setOnAction(e -> {
+          if (itemHandler.addTransaction(copy.getMember().getNo(), copy.getId(), "SELL")) {
             _displayCopies();
           }
         });
 
-        vendreParent.setOnAction(event14 -> {
-          int id = itemHandler.addTransaction(c.getMember().getNo(), c.getId(), 3);
-
-          if (id != 0) {
-            Transaction t = new Transaction();
-            t.setId(id);
-            t.setType("SELL_PARENT");
-            t.setDate(new Date());
-
-            item.getAvailable().remove(c);
-            c.addTransaction(t);
-            item.getSold().add(c);
-
+        sellParent.setOnAction(e -> {
+          if (itemHandler.addTransaction(copy.getMember().getNo(), copy.getId(), "SELL_PARENT")) {
             _displayCopies();
           }
         });
 
-        modifier.setOnAction(event15 -> {
+        update.setOnAction(e -> {
           boolean isDouble = false;
-          double price = c.getPrice();
+          double price = copy.getPrice();
 
           while (!isDouble) {
             try {
-              price = Double.parseDouble(Dialog.input("Modification du price", "Entrez le nouveau montant :", Double.toString(c.getPrice())));
+              price = Double.parseDouble(Dialog.input("Modification du price", "Entrez le nouveau montant :", Double.toString(copy.getPrice())));
               isDouble = true;
-            } catch (NumberFormatException e1) {
+            } catch (NumberFormatException ex) {
               Dialog.information("Vous devez entrer un montant valide");
             }
           }
 
           CopyHandler copyHandler = new CopyHandler();
-          if(copyHandler.updateCopyPrice(c.getId(), price)) {
-            item.getAvailable().remove(c);
-            c.setPrice(price);
-            item.getAvailable().add(c);
+          if(copyHandler.updateCopyPrice(copy.getId(), price)) {
+            item.getCopies().remove(copy);
+            copy.setPrice(price);
+            item.getCopies().add(copy);
 
             _displayCopies();
           } else {
@@ -366,10 +322,10 @@ public class ItemViewController extends Controller {
           }
         });
 
-        supprimer.setOnAction(event16 -> {
+        delete.setOnAction(event16 -> {
           CopyHandler copyHandler = new CopyHandler();
-          if(copyHandler.deleteCopy(c.getId())) {
-            item.getAvailable().remove(c);
+          if(copyHandler.deleteCopy(copy.getId())) {
+            item.getCopies().remove(copy);
             _displayCopies();
           } else {
             Dialog.information("Une erreur est survnue");
@@ -409,7 +365,7 @@ public class ItemViewController extends Controller {
               }
             }
 
-            item.getAvailable().add(e);
+            item.getCopies().add(e);
             _displayCopies();
           }
         });
@@ -470,7 +426,7 @@ public class ItemViewController extends Controller {
 
   private void _displayCopies() {
     ObservableList<Copy> reserve = FXCollections.observableArrayList(item.getReserved());
-    ObservableList<Copy> aVendre = FXCollections.observableArrayList(item.getAvailable());
+    ObservableList<Copy> aVendre = FXCollections.observableArrayList(item.getCopies());
     ObservableList<Copy> vendu = FXCollections.observableArrayList(item.getSold());
     ObservableList<Copy> argentRemis = FXCollections.observableArrayList(item.getPaid());
 

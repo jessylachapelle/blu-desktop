@@ -161,6 +161,10 @@ public class Copy {
     return "ADDED";
   }
 
+  public void addTransaction(String type) {
+    transaction.add(new Transaction(type));
+  }
+
   /**
    * Ajoute une transaction à l'exemplaire
    *
@@ -199,19 +203,19 @@ public class Copy {
   }
 
   /**
-   * Supprime une transaction liée à un exemplaire
-   *
-   * @param index L'index de la transaction
-   */
-  public void removeTransaction(int index) {
-    transaction.remove(index);
-  }
-
-  /**
    * Supprime toutes les transactions liées à un exemplaire
    */
   public void clearTransactions() {
     transaction.clear();
+  }
+
+  public void removeTransaction(String type) {
+    for (int i = 0; i < transaction.size(); i++) {
+      if (transaction.get(i).getType().equals(type)) {
+        transaction.remove(i);
+        break;
+      }
+    }
   }
 
   /**
@@ -244,11 +248,11 @@ public class Copy {
     return false;
   }
 
-  public boolean isAdded() {
+  public boolean isAvailable() {
     return getState().equals("ADDED");
   }
 
-  public boolean isPayed() {
+  public boolean isPaid() {
     return getState().equals("PAYED");
   }
 

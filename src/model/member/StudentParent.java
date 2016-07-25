@@ -1,7 +1,8 @@
 package model.member;
 
 import java.util.ArrayList;
-import model.transaction.Transaction;
+
+import model.item.Reservation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,13 +12,13 @@ import org.json.JSONObject;
  * le droit de réserver et d'obtenir 50% de rabais sur les achats
  *
  * @author Jessy Lachapelle
- * @since 26/10/2015
- * @version 0.1
+ * @since 2016/07/24
+ * @version 1.0
  */
 @SuppressWarnings("unused")
 public class StudentParent extends Member {
 
-  private ArrayList<Transaction> reservations;
+  private ArrayList<Reservation> reservations;
 
   /**
    * Constructeur par défaut, crée un objet aux valeurs null
@@ -32,7 +33,7 @@ public class StudentParent extends Member {
    *
    * @return reservations La liste des réservations
    */
-  public ArrayList<Transaction> getReservations() {
+  public ArrayList<Reservation> getReservations() {
     return reservations;
   }
 
@@ -41,7 +42,7 @@ public class StudentParent extends Member {
    *
    * @param reservations Une liste de réservation
    */
-  public void setReservations(ArrayList<Transaction> reservations) {
+  public void setReservations(ArrayList<Reservation> reservations) {
     this.reservations = reservations;
   }
 
@@ -50,17 +51,31 @@ public class StudentParent extends Member {
    *
    * @param reservation La nouvelle réservation
    */
-  public void addReservation(Transaction reservation) {
+  public void addReservation(Reservation reservation) {
     this.reservations.add(reservation);
   }
 
   /**
    * Enlève une réservation qui a été annulé
    *
-   * @param index L'indice de la position de la réservation
+   * @param itemId L'indice de la position de la réservation
    */
-  public void removeReservation(int index) {
-    this.reservations.remove(index);
+  public void removeItemReservation(int itemId) {
+    for (int i = 0; i < reservations.size(); i++) {
+      if (reservations.get(i).getItem().getId() == itemId) {
+        reservations.remove(i);
+        break;
+      }
+    }
+  }
+
+  public void removeCopyReservation(int copyId) {
+    for (int i = 0; i < reservations.size(); i++) {
+      if (reservations.get(i).getCopy().getId() == copyId) {
+        reservations.remove(i);
+        break;
+      }
+    }
   }
 
   public void fromJSON(JSONObject parent) {
@@ -71,7 +86,7 @@ public class StudentParent extends Member {
         JSONArray reservations = parent.getJSONArray("reservations");
 
         for (int i = 0; i < reservations.length(); i++) {
-          this.reservations.add(new Transaction(reservations.getJSONObject(i)));
+          this.reservations.add(new Reservation(reservations.getJSONObject(i)));
         }
       }
     } catch (JSONException e) {
@@ -84,7 +99,7 @@ public class StudentParent extends Member {
     JSONArray reservations = new JSONArray();
 
     try {
-      for (Transaction reservation : this.reservations) {
+      for (Reservation reservation : this.reservations) {
         reservations.put(reservation.toJSON());
       }
 

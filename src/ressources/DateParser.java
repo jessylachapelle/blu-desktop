@@ -1,5 +1,7 @@
 package ressources;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -24,6 +26,27 @@ public class DateParser {
   }
 
   public static String dateToString(Date date) {
-    return (date.getYear() + 1900) + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    String YYYY = Integer.toString((date.getYear() + 1900));
+    String MM = Integer.toString((date.getMonth() + 1));
+    String DD = Integer.toString(date.getDate());
+
+    if ((date.getMonth() + 1) <= 9) {
+      MM = "0" + MM;
+    }
+
+    if (date.getDate() <= 9) {
+      DD = "0" + DD;
+    }
+
+
+    return YYYY + "-" + MM + "-" + DD;
+  }
+
+  public static String toLongDate(Date date) {
+    String[] months = {"janvier", "févier", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"};
+    String YYYY = Integer.toString((date.getYear() + 1900));
+    String DD = Integer.toString(date.getDate());
+
+    return DD + " " + months[date.getMonth()] + " " + YYYY;
   }
 }

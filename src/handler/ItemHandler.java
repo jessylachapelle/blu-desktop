@@ -50,18 +50,20 @@ public class ItemHandler {
     return false;
   }
 
-  public int addTransaction(int memberNo, int copyId, int type) {
-    int id = 0;
-
+  public boolean addTransaction(int memberNo, int copyId, String type) {
     TransactionHandler transactionHandler = new TransactionHandler();
-    transactionHandler.insert(memberNo, copyId, type);
 
-    return id;
+    if (transactionHandler.insert(memberNo, copyId, type)) {
+      // item.getCopy(copyId).addTransaction(type);
+      return true;
+    }
+
+    return false;
   }
 
   public boolean cancelSell(int copyId) {
     TransactionHandler transactionHandler = new TransactionHandler();
-    return transactionHandler.delete(copyId, 2);
+    return transactionHandler.delete(copyId, "SELL");
   }
 
   public boolean updateStorage(int id, String[] storage) {
@@ -269,14 +271,14 @@ public class ItemHandler {
     return subjects;
   }
 
-  public int addItemReservation(int memberNo, int itemId) {
+  public boolean addItemReservation(int memberNo) {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
     int id = 0;
 
     try {
       data.put("member", memberNo);
-      data.put("item", itemId);
+      data.put("item", item.getId());
 
       req.put("object", "reservation");
       req.put("function", "insert");
@@ -284,12 +286,16 @@ public class ItemHandler {
 
       JSONObject res = APIConnector.call(req);
       data = res.getJSONObject("data");
-      id = data.getInt("id");
+
+      if (data.has("code") && data.getInt("code") == 200) {
+        item.addReservation(new Reservation(memberNo));
+        return true;
+      }
     } catch (JSONException e) {
       e.printStackTrace();
     }
 
-    return id;
+    return false;
   }
 
   public int addCopyReservation(int memberNo, int copyId) {

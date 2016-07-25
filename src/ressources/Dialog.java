@@ -52,8 +52,8 @@ public class Dialog {
    * @param message Le message à afficher à l'utilisateur
    * @return Vrai si l'utilisateur confirme
    */
-  public static boolean dialogueConfirmation(String message) {
-    return dialogueConfirmation("Confirmation", message);
+  public static boolean confirmation(String message) {
+    return confirmation("Confirmation", message);
   }
 
   /**
@@ -62,7 +62,7 @@ public class Dialog {
    * @param message Le message à afficher à l'utilisateur
    * @return Vrai si l'utilisateur confirme
    */
-  public static boolean dialogueConfirmation(String titre, String message) {
+  public static boolean confirmation(String titre, String message) {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     alert.setTitle(titre);
     alert.setHeaderText(null);

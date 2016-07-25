@@ -2,6 +2,7 @@ package model.member;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import model.item.Copy;
 import org.json.JSONArray;
@@ -25,10 +26,7 @@ public class Account {
 
   private ArrayList<Comment> comments;
 
-  private ArrayList<Copy> available,
-                          sold,
-                          paid,
-                          reserved;
+  private ArrayList<Copy> copies;
 
   /**
    * Constructeur par défaut, crée compte à valeur null
@@ -46,10 +44,7 @@ public class Account {
     registration = new Date();
     lastActivity = new Date();
     comments = new ArrayList<>();
-    available = new ArrayList<>();
-    sold = new ArrayList<>();
-    paid = new ArrayList<>();
-    reserved = new ArrayList<>();
+    copies = new ArrayList<>();
   }
 
   /**
@@ -63,9 +58,7 @@ public class Account {
     setLastActivity(lastActivity);
 
     comments = new ArrayList<>();
-    available = new ArrayList<>();
-    sold = new ArrayList<>();
-    reserved = new ArrayList<>();
+    copies = new ArrayList<>();
   }
 
   /**
@@ -75,6 +68,10 @@ public class Account {
    */
   public Date getRegistration() {
     return registration;
+  }
+
+  public String getRegistrationString() {
+    return DateParser.toLongDate(registration);
   }
 
   /**
@@ -103,6 +100,20 @@ public class Account {
     return lastActivity;
   }
 
+  public String getLastActivityString() {
+    return DateParser.toLongDate(lastActivity);
+  }
+
+  @SuppressWarnings("deprecation")
+  public Date getDeactivation() {
+    Date deactivation = (Date) getLastActivity().clone();
+    deactivation.setYear(deactivation.getYear() + 1);
+    return deactivation;
+  }
+
+  public String getDeactivationString() {
+    return DateParser.toLongDate(getDeactivation());
+  }
   /**
    * Modifie la date de la dernière activité au compte
    *
@@ -148,26 +159,44 @@ public class Account {
   }
 
   /**
-   * Supprime un comments de la liste
-   *
-   * @param index Indice de la position du comments à supprimer
+   * Removes a comment form the list
+   * @param id Id of the comment to remove
    */
-  public void removeComment(int index) {
-    this.comments.remove(index);
+  public void removeComment(int id) {
+    for (int i = 0; i < comments.size(); i++) {
+      if (comments.get(i).getId() == id) {
+        comments.remove(i);
+        break;
+      }
+    }
+  }
+
+  public void editComment(int id, String comment, String updatedBy) {
+    for (Comment c : comments) {
+      if (c.getId() == id) {
+        c.setComment(comment);
+        c.setUpdatedBy(updatedBy);
+        break;
+      }
+    }
   }
 
   public void setCopies(ArrayList<Copy> copies) {
+    this.copies.addAll(copies);
+  }
+
+  public ArrayList<Copy> getCopies() {
+    return copies;
+  }
+
+  public Copy getCopy(int id) {
     for (Copy copy : copies) {
-      if (copy.isReserved()) {
-        reserved.add(copy);
-      } else if (copy.isSold()) {
-        sold.add(copy);
-      } else if (copy.isPayed()) {
-        paid.add(copy);
-      } else {
-        available.add(copy);
+      if (copy.getId() == id) {
+        return copy;
       }
     }
+
+    return null;
   }
 
   /**
@@ -176,43 +205,7 @@ public class Account {
    * @return available La liste des exemplaires en vente
    */
   public ArrayList<Copy> getAvailable() {
-    return available;
-  }
-
-  /**
-   * Défini la liste des exemplaires en vente
-   *
-   * @param available Liste des exemplaires en vente
-   */
-  public void setAvailable(ArrayList<Copy> available) {
-    this.available = available;
-  }
-
-  /**
-   * Ajout d'un copy à la liste en vente
-   *
-   * @param copy Copy à ajouter
-   */
-  public void addAvailable(Copy copy) {
-    available.add(copy);
-  }
-
-  /**
-   * Ajout de plusieurs copies à la liste en vente
-   *
-   * @param copies Liste des copies à ajouter
-   */
-  public void addAvailable(ArrayList<Copy> copies) {
-    available.addAll(copies);
-  }
-
-  /**
-   * Supprime en exemplaire de la liste available
-   *
-   * @param index Indice de l'exemplaire à supprimer
-   */
-  public void removeCopyAvailable(int index) {
-    available.remove(index);
+    return copies.stream().filter(Copy::isAvailable).collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
@@ -221,25 +214,7 @@ public class Account {
    * @return sold La liste des exemplaires sold
    */
   public ArrayList<Copy> getSold() {
-    return sold;
-  }
-
-  /**
-   * Défini la liste des exemplaires vendus
-   *
-   * @param sold Les des exemplaires vendus
-   */
-  public void setSold(ArrayList<Copy> sold) {
-    this.sold = sold;
-  }
-
-  /**
-   * Ajout d'un copy à la liste des exemplaires vendus
-   *
-   * @param copy L'copy à ajouter
-   */
-  public void addSold(Copy copy) {
-    this.sold.add(copy);
+    return copies.stream().filter(Copy::isSold).collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
@@ -249,24 +224,7 @@ public class Account {
    * member
    */
   public ArrayList<Copy> getPaid() {
-    return paid;
-  }
-
-  /**
-   * Défini la liste des exemplaires dont l'argent est remis
-   *
-   * @param paid Liste des exemplaires que l'argent a été remis au member
-   */
-  public void setPaid(ArrayList<Copy> paid) {
-    this.paid = paid;
-  }
-
-  public void addPayed(ArrayList<Copy> copies) {
-    this.paid.addAll(copies);
-  }
-
-  public void addPayed(Copy copy) {
-    this.paid.add(copy);
+    return copies.stream().filter(Copy::isPaid).collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
@@ -275,52 +233,7 @@ public class Account {
    * @return reserved Liste des exemplaires en réservation
    */
   public ArrayList<Copy> getReserved() {
-    return reserved;
-  }
-
-  /**
-   * Défini la liste des exemplaires mis en réservation
-   *
-   * @param reserved Liste des exemplaires en réservation
-   */
-  public void setReserved(ArrayList<Copy> reserved) {
-    this.reserved = reserved;
-  }
-
-  /**
-   * Ajout d'un copy à la liste mis en réservation
-   *
-   * @param copy Copy à ajouter
-   */
-  public void addReserved(Copy copy) {
-    reserved.add(copy);
-  }
-
-  /**
-   * Annulation d'une réservation et remise en vente d'un exemplaire
-   *
-   * @param availableCopyIndex L'exemplaire à remettre en vente
-   */
-  public void cancelReservation(int availableCopyIndex) {
-    available.add(reserved.remove(availableCopyIndex));
-  }
-
-  /**
-   * Prend un exeplaire en réservation et le met dans la liste sold
-   *
-   * @param reservedCopyIndex L'exemplaire sold
-   */
-  public void sellReservedCopy(int reservedCopyIndex) {
-    sold.add(reserved.remove(reservedCopyIndex));
-  }
-
-  /**
-   * Prend un exemplaire de available et le met dans sold
-   *
-   * @param availableCopyIndex Copy sold
-   */
-  public void sell(int availableCopyIndex) {
-    sold.add(available.remove(availableCopyIndex));
+    return copies.stream().filter(Copy::isReserved).collect(Collectors.toCollection(ArrayList::new));
   }
 
   @SuppressWarnings("deprecation")
@@ -344,40 +257,49 @@ public class Account {
   public double amountAvailable() {
     double amount = 0;
 
-    for (Copy copy : available) {
-      amount += copy.getPrice();
+    for (Copy copy : copies) {
+      if (copy.isAvailable()) {
+        amount += copy.getPrice();
+      }
     }
+
     return amount;
   }
 
   public int quantityAvailable() {
-    return available.size();
+    return getAvailable().size();
   }
 
   public double amountSold() {
     double amount = 0;
 
-    for (Copy copy : sold) {
-      amount += copy.getPrice();
+    for (Copy copy : copies) {
+      if (copy.isSold()) {
+        amount += copy.getPrice();
+      }
     }
+
     return amount;
   }
 
   public int quantitySold() {
-    return sold.size();
+    return getSold().size();
   }
 
   public double amountPaid() {
     double amount = 0;
 
-    for (Copy copy : paid) {
-      amount += copy.getPrice();
+    for (Copy copy : copies) {
+      if (copy.isPaid()) {
+        amount += copy.getPrice();
+      }
     }
+
     return amount;
   }
 
   public int quantityPaid() {
-    return paid.size();
+    return getPaid().size();
   }
 
   public Comment getComment(int id) {
@@ -388,6 +310,18 @@ public class Account {
     }
 
     return null;
+  }
+
+  public void pay() {
+    copies.stream().filter(Copy::isPaid).forEach(copy -> copy.addTransaction("PAY"));
+  }
+
+  public void removeCopy(int copyId) {
+    for (int i = 0; i < copies.size(); i++) {
+      if (copies.get(i).getId() == copyId) {
+
+      }
+    }
   }
 
   public void fromJSON(JSONObject json) {
@@ -412,17 +346,7 @@ public class Account {
         JSONArray copies = json.getJSONArray("copies");
 
         for (int i = 0; i < copies.length(); i++) {
-          Copy copy = new Copy(copies.getJSONObject(i));
-
-          if (copy.isReserved()) {
-            addReserved(copy);
-          } else if (copy.isPayed()) {
-            addPayed(copy);
-          } else if (copy.isSold()) {
-            addSold(copy);
-          } else {
-            addAvailable(copy);
-          }
+          this.copies.add(new Copy(copies.getJSONObject(i)));
         }
       }
     } catch (JSONException e) {
@@ -443,19 +367,7 @@ public class Account {
         comments.put(comment.toJSON());
       }
 
-      for (Copy copy : available) {
-        copies.put(copy.toJSON());
-      }
-
-      for (Copy copy : sold) {
-        copies.put(copy.toJSON());
-      }
-
-      for (Copy copy : paid) {
-        copies.put(copy.toJSON());
-      }
-
-      for (Copy copy : reserved) {
+      for (Copy copy : this.copies) {
         copies.put(copy.toJSON());
       }
 

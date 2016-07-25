@@ -21,25 +21,25 @@ import java.net.URL;
  */
 public class APIConnector {
   private static final String API_KEY = "8ecf71749e3a5a5f02d585943e81849f";
-  private static final String API_URL = "http://localhost/blu-api/query.php";
+  private static final String API_URL = "http://localhost/blu-api/index.php";
 
   /**
    * Calls the API and sends it JSON.
    * Receives JSON in response.
-   * @param json JSONObject to send to API
+   * @param req JSONObject to send to API
    * @return JSONObject containing response from API or error
    */
-  public static JSONObject call(JSONObject json) {
+  public static JSONObject call(JSONObject req) {
     try {
       URL url = new URL(API_URL);
-      json = addAPIKey(json);
+      addAPIKey(req);
 
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("POST");
       connection.setDoInput(true);
       connection.setDoOutput(true);
 
-      String jsonData = "jsonData=" + json.toString();
+      String jsonData = "req=" + req.toString();
       PrintWriter vars = new PrintWriter(connection.getOutputStream());
       vars.println(jsonData);
       vars.close();
@@ -48,9 +48,7 @@ public class APIConnector {
       String response = bufferedReader.readLine();
       bufferedReader.close();
 
-      json = new JSONObject(response);
-
-      return json;
+      return new JSONObject(response);
     } catch (MalformedURLException e) {
       return error(422, "INVALID_DATA");
     } catch (IOException | JSONException e) {
@@ -58,24 +56,22 @@ public class APIConnector {
     }
   }
 
-  private static JSONObject addAPIKey(JSONObject json) {
+  private static void addAPIKey(JSONObject req) {
     try {
-      json.put("apikey", API_KEY);
+      req.put("apikey", API_KEY);
     } catch (JSONException e) {
       e.printStackTrace();
     }
-
-    return json;
   }
 
   private static JSONObject error(int code, String message) {
     JSONObject error = new JSONObject();
-    JSONObject errorData = new JSONObject();
+    JSONObject data = new JSONObject();
 
     try {
-      errorData.put("code", code);
-      errorData.put("message", message);
-      error.put("data", errorData);
+      data.put("code", code);
+      data.put("message", message);
+      error.put("data", data);
     } catch (JSONException e) {
       e.printStackTrace();
     }
