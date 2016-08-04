@@ -1,136 +1,161 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
 
-<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MemberViewController">
-  <children>
-    <ScrollPane prefHeight="575.0" prefWidth="670.0">
-      <content>
-        <Pane prefHeight="1515.0" prefWidth="670.0">
-          <children>
-            <Pane id="main_pane_fiche_membre">
-              <children>
-                <Label id="cpt_etudiant" text="Compte Étudiant"/>
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.MemberViewController">
+  <ScrollPane prefHeight="900">
+    <VBox styleClass="main" spacing="10">
+      <Label styleClass="h1" text="Compte Étudiant"/>
 
-                <Button id="btn_modif" fx:id="btnUpdate" mnemonicParsing="false" text="Modifier"/>
-                <Button id="btn_suppMem" fx:id="btnDelete" mnemonicParsing="false" text="Supprimer"/>
+      <HBox spacing="10">
+        <Button styleClass="form-button" fx:id="btnAddCopy" text="Ajouter des livres"/>
+        <Button styleClass="form-button" fx:id="btnUpdate" text="Modifier"/>
+        <Button styleClass="form-button" fx:id="btnDelete" text="Supprimer"/>
+      </HBox>
 
-                <Label id="nom_etudiant" prefWidth="165.0" text="Nom :"/>
-                <Label id="lbl_nom_etudiant" fx:id="lblName"/>
+      <!-- Coordinates -->
+      <VBox styleClass="section" spacing="10">
+        <Label styleClass="h2" text="Information du member"/>
+        <HBox spacing="10">
+          <Label text="Nom :"/>
+          <Label fx:id="lblName"/>
+        </HBox>
 
-                <Label id="no_membre_etudiant" prefWidth="165.0" text="Numéro de member :"/>
-                <Label id="lbl_no_membre" fx:id="lblNo"/>
+        <HBox spacing="10">
+          <Label text="Numéro de member :"/>
+          <Label fx:id="lblNo"/>
+        </HBox>
 
-                <Label id="etudiant_adresse" prefWidth="165.0" text="Adresse :"/>
-                <Label id="lbl_adresse" fx:id="lblAddress"/>
+        <HBox spacing="10">
+          <Label text="Adresse :"/>
+          <Label fx:id="lblAddress"/>
+        </HBox>
 
-                <Label id="etudiant_courriel" prefWidth="165.0" text="Courriel :"/>
-                <Label id="lbl_courriel" fx:id="lblEmail"/>
+        <HBox spacing="10">
+          <Label text="Courriel :"/>
+          <Label fx:id="lblEmail"/>
+        </HBox>
 
-                <Label id="etudiant_tel1" prefWidth="165.0" text="Téléphone 1 :"/>
-                <Label id="lbl_telephone1" fx:id="lblPhone1"/>
+        <HBox spacing="10">
+          <Label text="Téléphone 1 :"/>
+          <Label fx:id="lblPhone1"/>
+        </HBox>
 
-                <Label id="etudiant_tel2" prefWidth="165.0" text="Téléphone 2 :"/>
-                <Label id="lbl_telephone2" fx:id="lblPhone2"/>
+        <HBox spacing="10">
+          <Label text="Téléphone 2 :"/>
+          <Label fx:id="lblPhone2"/>
+        </HBox>
+      </VBox>
 
-                <Label id="lbl_etat_compte" text="État du account"/>
+      <!-- Account information -->
+      <VBox styleClass="section" spacing="10">
+        <Label styleClass="h2" text="État du account"/>
 
-                <Label id="etudiant_etat" prefWidth="165.0" text="État d'activation :"/>
-                <Label id="lbl_etat" fx:id="lblState"/>
+        <HBox spacing="10">
+          <Label text="État d'activation :"/>
+          <Label fx:id="lblState"/>
+        </HBox>
 
-                <Label id="date_activation" prefWidth="165.0" text="Date d'inscription :"/>
-                <Label id="lbl_inscription" fx:id="lblRegistration"/>
+        <HBox spacing="10">
+          <Label text="Date d'inscription :"/>
+          <Label fx:id="lblRegistration"/>
+        </HBox>
 
-                <Label id="date_derniere_activite" prefWidth="165.0" text="Dernière activité :"/>
-                <Label id="lbl_derniereActivite" fx:id="lblLastActivity"/>
+        <HBox spacing="10">
+          <Label text="Dernière activité :"/>
+          <Label fx:id="lblLastActivity"/>
+        </HBox>
 
-                <Label id="date_desactivation" prefWidth="165.0" text="Date de désactivation :"/>
-                <Label fx:id="lblDeactivation"/>
+        <HBox spacing="10">
+          <Label text="Date de désactivation :"/>
+          <Label fx:id="lblDeactivation"/>
+        </HBox>
+      </VBox>
 
-                <Button id="btn_ajout_exemplaire" fx:id="btnAddCopy" text="Ajouter des copies"/>
+      <VBox styleClass="section" spacing="10">
+        <Label styleClass="h2" text="Notes et commentaires"/>
+        <Button styleClass="form-button" fx:id="btnAddComment" text="Ajouter un commentaire"/>
 
-                <Label id="lbl_txt_comm" text="Notes et commentaires"/>
-                <Button id="btn_ajoutCom" fx:id="btnAddComment" mnemonicParsing="false" text="Ajouter un comments"/>
+        <TableView fx:id="tblComments">
+          <columns>
+            <TableColumn fx:id="colComment" prefWidth="450.0" text="Commentaire"/>
+            <TableColumn fx:id="colCommentDate" prefWidth="120.0" text="Date"/>
+          </columns>
+        </TableView>
+      </VBox>
 
-                <TableView id="tbl_commentaire" fx:id="tblComments" prefHeight="135.0" prefWidth="570.0">
-                  <columns>
-                    <TableColumn fx:id="colComment" prefWidth="450.0" text="Commentaire"/>
-                    <TableColumn fx:id="colCommentDate" prefWidth="120.0" text="Date"/>
-                  </columns>
-                </TableView>
+      <VBox fx:id="reservation" spacing="10">
+        <Label styleClass="h2" text="Réservations"/>
+        <Button styleClass="form-button" fx:id="btnAddReservation" text="Faire une réservation"/>
+        <TableView fx:id="tblReservation">
+          <columns>
+            <TableColumn prefWidth="228.0" text="Titre"/>
+            <TableColumn prefWidth="132.0" text="Propriétaire"/>
+            <TableColumn prefWidth="147.0" text="Mise en réservation"/>
+            <TableColumn prefWidth="61.0" text="Prix"/>
+          </columns>
+        </TableView>
+      </VBox>
 
-                <Button id="btn_remboursement" fx:id="btnPay" mnemonicParsing="false" text="Remboursement"/>
-                <Button id="btn_renouv" fx:id="btnRenew" mnemonicParsing="false" text="Renouveller"/>
-                <Button id="btn_recu" fx:id="btnReceipt" mnemonicParsing="false" text="Impression reçu"/>
+      <HBox styleClass="section" spacing="10" alignment="CENTER">
+        <Button styleClass="form-button" fx:id="btnPay" text="Remboursement"/>
+        <Button styleClass="form-button" fx:id="btnRenew" text="Renouveller"/>
+        <Button styleClass="form-button" fx:id="btnReceipt" text="Impression reçu"/>
+      </HBox>
 
+      <VBox styleClass="section" spacing="10">
+        <Label styleClass="h2" text="Statistiques"/>
+        <TableView fx:id="tblStats">
+          <columns>
+            <TableColumn prefWidth="285.0" text="C1"/>
+            <TableColumn prefWidth="285.0" text="C2"/>
+          </columns>
+        </TableView>
+      </VBox>
 
-                <Label id="lbl_membre_stats" text="Statistiques"/>
+      <!-- Member's copies -->
+      <VBox styleClass="section" spacing="10">
+        <Label styleClass="h2" text="Ouvrages"/>
 
-                <TableView id="tbl_stat" fx:id="tblStats" prefHeight="141.0" prefWidth="570.0">
-                  <columns>
-                    <TableColumn prefWidth="285.0" text="C1"/>
-                    <TableColumn prefWidth="285.0" text="C2"/>
-                  </columns>
-                </TableView>
+        <Label styleClass="h3" text="À vendre"/>
+        <TableView fx:id="tblAvailable">
+          <columns>
+            <TableColumn fx:id="colAvailableTitle" prefWidth="217.0" text="Titre"/>
+            <TableColumn fx:id="colAvailableEditor" prefWidth="93.0" text="Éditeur"/>
+            <TableColumn fx:id="colAvailableEdition" prefWidth="63.0" text="Édition"/>
+            <TableColumn fx:id="colAvailableDateAdded" prefWidth="92.0" text="Mise en vente"/>
+            <TableColumn fx:id="colAvailablePrice" prefWidth="60.0" text="Prix"/>
+          </columns>
+        </TableView>
 
-                <Label id="lbl_membre_ouvrages" text="Ouvrages"/>
+        <Label styleClass="h3" text="Vendu"/>
+        <TableView fx:id="tblSold">
+          <columns>
+            <TableColumn fx:id="colSoldTitle" prefWidth="201.0" text="Titre"/>
+            <TableColumn fx:id="colSoldEditor" prefWidth="105.0" text="Éditeur"/>
+            <TableColumn fx:id="colSoldEdition" prefWidth="52.0" text="Édition"/>
+            <TableColumn fx:id="colSoldDateAdded" prefWidth="95.0" text="Mise en vente"/>
+            <TableColumn fx:id="colSoldDateSold" prefWidth="95.0" text="Vente"/>
+            <TableColumn fx:id="colSoldPrice" prefWidth="77.0" text="Prix"/>
+          </columns>
+        </TableView>
 
-                <Button fx:id="btnAddReservation" layoutX="37.0" layoutY="899.0" mnemonicParsing="false"
-                        style="-fx-background-color: none;" text="Réservation  v"/>
-                <TableView fx:id="tblReservation" layoutX="22.0" layoutY="921.0" prefHeight="91.0" prefWidth="569.0">
-                  <columns>
-                    <TableColumn prefWidth="228.0" text="Titre"/>
-                    <TableColumn prefWidth="132.0" text="Propriétaire"/>
-                    <TableColumn prefWidth="147.0" text="Mise en réservation"/>
-                    <TableColumn prefWidth="61.0" text="Prix"/>
-                  </columns>
-                </TableView>
-
-                <Button id="btn_membre_aVendre" fx:id="btnAvailable" mnemonicParsing="false" text="À vendre V"/>
-                <TableView id="tbl_membre_aVendre" fx:id="tblAvailable" prefHeight="110.0" prefWidth="570.0">
-                  <columns>
-                    <TableColumn fx:id="colAvailableTitle" prefWidth="217.0" text="Titre"/>
-                    <TableColumn fx:id="colAvailableEditor" prefWidth="93.0" text="Éditeur"/>
-                    <TableColumn fx:id="colAvailableEdition" prefWidth="63.0" text="Édition"/>
-                    <TableColumn fx:id="colAvailableDateAdded" prefWidth="92.0" text="Mise en vente"/>
-                    <TableColumn fx:id="colAvailablePrice" prefWidth="60.0" text="Prix"/>
-                  </columns>
-                </TableView>
-
-                <Button id="btn_membre_vendu" fx:id="btnSold" mnemonicParsing="false" text="Vendu V"/>
-                <TableView id="tbl_membre_vendu" fx:id="tblSold" prefHeight="91.0" prefWidth="569.0">
-                  <columns>
-                    <TableColumn fx:id="colSoldTitle" prefWidth="201.0" text="Titre"/>
-                    <TableColumn fx:id="colSoldEditor" prefWidth="105.0" text="Éditeur"/>
-                    <TableColumn fx:id="colSoldEdition" prefWidth="52.0" text="Édition"/>
-                    <TableColumn fx:id="colSoldDateAdded" prefWidth="95.0" text="Mise en vente"/>
-                    <TableColumn fx:id="colSoldDateSold" prefWidth="95.0" text="Vente"/>
-                    <TableColumn fx:id="colSoldPrice" prefWidth="77.0" text="Prix"/>
-                    <TableColumn prefWidth="38.0"/>
-                  </columns>
-                </TableView>
-
-                <Button id="btn_membre_argentRemis" fx:id="btnPaid" mnemonicParsing="false" text="Argent remis V"/>
-                <TableView id="tbl_membre_argentRemis" fx:id="tblPaid" prefHeight="91.0" prefWidth="569.0">
-                  <columns>
-                    <TableColumn fx:id="colPaidTitle" prefWidth="215.0" text="Titre"/>
-                    <TableColumn fx:id="colPaidEditor" prefWidth="96.0" text="Éditeur"/>
-                    <TableColumn fx:id="colPaidEdition" prefWidth="52.0" text="Édition"/>
-                    <TableColumn fx:id="colPaidDateAdded" prefWidth="147.0" text="Mise en Vente"/>
-                    <TableColumn fx:id="colPaidDateSold" prefWidth="147.0" text="Vente"/>
-                    <TableColumn fx:id="colPaidDatePaid" prefWidth="147.0" text="Remise d'argent"/>
-                    <TableColumn fx:id="colPaidPrice" prefWidth="58.0" text="Prix"/>
-                  </columns>
-                </TableView>
-              </children>
-            </Pane>
-          </children>
-        </Pane>
-      </content>
-    </ScrollPane>
-  </children>
+        <Label styleClass="h3" text="Remboursé"/>
+        <TableView fx:id="tblPaid">
+          <columns>
+            <TableColumn fx:id="colPaidTitle" prefWidth="215.0" text="Titre"/>
+            <TableColumn fx:id="colPaidEditor" prefWidth="96.0" text="Éditeur"/>
+            <TableColumn fx:id="colPaidEdition" prefWidth="52.0" text="Édition"/>
+            <TableColumn fx:id="colPaidDateAdded" prefWidth="147.0" text="Mise en Vente"/>
+            <TableColumn fx:id="colPaidDateSold" prefWidth="147.0" text="Vente"/>
+            <TableColumn fx:id="colPaidDatePaid" prefWidth="147.0" text="Remise d'argent"/>
+            <TableColumn fx:id="colPaidPrice" prefWidth="58.0" text="Prix"/>
+          </columns>
+        </TableView>
+      </VBox>
+    </VBox>
+  </ScrollPane>
 </Pane>

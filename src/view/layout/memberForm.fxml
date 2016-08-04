@@ -1,64 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.text.*?>
+
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.collections.*?>
-<Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="544.0" prefWidth="669.0" fx:controller="controller.MemberFormController">
-    <children>
-        <Pane id="main_pane_ajout_membre" prefHeight="580.0" prefWidth="615.0">
-            <children>
-                <Label id="lbl_ajout" fx:id="lblAdd" text="Ajouter un member"/>
 
-                <Label id="lbl_prenom" text="Prénom* :" />
-                <TextField id="prenom" fx:id="txtFirstName"/>
+<Pane xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MemberFormController">
+  <VBox styleClass="main" spacing="10">
+    <Label styleClass="h1" fx:id="lblAdd" text="Ajouter un membre"/>
 
-                <Label id="lbl_nom" text="Nom* :" />
-                <TextField id="name" fx:id="name"/>
+    <VBox styleClass="section" spacing="10">
+      <HBox spacing="10">
+        <Label styleClass="form-label" text="Prénom*"/>
+        <TextField fx:id="txtFirstName"/>
+      </HBox>
 
-                <Label id="lbl_noEtudiant" text="Numéro Étudiant* :" />
-                <TextField id="no" fx:id="txtNo"/>
+      <HBox spacing="10">
+        <Label styleClass="form-label" text="Nom*"/>
+        <TextField fx:id="txtLastName"/>
+      </HBox>
 
-                <CheckBox id="cb_numDA" fx:id="cbGenerateMemberNo" mnemonicParsing="false" text="Générer un numéro étudiant" />
+      <HBox spacing="10">
+        <Label styleClass="form-label" text="Numéro Étudiant*"/>
+        <TextField fx:id="txtNo"/>
+        <CheckBox fx:id="cbGenerateMemberNo" text="Générer un numéro étudiant"/>
+      </HBox>
+    </VBox>
 
-                <Label id="lbl_addr_postal" text="Adresse postale" />
+    <Label styleClass="h2" text="Adresse postale"/>
 
-                <Label id="lbl_address" text="Adresse :" />
-                <TextField id="address" fx:id="txtAddress"/>
+    <VBox styleClass="section" spacing="10">
+      <HBox spacing="10">
+        <Label styleClass="form-label" text="Adresse"/>
+        <TextField fx:id="txtAddress"/>
+      </HBox>
 
-                <Label id="lbl_codePostal" text="Code Postal :" />
-                <TextField id="code_postal" fx:id="txtZip"/>
+      <HBox spacing="10">
+        <Label styleClass="form-label" text="Code Postal"/>
+        <TextField fx:id="txtZip"/>
+      </HBox>
 
-                <Label id="lbl_ville" text="Ville :" />
-                <TextField id="ville" fx:id="txtCity"/>
+      <HBox spacing="10">
+        <Label styleClass="form-label" text="Ville"/>
+        <TextField fx:id="txtCity"/>
+      </HBox>
 
-                <Label id="lbl_province" text="Province :" />
-                <ComboBox id="province" fx:id="cbState">
-                    <value>
-                        <String fx:value="QC" />
-                    </value>
-                </ComboBox>
+      <HBox spacing="10">
+        <Label styleClass="form-label" text="Province"/>
+        <ComboBox fx:id="cbState"/>
+      </HBox>
 
-                <Label id="lbl_email" text="Adresse email* :" />
-                <TextField id="courriel" fx:id="txtEmail"/>
+      <HBox spacing="10">
+        <Label styleClass="form-label" text="Adresse email* :"/>
+        <TextField fx:id="txtEmail"/>
+      </HBox>
 
-                <Label id="lbl_tel1" text="Téléphone 1 :" />
-                <TextField id="numero1" fx:id="txtPhoneNumber1"/>
+      <HBox spacing="10">
+        <Label styleClass="form-label" text="Téléphone 1"/>
+        <TextField fx:id="txtPhoneNumber1"/>
+        <Label text="Note"/>
+        <TextField fx:id="txtPhoneNote1"/>
+      </HBox>
 
-                <Label id="lbl_tel2" text="Telephone 2 :" />
-                <TextField id="numero2" fx:id="txtPhoneNumber2"/>
+      <HBox spacing="10">
+        <Label styleClass="form-label" text="Telephone 2"/>
+        <TextField fx:id="txtPhoneNumber2"/>
+        <Label text="Note"/>
+        <TextField fx:id="txtPhoneNote2"/>
+      </HBox>
+    </VBox>
 
-                <Label id="lbl_note1" text="Note :" />
-                <TextField id="note1" fx:id="txtPhoneNote1" />
-                <Label id="lbl_note2" text="Note :" />
-                <TextField id="note2" fx:id="txtPhoneNote2" />
+    <VBox styleClass="section" fx:id="commentSection" spacing="10">
+      <Label text="Commentaire"/>
+      <TextArea fx:id="txtComment" minHeight="75" wrapText="true"/>
+    </VBox>
 
-                <Label id="lbl_commentaire" fx:id="lblComment" text="Commentaires :" />
-                <TextArea id="comment" fx:id="txtComment"/>
-
-                <Button id="btn_annuler" fx:id="btnCancel" mnemonicParsing="false" text="Annuler"/>
-                <Button id="btn_ajout" fx:id="btnAdd" mnemonicParsing="false" text="Ajouter"/>
-            </children>
-        </Pane>
-    </children>
+    <AnchorPane>
+      <HBox spacing="10" AnchorPane.rightAnchor="10" AnchorPane.bottomAnchor="10">
+        <Button styleClass="form-button" fx:id="btnCancel" text="Annuler"/>
+        <Button styleClass="form-button" fx:id="btnSave" text="Ajouter"/>
+      </HBox>
+    </AnchorPane>
+  </VBox>
 </Pane>

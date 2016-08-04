@@ -1,125 +1,139 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="controller.ItemViewController">
-  <children>
-    <VBox prefHeight="1555.0" prefWidth="689.0">
-      <children>
-        <ScrollPane prefHeight="600.0" prefWidth="697.0">
-          <content>
-            <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1313.0" prefWidth="669.0">
-              <children>
-                <Pane layoutX="32.0" layoutY="51.0" prefHeight="1230.0" prefWidth="611.0" style="-fx-background-color: #d8e0d2">
-                  <children>
-                    <Label layoutX="22.0" layoutY="15.0" prefWidth="165.0" text="Titre :" textFill="#424b38" />
-                    <Label fx:id="lblTitle" layoutX="180.0" layoutY="15.0" textFill="#424b38" />
-                    <Label layoutX="22.0" layoutY="35.0" prefWidth="165.0" text="Description :" textFill="#424b38" />
-                    <Label fx:id="lblDescription" layoutX="180.0" layoutY="35.0" textFill="#424b38" />
-                    <Label layoutX="22.0" layoutY="55.0" prefWidth="165.0" text="Auteur :" textFill="#424b38" />
-                    <Label fx:id="lblAuthor" layoutX="180.0" layoutY="55.0" textFill="#424b38" />
-                    <Label layoutX="22.0" layoutY="75.0" prefWidth="165.0" text="Édition :" textFill="#424b38" />
-                    <Label fx:id="lblEdition" layoutX="180.0" layoutY="75.0" textFill="#424b38" />
-                    <Label layoutX="22.0" layoutY="95.0" prefWidth="165.0" text="Éditeur :" textFill="#424b38" />
-                    <Label fx:id="lblEditor" layoutX="180.0" layoutY="95.0" textFill="#424b38" />
-                    <Label layoutX="22.0" layoutY="115.0" prefWidth="165.0" text="Année :" textFill="#424b38" />
-                    <Label fx:id="lblPublication" layoutX="180.0" layoutY="115.0" textFill="#424b38" />
-                    <Label layoutX="22.0" layoutY="135.0" prefWidth="165.0" text="Code EAN13 :" textFill="#424b38" />
-                    <Label fx:id="lblEan13" layoutX="180.0" layoutY="135.0" textFill="#424b38" />
-                    <Label layoutX="22.0" layoutY="155.0" prefWidth="165.0" text="Commentaire :" textFill="#424b38" />
-                    <Button fx:id="btnAddComment" layoutX="140.0" layoutY="155.0" text="Modifier" />
-                    <Label fx:id="lblComment" layoutX="22.0" layoutY="185.0" textFill="#424b38" text="Ceci est un comments" />
+<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+      fx:controller="controller.ItemViewController">
+  <ScrollPane>
+    <VBox spacing="10" styleClass="main">
+      <Label styleClass="h1" text="Ouvrage"/>
 
-                    <Label layoutX="22.0" layoutY="195.0" text="Gestion interne" textFill="#424b38">
-                      <font>
-                        <Font size="18.0" />
-                      </font>
-                    </Label>
-                    <Label layoutX="22.0" layoutY="225.0" prefWidth="165.0" text="Statut :" textFill="#424b38" />
-                    <Label fx:id="lblStatus" layoutX="180.0" layoutY="225.0" textFill="#424b38" />
-                    <Button fx:id="statusUp" layoutX="260.0" layoutY="220.0" text="^" />
-                    <Button fx:id="statusDown" layoutX="300.0" layoutY="220.0" text="v" />
-                    <Label layoutX="22.0" layoutY="245.0" prefWidth="165.0" text="Catégorie :" textFill="#424b38" />
-                    <Label fx:id="lblCategory" layoutX="180.0" layoutY="245.0" textFill="#424b38" />
-                    <Label layoutX="22.0" layoutY="265.0" prefWidth="165.0" text="Matière :" textFill="#424b38" />
-                    <Label fx:id="lblSubject" layoutX="180.0" layoutY="265.0" textFill="#424b38" />
-                    <Label layoutX="22.0" layoutY="285.0" prefWidth="165.0" text="Caisses de rangement :" textFill="#424b38" />
-                    <Button fx:id="btnStorage" layoutX="140.0" layoutY="285.0" text="Modifier" />
-                    <Label fx:id="lblStorage" layoutX="22.0" layoutY="315.0" textFill="#424b38" />
+      <HBox spacing="10">
+        <Button styleClass="form-button" fx:id="btnUpdate" text="Modifier l'ouvrage"/>
+        <Button styleClass="form-button" fx:id="btnDelete" text="Supprimer"/>
+        <Button styleClass="form-button" fx:id="btnMerge" text="Fusionner avec un autre ouvrage"/>
+      </HBox>
 
-                    <Button fx:id="btnReserve" layoutX="25.0" layoutY="350.0" text="Faire une réservation" />
+      <VBox spacing="10" styleClass="section">
+        <Label styleClass="h2" text="Informations"/>
 
-                    <Label layoutX="25.0" layoutY="381.0" text="Statistiques" textFill="#424b38">
-                      <font>
-                        <Font size="18.0" />
-                      </font>
-                    </Label>
-                    <TableView fx:id="tblItemStatistics" layoutX="25.0" layoutY="416.0" prefHeight="141.0" prefWidth="569.0">
-                      <columns>
-                        <TableColumn prefWidth="263.0" text="C1" />
-                        <TableColumn prefWidth="305.0" text="C2" />
-                      </columns>
-                    </TableView>
+        <HBox spacing="10">
+          <Label text="Titre :"/>
+          <Label fx:id="lblTitle"/>
+        </HBox>
+        <HBox spacing="10">
+          <Label text="Description :"/>
+          <Label fx:id="lblDescription"/>
+        </HBox>
+        <HBox spacing="10">
+          <Label text="Auteur :"/>
+          <Label fx:id="lblAuthor"/>
+        </HBox>
+        <HBox spacing="10">
+          <Label text="Édition :"/>
+          <Label fx:id="lblEdition"/>
+        </HBox>
+        <HBox spacing="10">
+          <Label text="Éditeur :"/>
+          <Label fx:id="lblEditor"/>
+        </HBox>
+        <HBox spacing="10">
+          <Label text="Année :"/>
+          <Label fx:id="lblPublication"/>
+        </HBox>
+        <HBox spacing="10">
+          <Label text="Code EAN13 :"/>
+          <Label fx:id="lblEan13"/>
+        </HBox>
+        <HBox spacing="10">
+          <Label text="Commentaire :"/>
+          <Label fx:id="lblComment"/>
+        </HBox>
+        <AnchorPane>
+          <Button styleClass="form-button" fx:id="btnAddComment" text="Modifier le commentaire"
+                  AnchorPane.rightAnchor="0"/>
+        </AnchorPane>
+      </VBox>
 
-                    <Button fx:id="btnDisplayReservations" layoutX="25.0" layoutY="592.0" mnemonicParsing="false" style="-fx-background-color: none;" text="Réservation  v" />
-                    <TableView fx:id="tblReservations" layoutX="26.0" layoutY="629.0" prefHeight="91.0" prefWidth="569.0">
-                      <columns>
-                        <TableColumn fx:id="colReservationMember" prefWidth="196.0" text="Membre" />
-                        <TableColumn fx:id="colReservationSeller" prefWidth="164.0" text="Vendeur" />
-                        <TableColumn fx:id="colReservationAdded" prefWidth="147.0" text="Date d'ajout" />
-                        <TableColumn fx:id="colReservationDate" prefWidth="147.0" text="Date de réservation" />
-                        <TableColumn fx:id="colReservationPrice" prefWidth="61.0" text="Prix" />
-                      </columns>
-                    </TableView>
+      <VBox styleClass="section" spacing="10">
+        <Label styleClass="h2" text="Gestion interne"/>
 
-                    <Button fx:id="btnDisplayAvailable" layoutX="25.0" layoutY="752.0" mnemonicParsing="false" style="-fx-background-color: none;" text="À vendre  v" />
-                    <TableView fx:id="tblAvailable" layoutX="25.0" layoutY="789.0" prefHeight="109.0" prefWidth="569.0">
-                      <columns>
-                        <TableColumn fx:id="colAvailableSeller" prefWidth="360.0" text="Vendeur" />
-                        <TableColumn fx:id="colAvailableAdded" prefWidth="108.0" text="Date d'ajout" />
-                        <TableColumn fx:id="colAvailablePrice" prefWidth="62.0" text="Prix" />
-                        <TableColumn fx:id="colAvailableAction" prefWidth="37.0" text="Action" />
-                      </columns>
-                    </TableView>
+        <HBox spacing="10">
+          <Label text="Statut :"/>
+          <Label fx:id="lblStatus"/>
+          <Button styleClass="form-button" fx:id="statusUp" text="^"/>
+          <Button styleClass="form-button" fx:id="statusDown" text="v"/>
+        </HBox>
+        <HBox spacing="10">
+          <Label text="Catégorie :"/>
+          <Label fx:id="lblCategory"/>
+        </HBox>
+        <HBox spacing="10">
+          <Label text="Matière :"/>
+          <Label fx:id="lblSubject"/>
+        </HBox>
+        <HBox spacing="10">
+          <Label text="Caisses de rangement :"/>
+          <Label fx:id="lblStorage"/>
+          <Button styleClass="form-button" fx:id="btnStorage" text="Modifier les caisses"/>
+        </HBox>
 
-                    <Button fx:id="btnSold" layoutX="25.0" layoutY="911.0" mnemonicParsing="false" style="-fx-background-color: none;" text="Vendu  v" />
-                    <TableView fx:id="tblSold" layoutX="26.0" layoutY="948.0" prefHeight="91.0" prefWidth="569.0">
-                      <columns>
-                        <TableColumn fx:id="colSoldSeller" prefWidth="255.0" text="Vendeur" />
-                        <TableColumn fx:id="colSoldAdded" prefWidth="137.0" text="Date d'ajout" />
-                        <TableColumn fx:id="colSoldDateSold" prefWidth="91.0" text="Date de vente" />
-                        <TableColumn fx:id="colSoldPrice" prefWidth="55.0" text="Prix" />
-                      </columns>
-                    </TableView>
+        <Button styleClass="form-button" fx:id="btnReserve" text="Faire une réservation"/>
+      </VBox>
 
-                    <Button fx:id="btnPaid" layoutX="25.0" layoutY="1060.0" mnemonicParsing="false" style="-fx-background-color: none;" text="Argent remis  v" />
-                    <TableView fx:id="tblPaid" layoutX="25.0" layoutY="1106.0" prefHeight="91.0" prefWidth="569.0">
-                      <columns>
-                        <TableColumn fx:id="colPaidSeller" prefWidth="255.0" text="Vendeur" />
-                        <TableColumn fx:id="colPaidAdded" prefWidth="137.0" text="Date d'ajout" />
-                        <TableColumn fx:id="colPaidDateSold" prefWidth="91.0" text="Date de vente" />
-                        <TableColumn fx:id="colPaidDatePaid" prefWidth="91.0" text="Date de remise d'argent" />
-                        <TableColumn fx:id="colPaidPrice" prefWidth="55.0" text="Prix" />
-                      </columns>
-                    </TableView>
-                  </children>
-                </Pane>
-                <Label layoutX="49.0" layoutY="16.0" text="Ouvrage" textFill="#424b38">
-                  <font>
-                    <Font size="24.0" />
-                  </font>
-                </Label>
-                <Button fx:id="btnUpdate" layoutX="153.0" layoutY="21.0" mnemonicParsing="false" style="-fx-background-color: none;" text="Modifier l'ouvrage" />
-                <Button fx:id="btnDelete" layoutX="270.0" layoutY="21.0" mnemonicParsing="false" style="-fx-background-color: none;" text="Supprimer" />
-                <Button fx:id="btnMerge" layoutX="350.0" layoutY="21.0" mnemonicParsing="false" style="-fx-background-color: none;" text="Fusionner avec un autre ouvrage" />
-              </children>
-            </Pane>
-          </content>
-        </ScrollPane>
-      </children>
+      <VBox spacing="10" styleClass="section">
+        <Label styleClass="h2" text="Statistiques"/>
+        <TableView fx:id="tblItemStatistics">
+          <columns>
+            <TableColumn prefWidth="263.0" text="C1"/>
+            <TableColumn prefWidth="305.0" text="C2"/>
+          </columns>
+        </TableView>
+      </VBox>
+
+
+      <Button fx:id="btnDisplayReservations" text="Réservation  v"/>
+      <TableView fx:id="tblReservations">
+        <columns>
+          <TableColumn fx:id="colReservationMember" prefWidth="196.0" text="Membre"/>
+          <TableColumn fx:id="colReservationSeller" prefWidth="164.0" text="Vendeur"/>
+          <TableColumn fx:id="colReservationAdded" prefWidth="147.0" text="Date d'ajout"/>
+          <TableColumn fx:id="colReservationDate" prefWidth="147.0" text="Date de réservation"/>
+          <TableColumn fx:id="colReservationPrice" prefWidth="61.0" text="Prix"/>
+        </columns>
+      </TableView>
+
+      <Button fx:id="btnDisplayAvailable" text="À vendre  v"/>
+      <TableView fx:id="tblAvailable">
+        <columns>
+          <TableColumn fx:id="colAvailableSeller" prefWidth="360.0" text="Vendeur"/>
+          <TableColumn fx:id="colAvailableAdded" prefWidth="108.0" text="Date d'ajout"/>
+          <TableColumn fx:id="colAvailablePrice" prefWidth="62.0" text="Prix"/>
+          <TableColumn fx:id="colAvailableAction" prefWidth="37.0" text="Action"/>
+        </columns>
+      </TableView>
+
+      <Button fx:id="btnSold" text="Vendu  v"/>
+      <TableView fx:id="tblSold">
+        <columns>
+          <TableColumn fx:id="colSoldSeller" prefWidth="255.0" text="Vendeur"/>
+          <TableColumn fx:id="colSoldAdded" prefWidth="137.0" text="Date d'ajout"/>
+          <TableColumn fx:id="colSoldDateSold" prefWidth="91.0" text="Date de vente"/>
+          <TableColumn fx:id="colSoldPrice" prefWidth="55.0" text="Prix"/>
+        </columns>
+      </TableView>
+
+      <Button fx:id="btnPaid" text="Argent remis  v"/>
+      <TableView fx:id="tblPaid">
+        <columns>
+          <TableColumn fx:id="colPaidSeller" prefWidth="255.0" text="Vendeur"/>
+          <TableColumn fx:id="colPaidAdded" prefWidth="137.0" text="Date d'ajout"/>
+          <TableColumn fx:id="colPaidDateSold" prefWidth="91.0" text="Date de vente"/>
+          <TableColumn fx:id="colPaidDatePaid" prefWidth="91.0" text="Date de remise d'argent"/>
+          <TableColumn fx:id="colPaidPrice" prefWidth="55.0" text="Prix"/>
+        </columns>
+      </TableView>
     </VBox>
-  </children>
+  </ScrollPane>
 </Pane>

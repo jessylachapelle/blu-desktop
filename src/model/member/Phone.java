@@ -140,9 +140,17 @@ public class Phone {
     JSONObject phone = new JSONObject();
 
     try {
-      phone.put("id", id);
-      phone.put("number", number);
-      phone.put("note", note);
+      if (!number.isEmpty()) {
+        phone.put("number", number);
+
+        if (id != 0) {
+          phone.put("id", id);
+        }
+
+        if (!note.isEmpty()) {
+          phone.put("note", note);
+        }
+      }
     } catch (JSONException e) {
       e.printStackTrace();
     }

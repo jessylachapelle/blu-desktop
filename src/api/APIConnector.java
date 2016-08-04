@@ -2,11 +2,13 @@ package api;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import ressources.Dialog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -51,6 +53,9 @@ public class APIConnector {
       return new JSONObject(response);
     } catch (MalformedURLException e) {
       return error(422, "INVALID_DATA");
+    } catch (ConnectException e) {
+      Dialog.information("La connection au serveur n'a pu être établie, veuillez vérifier votre connection internet");
+      return error(404, "NOT_FOUND");
     } catch (IOException | JSONException e) {
       return error(500, "INTERNAL_SERVER_ERROR");
     }

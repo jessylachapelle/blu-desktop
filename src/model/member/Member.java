@@ -41,7 +41,11 @@ public class Member {
   private void init() {
     no = 0;
     account = new Account();
+
     phone = new Phone[2];
+    phone[0] = new Phone();
+    phone[1] = new Phone();
+
     firstName = "";
     lastName = "";
     email = "";

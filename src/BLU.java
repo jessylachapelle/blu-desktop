@@ -1,10 +1,12 @@
 import java.io.*;
 
 import javafx.application.*;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
+
 import ressources.I18N;
 
 /**
@@ -16,36 +18,32 @@ import ressources.I18N;
 public class BLU extends Application {
   I18N i18n;
 
+  public static void main(String[] args) {
+    launch(args);
+  }
+
   @Override
   public void start(Stage primaryStage) {
     i18n = new I18N();
 
+    double width = Screen.getPrimary().getVisualBounds().getWidth();
+    double height = Screen.getPrimary().getVisualBounds().getHeight();
+
     primaryStage.setTitle(i18n.getString("title"));
-    primaryStage.setWidth(900);
-    primaryStage.setHeight(700);
-    primaryStage.setMaximized(false);
+    primaryStage.setWidth(width);
+    primaryStage.setHeight(height);
+    //primaryStage.setMaximized(true);
 
     try {
       FXMLLoader loader = new FXMLLoader(BLU.class.getResource("view/layout/window.fxml"));
-      BorderPane rootLayout = loader.load();
+      Pane window = loader.load();
 
-      Scene scene = new Scene(rootLayout);
-      scene.getStylesheets().add("view/css/window.css");
-      scene.getStylesheets().add("view/css/memberForm.css");
-      scene.getStylesheets().add("view/css/recherche.css");
-      scene.getStylesheets().add("view/css/memberView.css");
-      scene.getStylesheets().add("view/css/itemForm.css");
+      Scene scene = new Scene(window);
+      scene.getStylesheets().addAll("view/css/window.css", "view/css/memberForm.css", "view/css/recherche.css", "view/css/memberView.css", "view/css/itemForm.css");
       primaryStage.setScene(scene);
       primaryStage.show();
     } catch(IOException e) {
       e.printStackTrace();
     }
-  }
-
-  /**
-   * @param args the command line arguments
-   */
-  public static void main(String[] args) {
-    launch(args);
   }
 }

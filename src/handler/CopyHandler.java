@@ -41,51 +41,26 @@ public class CopyHandler {
   /**
    * Modifie un copy dans la base de données
    *
-   * @param copyId Le numéro de l'copy
+   * @param id Le numéro de l'copy
    * @param price Le nouveau prix
    * @return True si l'copy a été modifié
    */
-  public boolean updateCopyPrice(int copyId, double price) {
-    JSONObject json = new JSONObject();
+  public boolean updateCopyPrice(int id, double price) {
+    JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
     try {
-      data.put("id", copyId);
+      data.put("id", id);
       data.put("price", price);
 
-      json.put("function", "update");
-      json.put("object", "copy");
-      json.put("data", data);
+      req.put("function", "update");
+      req.put("object", "copy");
+      req.put("data", data);
 
-      JSONObject response = APIConnector.call(json).getJSONObject("data");
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
 
-      return response.has("code") && response.getInt("code") == 200;
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    return false;
-  }
-
-  /**
-   * Supprime un copy de la base de données
-   *
-   * @param copyId L'identifiant de l'exmplaire
-   * @return Vrai si l'copy a été supprimé
-   */
-  public boolean deleteCopy(int copyId) {
-    JSONObject json = new JSONObject();
-    JSONObject data = new JSONObject();
-
-    try {
-      data.put("id", copyId);
-      json.put("function", "delete");
-      json.put("object", "copy");
-      json.put("data", data);
-
-      JSONObject response = APIConnector.call(json).getJSONObject("data");
-
-      return response.has("code") && response.getInt("code") == 200;
+      return data.has("code") && data.getInt("code") == 200;
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -98,51 +73,56 @@ public class CopyHandler {
    * @param copy L'copy à ajouter
    * @return Identifiant de l'copy ajouté
    */
-  public int addCopy(Copy copy) {
-    int exemplaireId = 0;
-    JSONObject json = new JSONObject();
+  public Copy addCopy(Copy copy) {
+    JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
-    JSONObject response;
 
     try {
       data.put("item_id", copy.getItem().getId());
       data.put("price", copy.getPrice());
       data.put("member_no", copy.getMember().getNo());
 
-      json.put("object", "copy");
-      json.put("function", "insert");
-      json.put("data", data);
+      req.put("object", "copy");
+      req.put("function", "insert");
+      req.put("data", data);
 
-      response = APIConnector.call(json).getJSONObject("data");
-      exemplaireId = response.getJSONObject("copy").getInt("id");
-    } catch (JSONException ex) {
-      Logger.getLogger(CopyHandler.class.getName()).log(Level.SEVERE, null, ex);
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+
+      if (data.has("id")) {
+        copy.setId(data.getInt("id"));
+        return copy;
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
 
-    return exemplaireId;
+    return null;
   }
 
   /**
    * Supprimer un copy de la BD
-   * @param copy l'copy à supprimer
+   * @param id copy à supprimer
    * @return true si supprimé
    */
-  public boolean deleteCopy(Copy copy) {
-    JSONObject json = new JSONObject();
+  public boolean deleteCopy(int id) {
+    JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
     try {
-      data.append("exemplaireId", copy.getId());
+      data.put("id", id);
 
-      json.append("object", "copy");
-      json.append("function", "delete");
-      json.append("data", data.toString());
+      req.put("object", "copy");
+      req.put("function", "delete");
+      req.put("data", data);
 
-      APIConnector.call(json);
-      return true;
-    } catch (JSONException ex) {
-      Logger.getLogger(CopyHandler.class.getName()).log(Level.SEVERE, null, ex);
-      return false;
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+      return data.has("code") && data.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
+
+    return false;
   }
 }

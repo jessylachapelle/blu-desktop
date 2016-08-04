@@ -12,6 +12,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.Node;
 
 import handler.MemberHandler;
+import javafx.scene.layout.VBox;
 import model.item.Copy;
 import model.member.Comment;
 import model.member.Member;
@@ -49,6 +50,7 @@ public class MemberViewController extends Controller {
   @FXML private Button btnAddComment;
   @FXML private Button btnPay;
 
+  @FXML private VBox reservation;
   @FXML private Button btnAddReservation;
   @FXML private TableView tblReservation;
 
@@ -81,6 +83,7 @@ public class MemberViewController extends Controller {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     memberHandler = new MemberHandler();
+    initI18n();
     _eventHandlers();
     _dataBinding();
   }
@@ -200,10 +203,11 @@ public class MemberViewController extends Controller {
         });
 
         delete.setOnAction(e -> {
-          if (memberHandler.deleteCopy(copy.getId())) {
+          if (Dialog.confirmation("Souhaitez-vous vraiment supprimer cet exemplaire de " + copy.getItem().getName() + "?") && memberHandler.deleteCopy(copy.getId())) {
             _displayCopies();
+            Dialog.information("L'exemplaire de " + copy.getItem().getName() + " a été supprimé");
           } else {
-            Dialog.information("Une erreur est survenue lors de la supression de l'exemplaire");
+            Dialog.information("Une erreur est survenue lors de la suppression de l'exemplaire");
           }
         });
       }
@@ -268,10 +272,12 @@ public class MemberViewController extends Controller {
           update.setOnAction(e -> {
             String str = Dialog.input("Comment", "Saisissez votre commentaire :", comment.getComment());
 
-            if (!str.isEmpty() && memberHandler.updateComment(comment.getId(), str)) {
-              _displayComment();
-            } else {
-              Dialog.information("Une erreur est survenues lors de la modification du commentaire");
+            if (!str.isEmpty()) {
+              if (memberHandler.updateComment(comment.getId(), str)) {
+                _displayComment();
+              } else {
+                Dialog.information("Une erreur est survenues lors de la modification du commentaire");
+              }
             }
           });
 
@@ -339,6 +345,8 @@ public class MemberViewController extends Controller {
   }
 
   private void _dataBinding() {
+    reservation.managedProperty().bind(reservation.visibleProperty());
+
     colComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
     colCommentDate.setCellValueFactory(new PropertyValueFactory<>("date"));
 
@@ -379,22 +387,21 @@ public class MemberViewController extends Controller {
 
   private void _displayComment() {
     tblComments.setItems(FXCollections.observableArrayList(getMember().getAccount().getComments()));
+    tblComments.refresh();
   }
 
   private void _displayCopies() {
     tblAvailable.setItems(FXCollections.observableArrayList(getMember().getAccount().getAvailable()));
     tblSold.setItems(FXCollections.observableArrayList(getMember().getAccount().getSold()));
     tblPaid.setItems(FXCollections.observableArrayList(getMember().getAccount().getPaid()));
+
+    tblAvailable.refresh();
+    tblSold.refresh();
+    tblPaid.refresh();
   }
 
   private void _displayMember() {
-    if (getMember() instanceof StudentParent) {
-      btnAddReservation.setVisible(true);
-      tblReservation.setVisible(true);
-    } else {
-      btnAddReservation.setVisible(false);
-      tblReservation.setVisible(false);
-    }
+    reservation.setVisible(getMember() instanceof StudentParent);
 
     lblName.setText(getMember().getFirstName() + " " + getMember().getLastName());
     lblNo.setText(Integer.toString(getMember().getNo()));

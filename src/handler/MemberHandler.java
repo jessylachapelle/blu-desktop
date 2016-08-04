@@ -47,21 +47,23 @@ public class MemberHandler {
   }
 
   public Member selectMember(int no) {
-    Member member = new Member();
-    JSONObject json = new JSONObject();
+    JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
     try {
       data.put("no", no);
 
-      json.put("function", "select");
-      json.put("object", "member");
-      json.put("data", data);
+      req.put("function", "select");
+      req.put("object", "member");
+      req.put("data", data);
 
-      JSONObject memberData = APIConnector.call(json).getJSONObject("data");
-      member.fromJSON(memberData);
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+
+      member = new Member(data);
     } catch (JSONException e) {
       e.printStackTrace();
+      member = new Member();
     }
 
     return member;
@@ -89,9 +91,11 @@ public class MemberHandler {
       json.put("object", "member");
       json.put("data", data);
 
-      JSONArray memberArray = APIConnector.call(json).getJSONArray("data");
+      JSONObject req = APIConnector.call(json);
 
-      for(int i = 0; i < memberArray.length(); i++) {
+      JSONArray memberArray = req.getJSONArray("data");
+
+      for (int i = 0; i < memberArray.length(); i++) {
         members.add(new Member(memberArray.getJSONObject(i)));
       }
     } catch (JSONException e) {
@@ -102,15 +106,18 @@ public class MemberHandler {
   }
 
   public Member insertMember(Member member) {
-    JSONObject json = new JSONObject();
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
 
     try {
-      json.put("object", "member");
-      json.put("function", "insert");
-      json.put("data", member.toJSON());
+      data.put("member", member.toJSON());
 
-      JSONObject response = APIConnector.call(json);
-      JSONObject data = response.getJSONObject("data");
+      req.put("object", "member");
+      req.put("function", "insert");
+      req.put("data", data);
+
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
 
       member.fromJSON(data);
     } catch (JSONException e) {
@@ -121,37 +128,41 @@ public class MemberHandler {
     return member;
   }
 
-  public Member updateMember(Member member) {
-    JSONObject json = new JSONObject();
+  public Member updateMember(JSONObject member) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
 
     try {
-      json.put("object", "member");
-      json.put("function", "update");
-      json.put("data", member.toJSON());
+      data.put("no", this.member.getNo());
+      data.put("member", member);
 
-      JSONObject response = APIConnector.call(json);
-      JSONObject data = response.getJSONObject("data");
+      req.put("object", "member");
+      req.put("function", "update");
+      req.put("data", data);
 
-      member.fromJSON(data);
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+
+      this.member.fromJSON(data);
     } catch (JSONException e) {
       e.printStackTrace();
       return null;
     }
 
-    return member;
+    return this.member;
   }
 
   public boolean deleteMember() {
-    JSONObject json = new JSONObject();
+    JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
     try {
       data.put("no", member.getNo());
-      json.put("function", "delete");
-      json.put("object", "member");
-      json.put("data", data);
+      req.put("function", "delete");
+      req.put("object", "member");
+      req.put("data", data);
 
-      JSONObject res = APIConnector.call(json);
+      JSONObject res = APIConnector.call(req);
       data = res.getJSONObject("data");
 
       return data.has("code") && data.getInt("code") == 200;
@@ -213,18 +224,18 @@ public class MemberHandler {
   }
 
   public boolean updateComment(int id, String comment) {
-    JSONObject json = new JSONObject();
+    JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
     try {
       data.put("id", id);
       data.put("comment", comment);
 
-      json.put("function", "update");
-      json.put("object", "comment");
-      json.put("data", data);
+      req.put("function", "update");
+      req.put("object", "comment");
+      req.put("data", data);
 
-      JSONObject res = APIConnector.call(json);
+      JSONObject res = APIConnector.call(req);
       data = res.getJSONObject("data");
 
       if (data.has("code") && data.getInt("code") == 200) {
@@ -354,6 +365,28 @@ public class MemberHandler {
     }
 
     return false;
+  }
+
+  public ArrayList<String> getStates() {
+    JSONObject req = new JSONObject();
+    ArrayList<String> states = new ArrayList<>();
+
+    try {
+      req.put("object", "state");
+      req.put("function", "select");
+      req.put("data", new JSONObject());
+
+      JSONObject res = APIConnector.call(req);
+      JSONArray data = res.getJSONArray("data");
+
+      for (int i = 0; i < data.length(); i++) {
+        states.add(data.getString(i));
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return states;
   }
 
   public boolean exist(int no) {

@@ -297,6 +297,7 @@ public class Copy {
 
       return Integer.toString(edition);
     }
+
     return "";
   }
 
@@ -324,7 +325,7 @@ public class Copy {
       if (json.has("item")) {
         JSONObject itemData = json.getJSONObject("item");
 
-        if (itemData.has("isBook") && itemData.getBoolean("isBook")) {
+        if (itemData.has("is_book") && itemData.getBoolean("is_book")) {
           item = new Book(itemData);
         } else {
           item = new Item(itemData);

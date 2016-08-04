@@ -1,19 +1,19 @@
 package controller;
 
-import handler.MemberHandler;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import javafx.fxml.FXML;
+import javafx.collections.FXCollections;
 import javafx.scene.control.*;
-import model.member.Member;
+
+import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import handler.MemberHandler;
+import model.member.Member;
 
 /**
  * La classe qui fait le pont entre la vue(ajoutMembre) et le modèle
@@ -21,15 +21,12 @@ import java.util.ResourceBundle;
  *
  * @author Marc
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class MemberFormController extends Controller {
-
-  private MemberHandler memberHandler;
-  private Member member;
-  private BooleanProperty success;
-  private boolean insertion;
+  private final String DEFAULT_STATE = "QC";
 
   @FXML private Label lblAdd;
-  @FXML private Label lblComment;
+  @FXML private VBox commentSection;
 
   @FXML private TextField txtNo;
   @FXML private TextField txtLastName;
@@ -49,89 +46,53 @@ public class MemberFormController extends Controller {
 
   @FXML private CheckBox cbGenerateMemberNo;
 
-  @FXML private Button btnAdd;
+  @FXML private Button btnSave;
   @FXML private Button btnCancel;
+
+  private TextField[][] txtPhones;
+  private MemberHandler memberHandler;
+  private boolean insertion;
 
   @Override
   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-    this.success = new SimpleBooleanProperty(false);
-    insertion = true;
-    btnCancel.setVisible(false);
+    txtPhones = new TextField[][]{{txtPhoneNumber1, txtPhoneNote1}, {txtPhoneNumber2, txtPhoneNote2}};
+
     memberHandler = new MemberHandler();
-    member = new Member();
     _populeState();
 
-    btnAdd.setOnAction(event -> memberHandler.insertMember(new Member(_toJSON())));
+    insertion = true;
+    btnCancel.setVisible(false);
   }
 
-  /**
-   * Rajout les choix de cbState au CbBox
-   */
-  private void _populeState() {
-    // TODO: Use database
-    ObservableList<String> options = FXCollections.observableArrayList("AB", "BC", "MB", "NB", "NL", "NT", "NU", "ON", "PE", "QC", "SK", "YT");
-    cbState.setItems(options);
+  public Button getCancelButton() {
+    return btnCancel;
   }
 
-  private JSONObject _toJSON() {
-    JSONObject json = new JSONObject();
-    JSONArray phones = new JSONArray();
-
-    try {
-      // TODO: Add auto generator for fake member txtNo
-      json.put("no", txtNo.getText());
-      json.put("last_name", txtLastName.getText());
-      json.put("first_name", txtFirstName.getText());
-      json.put("address", txtAddress.getText());
-      json.put("zip", txtZip.getText());
-      json.put("city", txtCity.getText());
-      json.put("state", cbState.getValue());
-      json.put("email", txtEmail.getText());
-      json.put("comment", txtComment.getText());
-
-      // TODO: Optimize
-      if (!txtPhoneNumber1.getText().isEmpty()) {
-        JSONObject phone = new JSONObject();
-        phone.put("number", txtPhoneNumber1.getText());
-        phone.put("note", txtPhoneNote1.getText());
-        phones.put(phone);
-      }
-
-      if (!txtPhoneNumber2.getText().isEmpty()) {
-        JSONObject phone = new JSONObject();
-        phone.put("number", txtPhoneNumber2.getText());
-        phone.put("note", txtPhoneNote2.getText());
-        phones.put(phone);
-      }
-
-      json.put("phone", phones);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    return json;
+  public Member getMember() {
+    return memberHandler.getMember();
   }
 
-  public Button getAddButton() {
-    return btnAdd;
+  public Button getSaveButton() {
+    return btnSave;
   }
 
-  public int getNo() {
-    return Integer.parseInt(txtNo.getText());
+  public Member loadMember(int memberNo) {
+    insertion = true;
+    getMember().setNo(memberNo);
+    txtNo.setText(Integer.toString(memberNo));
+
+    return getMember();
   }
 
-  public BooleanProperty getSuccess() {
-    return success;
-  }
-
-  public void loadMember(Member m) {
-    member = m;
+  public Member loadMember(Member member) {
+    memberHandler.setMember(member);
     insertion = false;
 
-    lblAdd.setText("Modifier un member");
-    btnAdd.setText("Modifier");
-    lblComment.setVisible(false);
+    lblAdd.setText("Modifier un membre");
+    btnSave.setText("Modifier");
+    commentSection.setVisible(false);
     txtComment.setVisible(false);
+    cbGenerateMemberNo.setSelected(false);
     cbGenerateMemberNo.setVisible(false);
     btnCancel.setVisible(true);
 
@@ -142,46 +103,126 @@ public class MemberFormController extends Controller {
     txtZip.setText(member.getZip());
     txtCity.setText(member.getCity());
     txtEmail.setText(member.getEmail());
+    cbState.setValue(member.getStateCode());
 
-    // TODO: Optimisation
-    for (int i = 0; i < 2; i++) {
-      if (member.getPhone(i) != null) {
-        if (i == 0) {
-          txtPhoneNumber1.setText(member.getPhone(i).getNumber());
-          txtPhoneNote1.setText(member.getPhone(i).getNote());
-        }
-
-        if (i == 1) {
-          txtPhoneNumber2.setText(member.getPhone(i).getNumber());
-          txtPhoneNote2.setText(member.getPhone(i).getNote());
-        }
+    for (int i = 0; i < member.getPhone().length; i++) {
+      if (member.getPhone(i) != null && member.getPhone(i).getNumber() != null) {
+        txtPhones[i][0].setText(member.getPhone(i).getNumber());
+        txtPhones[i][1].setText(member.getPhone(i).getNote());
       }
     }
+
+    return getMember();
   }
 
   public Member saveMember() {
-    if (isInsert()) {
-      return memberHandler.insertMember(new Member(_toJSON()));
+    JSONObject form = _toJSON();
+
+    if (insertion && form.length() > 0) {
+      return memberHandler.insertMember(new Member(form));
+    } else if (form.length() > 0) {
+      return memberHandler.updateMember(form);
     }
 
-    return memberHandler.updateMember(new Member(_toJSON()));
+    return getMember();
   }
 
-  public void loadMember(int memberNo) {
-    insertion = true;
-    member.setNo(memberNo);
-    txtNo.setText(Integer.toString(member.getNo()));
+  public boolean canSave() {
+    TextField[] mandatory = { txtFirstName, txtLastName, txtEmail };
+
+    for (TextField textField : mandatory) {
+      if (textField.getText().isEmpty()) {
+        return false;
+      }
+    }
+
+    return !txtNo.getText().isEmpty() || cbGenerateMemberNo.isSelected();
   }
 
-  public boolean isInsert() {
-    return insertion;
+
+  /**
+   * Rajout les choix de cbState au CbBox
+   */
+  private void _populeState() {
+    cbState.setItems(FXCollections.observableArrayList(memberHandler.getStates()));
+    cbState.setValue(DEFAULT_STATE);
   }
 
-  public Button getCancelButton() {
-    return btnCancel;
+  private JSONObject _toJSON() {
+    JSONObject form = new JSONObject();
+    JSONArray phones = new JSONArray();
+
+    try {
+      if (cbGenerateMemberNo.isSelected()) {
+        form.put("no", _getRandomMemberNo());
+      } else if (insertion || Integer.parseInt(txtNo.getText()) != getMember().getNo()) {
+        form.put("no", txtNo.getText());
+      }
+
+      if (!txtLastName.getText().equals(getMember().getLastName())) {
+        form.put("last_name", txtLastName.getText());
+      }
+
+      if (!txtFirstName.getText().equals(getMember().getFirstName())) {
+        form.put("first_name", txtFirstName.getText());
+      }
+
+      if (!txtAddress.getText().equals(getMember().getAddress())) {
+        form.put("address", txtAddress.getText());
+      }
+
+      if (!txtZip.getText().equals(getMember().getZip())) {
+        form.put("zip", txtZip.getText());
+      }
+
+      if (!txtCity.getText().equals(getMember().getCity())) {
+        form.put("city", txtCity.getText());
+      }
+
+      if (!cbState.getValue().equals(getMember().getStateCode())) {
+        form.put("state", cbState.getValue());
+      }
+
+      if (!txtEmail.getText().equals(getMember().getEmail())) {
+        form.put("email", txtEmail.getText());
+      }
+
+      if (!txtComment.getText().isEmpty()) {
+        form.put("comment", txtComment.getText());
+      }
+
+      for (int i = 0; i < txtPhones.length; i++) {
+        if (!txtPhones[i][0].getText().isEmpty() && !txtPhones[i][0].getText().equals(getMember().getPhone(i).getNumber())) {
+          JSONObject phone = new JSONObject();
+
+          if (getMember().getPhone(i).getId() != 0) {
+            phone.put("id", getMember().getPhone(i).getId());
+          }
+
+          phone.put("number", txtPhones[i][0].getText());
+          phone.put("note", txtPhones[i][1].getText());
+
+          phones.put(phone);
+        }
+      }
+
+      if (phones.length() > 0) {
+        form.put("phone", phones);
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return form;
   }
 
-  public Member getMember() {
-    return member;
+  private int _getRandomMemberNo() {
+    int no = (int) (Math.random() * (189999999 - 180000000 + 1) + 180000000);
+
+    if (memberHandler.exist(no)) {
+      return _getRandomMemberNo();
+    }
+
+    return no;
   }
 }
