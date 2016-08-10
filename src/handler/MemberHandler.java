@@ -20,6 +20,7 @@ import org.json.JSONObject;
 public class MemberHandler {
   private ArrayList<Member> members;
   private Member member;
+  private static ArrayList<String> states;
 
   /**
    * Constructeur par défaut
@@ -27,6 +28,10 @@ public class MemberHandler {
   public MemberHandler() {
     this.member = new Member();
     this.members = new ArrayList<>();
+
+    if (states == null || states.size() == 0) {
+      _initStates();
+    }
   }
 
   public void setMember(int no) {
@@ -368,8 +373,12 @@ public class MemberHandler {
   }
 
   public ArrayList<String> getStates() {
+    return states;
+  }
+
+  private void _initStates() {
     JSONObject req = new JSONObject();
-    ArrayList<String> states = new ArrayList<>();
+    states = new ArrayList<>();
 
     try {
       req.put("object", "state");
@@ -385,8 +394,6 @@ public class MemberHandler {
     } catch (JSONException e) {
       e.printStackTrace();
     }
-
-    return states;
   }
 
   public boolean exist(int no) {

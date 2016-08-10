@@ -7,12 +7,9 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
+import model.item.Category;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,22 +28,23 @@ import ressources.Dialog;
  * @version 1.0
  */
 public class ItemFormController extends Controller {
+
+  @FXML private TextField txtTitle;
+  @FXML private TextField txtEdition;
   @FXML private Button btnRemoveAuthor;
   @FXML private Button btnAddAuthor;
   @FXML private TextField txtAuthorFirstName;
   @FXML private TextField txtAuthorLastName;
-
-  @FXML private TextField txtTitle;
-  @FXML private TextField txtEdition;
   @FXML private TextField txtEditor;
   @FXML private TextField txtPublication;
   @FXML private TextField txtEan13;
   @FXML private CheckBox cbHasEan13;
-  @FXML private ComboBox<KeyValuePair> cbSubject;
+  @FXML private ComboBox<Subject> cbSubject;
   @FXML private Button btnAddBook;
+
   @FXML private TextField txtItemName;
   @FXML private TextArea txtComment;
-  @FXML private ComboBox<?> cbCategories;
+  @FXML private ComboBox<Category> cbCategories;
   @FXML private Button btnAddItem;
 
   private ItemHandler itemHandler;
@@ -55,33 +53,28 @@ public class ItemFormController extends Controller {
   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
     itemHandler = new ItemHandler();
     _eventHandlers();
-    _initSubjectList();
+    _initCategoryList();
   }
 
   /**
    * Initialise notre combobox matière à partir de la bd
    */
-  private void _initSubjectList() {
-//    ObservableList<KeyValuePair> options = FXCollections.observableArrayList(new KeyValuePair("0", "Aucune sélection"));
-//    ArrayList<Subject> subjects = itemHandler.getSubjects();
-//
-//    for (Subject subject : subjects) {
-//      JSONObject json = subject.toJSON();
-//      int id = 0;
-//      String name = "";
-//
-//      try {
-//        id = json.getInt("id");
-//        name = json.getString("name");
-//      } catch (JSONException e) {
-//        e.printStackTrace();
-//      }
-//
-//      options.add(new KeyValuePair(Integer.toString(id), name));
-//    }
-//
-//    cbSubject.setItems(options);
-//    cbSubject.getSelectionModel().select(0);
+  private void _setSubjectList(Category category) {
+    ObservableList<Subject> options = FXCollections.observableArrayList(category.getSubjects());
+
+    cbSubject.setItems(options);
+    cbSubject.getSelectionModel().select(0);
+  }
+
+  /**
+   * Initialise notre combobox matière à partir de la bd
+   */
+  private void _initCategoryList() {
+    ObservableList<Category> options = FXCollections.observableArrayList(itemHandler.getCategories());
+
+    cbCategories.setItems(options);
+    cbCategories.getSelectionModel().select(0);
+    _setSubjectList(cbCategories.getValue());
   }
 
   public void loadItem(String ean13) {
@@ -116,7 +109,7 @@ public class ItemFormController extends Controller {
       formData.put("edition", txtEdition.getText());
       formData.put("editor", txtEditor.getText());
       formData.put("publication", txtPublication.getText());
-      formData.put("subject", cbSubject.getValue().toString());
+      formData.put("subject", cbSubject.getValue().getId());
       formData.put("ean13", txtEan13.getText());
 
       formData.put("author", authors);
@@ -127,48 +120,26 @@ public class ItemFormController extends Controller {
     return formData;
   }
 
-  @SuppressWarnings("StatementWithEmptyBody")
   private void _eventHandlers() {
 //    // TODO
-//    btnAddAuthor.setOnAction(event -> {});
+    btnAddAuthor.setOnAction(event -> {});
 //
 //    // TODO
-//    btnRemoveAuthor.setOnAction(event -> {});
+    btnRemoveAuthor.setOnAction(event -> {});
 
-//    btnAddBook.setOnAction(event -> {
-//      if (_canAdd()) {
-//        itemHandler.addItem(getBookData());
-//      } else {
-//        Dialog.information("Vous devez remplir tous les champs obligatoires avant d'enregistrer");
-//      }
-//    });
+    btnAddBook.setOnAction(event -> {
+      if (_canAdd()) {
+        itemHandler.addItem(getBookData());
+      } else {
+        Dialog.information("Vous devez remplir tous les champs obligatoires avant d'enregistrer");
+      }
+    });
+
+    cbCategories.setOnAction(event -> _setSubjectList(cbCategories.getValue()));
   }
 
   public Item getArticle() {
     return itemHandler.getItem();
-  }
-
-  /**
-   * Thanks to Hirosh Wickramasuriya
-   *
-   * http://stackoverflow.com/questions/15554715/how-do-i-populate-a-javafx-choicebox-with-data-from-the-database
-   */
-  public class KeyValuePair {
-    private final String key;
-    private final String value;
-
-    public KeyValuePair(String key, String value) {
-      this.key = key;
-      this.value = value;
-    }
-
-    public String toString() {
-      return value;
-    }
-
-    public String getKey() {
-      return key;
-    }
   }
 
   public Button getBtnAjoutOuvrage() {

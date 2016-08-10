@@ -10,6 +10,7 @@ import org.json.JSONObject;
  */
 @SuppressWarnings("unused")
 public class Subject {
+  private int id;
   private String name;
   private String category;
 
@@ -17,6 +18,7 @@ public class Subject {
    * Default constructor
    */
   public Subject() {
+    id = 0;
     name = "";
     category = "";
   }
@@ -35,6 +37,9 @@ public class Subject {
     fromJSON(json);
   }
 
+  public int getId() {
+    return id;
+  }
   /**
    * Get subject's name
    * @return name Subject's name
@@ -73,11 +78,15 @@ public class Subject {
    */
   public void fromJSON(JSONObject json) {
     try {
+      if (json.has("id") && json.get("id") instanceof Integer) {
+        id = json.getInt("id");
+      }
+
       if (json.has("name")) {
         name = json.getString("name");
       }
 
-      if (json.has("category")) {
+      if (json.has("category") && json.get("category") instanceof String) {
         category = json.getString("category");
       }
     } catch (JSONException e) {
@@ -88,6 +97,7 @@ public class Subject {
   public JSONObject toJSON() {
     JSONObject subject = new JSONObject();
     try {
+      subject.put("id", id);
       subject.put("name", name);
       subject.put("category", category);
     } catch (JSONException e) {
@@ -95,5 +105,10 @@ public class Subject {
     }
 
     return subject;
+  }
+
+  @Override
+  public String toString() {
+    return name;
   }
 }

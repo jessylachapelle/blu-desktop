@@ -9,10 +9,82 @@
     <Label styleClass="h1" text="Ajouter un item"/>
     <TabPane tabClosingPolicy="UNAVAILABLE">
       <Tab styleClass="form-button" text="Ouvrage">
-        <fx:include styleClass="border" source="bookTab.fxml"/>
+          <VBox spacing="10" styleClass="main">
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Titre* :"/>
+              <TextField fx:id="txtTitle"/>
+            </HBox>
+
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="No d'édition :"/>
+              <TextField fx:id="txtEdition"/>
+            </HBox>
+
+            <VBox fx:id="authors" spacing="10">
+              <Label styleClass="h3" text="Auteur"/>
+              <HBox spacing="10">
+                <Label styleClass="form-label" text="Prénom :"/>
+                <TextField fx:id="txtAuthorFirstName"/>
+                <Label text="Nom* :"/>
+                <TextField fx:id="txtAuthorLastName"/>
+              </HBox>
+              <AnchorPane>
+                <HBox spacing="10" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0">
+                  <Button styleClass="form-button" fx:id="btnAddAuthor" text="+"/>
+                  <Button styleClass="form-button" fx:id="btnRemoveAuthor" text=" -"/>
+                </HBox>
+              </AnchorPane>
+            </VBox>
+
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Éditeur* :"/>
+              <TextField fx:id="txtEditor"/>
+            </HBox>
+
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Année* :"/>
+              <TextField fx:id="txtPublication"/>
+            </HBox>
+
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Code EAN13* :"/>
+              <TextField fx:id="txtEan13"/>
+              <CheckBox fx:id="cbHasEan13" text="Pas de code"/>
+            </HBox>
+
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Catégorie :"/>
+              <ComboBox fx:id="cbCategories"/>
+            </HBox>
+
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Matière* :"/>
+              <ComboBox fx:id="cbSubject"/>
+            </HBox>
+
+            <AnchorPane>
+              <Button styleClass="form-button" fx:id="btnAddBook" text="Ajouter l'ouvrage" AnchorPane.bottomAnchor="0"
+                      AnchorPane.rightAnchor="0"/>
+            </AnchorPane>
+          </VBox>
       </Tab>
       <Tab styleClass="form-button" text="Objet">
-        <fx:include styleClass="border" source="itemTab.fxml"/>
+          <VBox spacing="10" styleClass="main">
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Nom * :"/>
+              <TextField fx:id="txtItemName"/>
+            </HBox>
+
+            <HBox spacing="10">
+              <Label text="Commentaire :"/>
+              <TextArea fx:id="txtComment"/>
+            </HBox>
+
+            <AnchorPane>
+              <Button styleClass="form-button" fx:id="btnAddItem" text="Ajouter l'objet" AnchorPane.rightAnchor="0"
+                      AnchorPane.bottomAnchor="0"/>
+            </AnchorPane>
+          </VBox>
       </Tab>
     </TabPane>
   </VBox>

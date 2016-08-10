@@ -22,10 +22,15 @@ public class ItemHandler {
 
   private ArrayList<Item> items;
   private Item item;
+  private static ArrayList<Category> categories;
 
   public ItemHandler() {
     item = null;
     items = new ArrayList<>();
+
+    if (categories == null || categories.size() == 0) {
+      _initCategories();
+    }
   }
 
   public boolean updateComment(int id, String comment) {
@@ -257,18 +262,49 @@ public class ItemHandler {
     try {
       req.put("object", "subject");
       req.put("function", "select");
+      req.put("data", new JSONObject());
 
       JSONObject res = APIConnector.call(req);
-      JSONArray data = res.getJSONArray("data");
 
-      for (int i = 0; i < data.length(); i++) {
-        subjects.add(new Subject(data.getJSONObject(i)));
+      if (res.has("data") && res.get("data") instanceof JSONArray) {
+        JSONArray data = res.getJSONArray("data");
+
+        for (int i = 0; i < data.length(); i++) {
+          subjects.add(new Subject(data.getJSONObject(i)));
+        }
       }
     } catch (JSONException e) {
       e.printStackTrace();
     }
 
     return subjects;
+  }
+
+  public ArrayList<Category> getCategories() {
+    return categories;
+  }
+
+  private void _initCategories() {
+    categories = new ArrayList<>();
+    JSONObject req = new JSONObject();
+
+    try {
+      req.put("object", "category");
+      req.put("function", "select");
+      req.put("data", new JSONObject());
+
+      JSONObject res = APIConnector.call(req);
+
+      if (res.has("data") && res.get("data") instanceof JSONArray) {
+        JSONArray data = res.getJSONArray("data");
+
+        for (int i = 0; i < data.length(); i++) {
+          categories.add(new Category(data.getJSONObject(i)));
+        }
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
   }
 
   public boolean addItemReservation(int memberNo) {

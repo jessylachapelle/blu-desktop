@@ -30,7 +30,10 @@
         <Button fx:id="btnAdmin"/>
       </VBox>
 
-      <Pane fx:id="mainPanel" />
+      <VBox styleClass="main" spacing="10">
+        <Button styleClass="form-button" fx:id="btnBack" text="Back"/>
+        <Pane fx:id="mainPanel" />
+      </VBox>
     </HBox>
   </VBox>
 </Pane>

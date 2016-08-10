@@ -27,6 +27,8 @@ import handler.ItemHandler;
 import handler.MemberHandler;
 import model.member.Member;
 import ressources.Dialog;
+import ressources.View;
+import ressources.ViewStack;
 
 /**
  * Cette classe controller prend en charge le panneau de gauche.
@@ -38,6 +40,7 @@ import ressources.Dialog;
 public class WindowController extends Controller {
   private Pane panel;
   private Controller controller;
+  private ViewStack viewStack;
 
   @FXML private VBox sideMenu;
   @FXML private VBox menu;
@@ -49,6 +52,7 @@ public class WindowController extends Controller {
   @FXML private Button btnMemberForm;
   @FXML private Button btnAdmin;
 
+  @FXML private Button btnBack;
 
   @Override
   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -58,6 +62,8 @@ public class WindowController extends Controller {
     menu.setPrefWidth(screenWidth);
     sideMenu.setPrefSize(screenWidth * .15, screenHeight);
     mainPanel.setPrefSize(screenWidth * .8, screenHeight);
+
+    viewStack = new ViewStack();
 
     _setText();
     _setWindowEventHandlers();
@@ -88,10 +94,19 @@ public class WindowController extends Controller {
   private Controller _loadPanel(String resource) {
     FXMLLoader loader = new FXMLLoader();
     loader.setLocation(WindowController.class.getClassLoader().getResource(resource));
+    return _loadPanel(loader);
+  }
+
+  private Controller _loadPanel(FXMLLoader loader) {
     mainPanel.getChildren().clear();
 
     try {
-      mainPanel.getChildren().add(loader.load());
+      Pane pane = loader.load();
+
+      viewStack.push(pane, loader.getController());
+      btnBack.setVisible(viewStack.size() > 1);
+
+      mainPanel.getChildren().add(pane);
       return loader.getController();
     } catch (IOException e) {
       e.printStackTrace();
@@ -99,6 +114,7 @@ public class WindowController extends Controller {
 
     return null;
   }
+
   /**
    * Affiche le panel dans la fenetre de droite
    */
@@ -224,7 +240,7 @@ public class WindowController extends Controller {
   }
 
   private void _setItemFormEventHandlers() {
-    ItemFormController itemFormController = new ItemFormController();
+    ItemFormController itemFormController = (ItemFormController) controller;
 
     itemFormController.getBtnAjoutObjet().setOnAction(event -> {
 
@@ -242,6 +258,22 @@ public class WindowController extends Controller {
     btnItemForm.setOnAction(event -> _displayItemFormPanel());
     btnMemberForm.setOnAction(event -> _displayMemberFormPanel());
     btnAdmin.setOnAction(event -> _displayAdminPanel());
+
+    btnBack.setOnAction(event -> {
+
+      if (viewStack.size() > 1) {
+        View view = viewStack.pop();
+
+        while (view.getController() == controller) {
+          view = viewStack.pop();
+        }
+
+        controller = view.getController();
+        mainPanel.getChildren().clear();
+        mainPanel.getChildren().add(view.getPane());
+        btnBack.setVisible(viewStack.size() > 1);
+      }
+    });
   }
 
   /**
