@@ -110,21 +110,42 @@ public class MemberHandler {
     return members;
   }
 
-  public Member insertMember(Member member) {
+  public Member insertMember(JSONObject memberData) {
     JSONObject req = new JSONObject();
-    JSONObject data = new JSONObject();
 
     try {
-      data.put("member", member.toJSON());
-
       req.put("object", "member");
       req.put("function", "insert");
-      req.put("data", data);
+      req.put("data", memberData);
 
       JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
+      JSONObject data = res.getJSONObject("data");
 
-      member.fromJSON(data);
+      member.fromJSON(memberData);
+
+      if (data.has("city")) {
+        JSONObject city = data.getJSONObject("city");
+        member.setCityId(city.getInt("id"));
+      }
+
+      if (data.has("comment")) {
+        JSONObject comment = data.getJSONObject("comment");
+        member.getAccount().getComments().get(0).setId(comment.getInt("id"));
+      }
+
+      if (data.has("phone")) {
+        JSONArray phones = data.getJSONArray("phone");
+
+        for (int i = 0; i < phones.length(); i++) {
+          JSONObject phone = phones.getJSONObject(i);
+
+          if (member.getPhone(0).getNumber().equals(phone.getString("number"))) {
+            member.getPhone(0).setId(phone.getInt("id"));
+          } else {
+            member.getPhone(1).setId(phone.getInt("id"));
+          }
+        }
+      }
     } catch (JSONException e) {
       e.printStackTrace();
       return null;

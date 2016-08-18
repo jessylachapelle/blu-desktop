@@ -119,7 +119,7 @@ public class MemberFormController extends Controller {
     JSONObject form = _toJSON();
 
     if (insertion && form.length() > 0) {
-      return memberHandler.insertMember(new Member(form));
+      return memberHandler.insertMember(form);
     } else if (form.length() > 0) {
       return memberHandler.updateMember(form);
     }
@@ -199,7 +199,7 @@ public class MemberFormController extends Controller {
             phone.put("id", getMember().getPhone(i).getId());
           }
 
-          phone.put("number", txtPhones[i][0].getText());
+          phone.put("number", txtPhones[i][0].getText().replaceAll("-", ""));
           phone.put("note", txtPhones[i][1].getText());
 
           phones.put(phone);
