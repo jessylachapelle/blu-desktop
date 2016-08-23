@@ -64,7 +64,7 @@ public class MemberFormController extends Controller {
     btnCancel.setVisible(false);
   }
 
-  public Button getCancelButton() {
+  Button getCancelButton() {
     return btnCancel;
   }
 
@@ -72,11 +72,11 @@ public class MemberFormController extends Controller {
     return memberHandler.getMember();
   }
 
-  public Button getSaveButton() {
+  Button getSaveButton() {
     return btnSave;
   }
 
-  public Member loadMember(int memberNo) {
+  Member loadMember(int memberNo) {
     insertion = true;
     getMember().setNo(memberNo);
     txtNo.setText(Integer.toString(memberNo));
@@ -84,7 +84,7 @@ public class MemberFormController extends Controller {
     return getMember();
   }
 
-  public Member loadMember(Member member) {
+  Member loadMember(Member member) {
     memberHandler.setMember(member);
     insertion = false;
 
@@ -115,7 +115,7 @@ public class MemberFormController extends Controller {
     return getMember();
   }
 
-  public Member saveMember() {
+  Member saveMember() {
     JSONObject form = _toJSON();
 
     if (insertion && form.length() > 0) {
@@ -127,7 +127,7 @@ public class MemberFormController extends Controller {
     return getMember();
   }
 
-  public boolean canSave() {
+  boolean canSave() {
     TextField[] mandatory = { txtFirstName, txtLastName, txtEmail };
 
     for (TextField textField : mandatory) {
@@ -192,7 +192,9 @@ public class MemberFormController extends Controller {
       }
 
       for (int i = 0; i < txtPhones.length; i++) {
-        if (!txtPhones[i][0].getText().isEmpty() && !txtPhones[i][0].getText().equals(getMember().getPhone(i).getNumber())) {
+        if (!txtPhones[i][0].getText().isEmpty() &&
+            (!txtPhones[i][0].getText().equals(getMember().getPhone(i).getNumber()) ||
+             !txtPhones[i][1].getText().equals(getMember().getPhone(i).getNote()))) {
           JSONObject phone = new JSONObject();
 
           if (getMember().getPhone(i).getId() != 0) {
@@ -202,6 +204,10 @@ public class MemberFormController extends Controller {
           phone.put("number", txtPhones[i][0].getText().replaceAll("-", ""));
           phone.put("note", txtPhones[i][1].getText());
 
+          phones.put(phone);
+        } else if (txtPhones[i][0].getText().isEmpty() && getMember().getPhone(i).getId() > 0) {
+          JSONObject phone = new JSONObject();
+          phone.put("id", getMember().getPhone(i).getId());
           phones.put(phone);
         }
       }
