@@ -319,7 +319,8 @@ public class Account {
   public void removeCopy(int copyId) {
     for (int i = 0; i < copies.size(); i++) {
       if (copies.get(i).getId() == copyId) {
-
+        copies.remove(i);
+        return;
       }
     }
   }

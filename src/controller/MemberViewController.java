@@ -203,7 +203,8 @@ public class MemberViewController extends Controller {
         });
 
         delete.setOnAction(e -> {
-          if (Dialog.confirmation("Souhaitez-vous vraiment supprimer cet exemplaire de " + copy.getItem().getName() + "?") && memberHandler.deleteCopy(copy.getId())) {
+          if (Dialog.confirmation("Souhaitez-vous vraiment supprimer cet exemplaire de " + copy.getItem().getName() + "?") &&
+              memberHandler.deleteCopy(copy.getId())) {
             _displayCopies();
             Dialog.information("L'exemplaire de " + copy.getItem().getName() + " a été supprimé");
           } else {
