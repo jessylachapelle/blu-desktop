@@ -186,7 +186,7 @@ public class Item {
     this.copies.addAll(copies);
   }
 
-  public void addCopy(Copy copy) {
+  private void _addCopy(Copy copy) {
     copies.add(copy);
   }
 
@@ -319,6 +319,25 @@ public class Item {
     }
   }
 
+  public Copy getCopy(int id) {
+    for (Copy copy : copies) {
+      if (copy.getId() == id) {
+        return copy;
+      }
+    }
+
+    return null;
+  }
+
+  public void removeCopy(int copyId) {
+    for (int i = 0; i < copies.size(); i++) {
+      if (copies.get(i).getId() == copyId) {
+        copies.remove(i);
+        return;
+      }
+    }
+  }
+
   public void fromJSON(JSONObject json) {
     try {
       if (json.has("id")) {
@@ -329,7 +348,7 @@ public class Item {
         name = json.getString("name");
       }
 
-      if (json.has("subject")) {
+      if (json.has("subject") && json.get("subject") instanceof JSONObject) {
         subject.fromJSON(json.getJSONObject("subject"));
       }
 
@@ -353,7 +372,7 @@ public class Item {
         JSONArray copies = json.getJSONArray("copies");
 
         for (int i = 0; i < copies.length(); i++) {
-          addCopy(new Copy(copies.getJSONObject(i)));
+          _addCopy(new Copy(copies.getJSONObject(i)));
         }
       }
 

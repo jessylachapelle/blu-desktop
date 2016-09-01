@@ -113,8 +113,9 @@ public class Copy {
    * @return Le price en string
    */
   public String getPriceString() {
-    if(price == 0)
-      return "";
+    if (price == 0) {
+      return "Gratuit";
+    }
     return (int) price + " $";
   }
 
@@ -305,6 +306,14 @@ public class Copy {
     if (item instanceof Book) {
       return ((Book) item).getEditor();
     }
+    return "";
+  }
+
+  public String getSeller() {
+    if (member != null) {
+      return member.getFirstName() + " " + member.getLastName();
+    }
+
     return "";
   }
 

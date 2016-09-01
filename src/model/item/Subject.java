@@ -12,29 +12,24 @@ import org.json.JSONObject;
 public class Subject {
   private int id;
   private String name;
-  private String category;
+  private Category category;
 
   /**
    * Default constructor
    */
   public Subject() {
-    id = 0;
-    name = "";
-    category = "";
-  }
-
-  /**
-   * Constructor with subject parameters
-   * @param name Subject's name
-   * @param category Subject's category
-   */
-  public Subject(String name, String category) {
-    setName(name);
-    setCategory(category);
+    _init();
   }
 
   public Subject(JSONObject json) {
+    _init();
     fromJSON(json);
+  }
+
+  private void _init() {
+    id = 0;
+    name = "";
+    category = new Category();
   }
 
   public int getId() {
@@ -60,7 +55,7 @@ public class Subject {
    * Get subject's category
    * @return category Subject's category
    */
-  public String getCategory() {
+  public Category getCategory() {
     return category;
   }
 
@@ -68,7 +63,7 @@ public class Subject {
    * Set subject's category
    * @param category Subject's category
    */
-  public void setCategory(String category) {
+  public void setCategory(Category category) {
     this.category = category;
   }
 
@@ -86,8 +81,8 @@ public class Subject {
         name = json.getString("name");
       }
 
-      if (json.has("category") && json.get("category") instanceof String) {
-        category = json.getString("category");
+      if (json.has("category") && json.get("category") instanceof JSONObject) {
+        category.fromJSON(json.getJSONObject("category"));
       }
     } catch (JSONException e) {
       e.printStackTrace();
