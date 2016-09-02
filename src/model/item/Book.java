@@ -16,7 +16,7 @@ import java.util.Date;
  * @since 12/07/2016
  * @version 1.1
  */
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Book extends Item {
 
   private String publication;

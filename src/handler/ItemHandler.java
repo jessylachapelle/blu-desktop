@@ -17,7 +17,7 @@ import org.json.JSONObject;
  * @version 1.1
  * @since 2016/19/07
  */
-@SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "unused"})
+@SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "unused", "WeakerAccess"})
 public class ItemHandler {
 
   private ArrayList<Item> items;
@@ -39,7 +39,7 @@ public class ItemHandler {
 
     try {
       data.put("id", id);
-      data.put("comment", comment);
+      data.put("comment", comment.replaceAll("'", "''"));
 
       json.put("function", "update_comment");
       json.put("object", "item");
@@ -47,7 +47,10 @@ public class ItemHandler {
 
       JSONObject response = APIConnector.call(json).getJSONObject("data");
 
-      return response.has("code") && response.getInt("code") == 200;
+      if (response.has("code") && response.getInt("code") == 200) {
+        item.setDescription(comment);
+        return true;
+      }
     } catch (JSONException e) {
       e.printStackTrace();
     }

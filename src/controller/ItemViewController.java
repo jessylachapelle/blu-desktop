@@ -127,7 +127,7 @@ public class ItemViewController extends Controller {
 
       if (!oldComment.equals(newComment)) {
         if (itemHandler.updateComment(getItem().getId(), newComment)) {
-          lblComment.setText(newComment);
+          _displayBook();
         } else {
           Dialog.information("Une erreur est survenue");
         }
@@ -163,7 +163,9 @@ public class ItemViewController extends Controller {
     });
 
     btnStorage.setOnAction(event -> {
-      String input = Dialog.input("Caisses de rangement", "Veuillez noter les caisses de rangement séparer par un \";\" :", lblStorage.getText());
+      String title = "Caisses de rangement",
+             message = "Veuillez noter les caisses de rangement séparer par un \";\" :";
+      String input = Dialog.input(title, message, lblStorage.getText());
       String[] storageArray = input.replace(" ", "").split(";");
 
       if (itemHandler.updateStorage(getItem().getId(), storageArray)) {
@@ -358,7 +360,6 @@ public class ItemViewController extends Controller {
     lblCategory.setText(getItem().getSubject().getCategory().getName());
     lblEan13.setText(getItem().getEan13());
     lblStorage.setText(getItem().getStorageString());
-    lblComment.setText(getItem().getDescription());
 
     if (isBook) {
       _displayBook();
@@ -393,6 +394,7 @@ public class ItemViewController extends Controller {
   }
 
   private void _displayBook() {
+    lblComment.setText(getItem().getDescription());
     lblPublication.setText(((Book) getItem()).getPublication());
     lblAuthor.setText(((Book) getItem()).getAuthorString());
     lblEditor.setText(((Book) getItem()).getEditor());
