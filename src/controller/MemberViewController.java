@@ -25,6 +25,7 @@ import ressources.Dialog;
  * @since 2016/07/24
  * @version 1.0
  */
+@SuppressWarnings("WeakerAccess")
 public class MemberViewController extends Controller {
   @FXML private Button btnUpdate;
   @FXML private Button btnDelete;
@@ -114,21 +115,10 @@ public class MemberViewController extends Controller {
     _displayMember();
   }
 
-  @SuppressWarnings("unchecked")
   private void _eventHandlers() {
     tblAvailable.setOnMouseClicked(event -> {
-      Node node = ((Node) event.getTarget()).getParent();
-      TableRow<Copy> row;
-
-      if (node instanceof TableRow) {
-        row = (TableRow<Copy>) node;
-      } else if (node.getParent() instanceof  TableRow) {
-        row = (TableRow<Copy>) node.getParent();
-      } else {
-        return;
-      }
-
-      final Copy copy = row.getItem();
+      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      Copy copy = (Copy) row.getItem();
 
       if (event.getButton() == MouseButton.SECONDARY) {
         final ContextMenu contextMenu = new ContextMenu();
@@ -185,10 +175,12 @@ public class MemberViewController extends Controller {
         updatePrice.setOnAction(e -> {
           boolean isDouble = false;
           double price = copy.getPrice();
+          String title = "Modification du prix",
+                 message = "Entrez le nouveau montant :";
 
           while (!isDouble) {
             try {
-              price = Double.parseDouble(Dialog.input("Modification du prix", "Entrez le nouveau montant :", Double.toString(price)));
+              price = Double.parseDouble(Dialog.input(title, message, Double.toString(price)));
               isDouble = true;
             } catch (NumberFormatException ex) {
               Dialog.information("Vous devez entrer un montant valide");
@@ -203,7 +195,9 @@ public class MemberViewController extends Controller {
         });
 
         delete.setOnAction(e -> {
-          if (Dialog.confirmation("Souhaitez-vous vraiment supprimer cet exemplaire de " + copy.getItem().getName() + "?") && memberHandler.deleteCopy(copy.getId())) {
+          String message = "Souhaitez-vous vraiment supprimer cet exemplaire de " + copy.getItem().getName() + "?";
+
+          if (Dialog.confirmation(message) && memberHandler.deleteCopy(copy.getId())) {
             _displayCopies();
             Dialog.information("L'exemplaire de " + copy.getItem().getName() + " a été supprimé");
           } else {
@@ -214,18 +208,8 @@ public class MemberViewController extends Controller {
     });
 
     tblSold.setOnMouseClicked(event -> {
-      Node node = ((Node) event.getTarget()).getParent();
-      TableRow<Copy> row;
-
-      if (node instanceof TableRow) {
-        row = (TableRow<Copy>) node;
-      } else if (node.getParent() instanceof  TableRow) {
-        row = (TableRow<Copy>) node.getParent();
-      } else {
-        return;
-      }
-
-      final Copy copy = row.getItem();
+      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      Copy copy = (Copy) row.getItem();
 
       if (event.getButton() == MouseButton.SECONDARY) {
         final ContextMenu contextMenu = new ContextMenu();
@@ -245,19 +229,10 @@ public class MemberViewController extends Controller {
     });
 
     tblComments.setOnMouseClicked(event -> {
-      Node node = ((Node) event.getTarget()).getParent();
-      TableRow<Comment> row = null;
-
-      if (node instanceof TableRow) {
-        row = (TableRow<Comment>) node;
-      } else if (node.getParent() instanceof TableRow) {
-        row = (TableRow<Comment>) node.getParent();
-      } else {
-        return;
-      }
+      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
 
       if (row != null) {
-        final Comment comment = row.getItem();
+        Comment comment = (Comment) row.getItem();
 
         if (event.getButton() == MouseButton.SECONDARY) {
           final ContextMenu contextMenu = new ContextMenu();
@@ -282,7 +257,9 @@ public class MemberViewController extends Controller {
           });
 
           delete.setOnAction(e -> {
-            if (Dialog.confirmation("Voulez-vous vraiment delete ce commentaire ?") && memberHandler.deleteComment(comment.getId())) {
+            String message = "Voulez-vous vraiment delete ce commentaire ?";
+
+            if (Dialog.confirmation(message) && memberHandler.deleteComment(comment.getId())) {
               _displayComment();
             } else {
               Dialog.information("Une erreur est survenue lors de la supression du commentaire");
@@ -336,7 +313,9 @@ public class MemberViewController extends Controller {
     btnAddReservation.setOnAction(event -> tblReservation.setVisible(!tblReservation.isVisible()));
 
     btnDelete.setOnAction(event -> {
-      if (Dialog.confirmation("Êtes-vous certain.e de vouloir supprimer ce membre ?") && memberHandler.deleteMember()) {
+      String message = "Êtes-vous certain.e de vouloir supprimer ce membre ?";
+
+      if (Dialog.confirmation(message) && memberHandler.deleteMember()) {
         Dialog.information("Suppression réussie");
       } else {
         Dialog.information("Erreur lors de la suppression");
@@ -346,6 +325,9 @@ public class MemberViewController extends Controller {
 
   private void _dataBinding() {
     reservation.managedProperty().bind(reservation.visibleProperty());
+    tblAvailable.managedProperty().bind(tblAvailable.visibleProperty());
+    tblSold.managedProperty().bind(tblSold.visibleProperty());
+    tblPaid.managedProperty().bind(tblPaid.visibleProperty());
 
     colComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
     colCommentDate.setCellValueFactory(new PropertyValueFactory<>("date"));
@@ -373,6 +355,7 @@ public class MemberViewController extends Controller {
   }
 
   private void _displayAccount() {
+    // TODO: Add this to account object instead
     String state = "Compte actif";
 
     if (getMember().getAccount().getDeactivation().before(new Date())) {
@@ -398,6 +381,10 @@ public class MemberViewController extends Controller {
     tblAvailable.refresh();
     tblSold.refresh();
     tblPaid.refresh();
+
+    tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
+    tblSold.setVisible(!tblSold.getItems().isEmpty());
+    tblPaid.setVisible(!tblPaid.getItems().isEmpty());
   }
 
   private void _displayMember() {

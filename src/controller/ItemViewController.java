@@ -332,6 +332,11 @@ public class ItemViewController extends Controller {
   }
 
   private void _dataBinding() {
+    tblReservations.managedProperty().bind(tblReservations.visibleProperty());
+    tblAvailable.managedProperty().bind(tblAvailable.visibleProperty());
+    tblSold.managedProperty().bind(tblSold.visibleProperty());
+    tblPaid.managedProperty().bind(tblPaid.visibleProperty());
+
     colReservationMember.setCellValueFactory(new PropertyValueFactory<>("reservee"));
     colReservationSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
     colReservationAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
@@ -412,5 +417,10 @@ public class ItemViewController extends Controller {
     tblAvailable.refresh();
     tblSold.refresh();
     tblPaid.refresh();
+
+    tblReservations.setVisible(!tblReservations.getItems().isEmpty());
+    tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
+    tblSold.setVisible(!tblSold.getItems().isEmpty());
+    tblPaid.setVisible(!tblPaid.getItems().isEmpty());
   }
 }
