@@ -31,7 +31,6 @@ public class Book extends Item {
    * Default constructor for Book
    */
   public Book() {
-    super();
     init();
   }
 
@@ -40,7 +39,6 @@ public class Book extends Item {
    * @param book JSON formatted book data
    */
   public Book(JSONObject book) {
-    super();
     init();
     fromJSON(book);
   }
@@ -49,6 +47,7 @@ public class Book extends Item {
    * Initializes object with default data
    */
   public void init() {
+    super.init();
     publication = "";
     author = new ArrayList<>();
     editor = "";

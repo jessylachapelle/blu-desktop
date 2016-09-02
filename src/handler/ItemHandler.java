@@ -59,7 +59,18 @@ public class ItemHandler {
     TransactionHandler transactionHandler = new TransactionHandler();
 
     if (transactionHandler.insert(memberNo, copyId, type)) {
-      // item.getCopy(copyId).addTransaction(type);
+      item.getCopy(copyId).addTransaction(type);
+      return true;
+    }
+
+    return false;
+  }
+
+  public boolean updateCopyPrice(int copyId, double price) {
+    CopyHandler copyHandler = new CopyHandler();
+
+    if (copyHandler.updateCopyPrice(copyId, price)) {
+      item.getCopy(copyId).setPrice(price);
       return true;
     }
 
@@ -68,7 +79,14 @@ public class ItemHandler {
 
   public boolean cancelSell(int copyId) {
     TransactionHandler transactionHandler = new TransactionHandler();
-    return transactionHandler.delete(copyId, "SELL");
+
+    if (transactionHandler.delete(copyId, "SELL")) {
+      item.getCopy(copyId).removeTransaction("SELL");
+      item.getCopy(copyId).removeTransaction("SELL_PARENT");
+      return true;
+    }
+
+    return false;
   }
 
   public boolean updateStorage(int id, String[] storage) {
@@ -162,7 +180,7 @@ public class ItemHandler {
       JSONObject response = APIConnector.call(json);
       JSONObject itemData = response.getJSONObject("data");
 
-      if (itemData.has("isBook") && itemData.getBoolean("isBook")) {
+      if (itemData.has("is_book") && itemData.getBoolean("is_book")) {
         item = new Book(itemData);
       } else {
         item = new Item(itemData);
@@ -192,6 +210,10 @@ public class ItemHandler {
     }
 
     return new Item(item);
+  }
+
+  public void setItem(Item item) {
+    this.item = item;
   }
 
   public Item updateItem(JSONObject item) {
@@ -404,6 +426,17 @@ public class ItemHandler {
     } catch (JSONException e) {
       e.printStackTrace();
     }
+    return false;
+  }
+
+  public boolean deleteCopy(int copyId) {
+    CopyHandler copyHandler = new CopyHandler();
+
+    if (copyHandler.deleteCopy(copyId)) {
+      item.removeCopy(copyId);
+      return true;
+    }
+
     return false;
   }
 
