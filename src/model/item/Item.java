@@ -356,8 +356,8 @@ public class Item {
         ean13 = json.getString("ean13");
       }
 
-      if (json.has("description")) {
-        description = json.getString("description");
+      if (json.has("comment")) {
+        description = json.getString("comment");
       }
 
       if (json.has("storage")) {
