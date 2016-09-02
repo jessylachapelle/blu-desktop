@@ -1,10 +1,7 @@
 package controller;
 
-import handler.CopyHandler;
 import handler.ItemHandler;
-import handler.MemberHandler;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -28,7 +25,7 @@ import java.util.ResourceBundle;
  * @since 29/11/2015
  * @version 0.1
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class ItemViewController extends Controller {
   private ItemHandler itemHandler;
 
@@ -123,11 +120,13 @@ public class ItemViewController extends Controller {
 
   private void _eventHandlers() {
     btnAddComment.setOnAction(event -> {
-      String oldComment = lblComment.getText();
-      String newComment = Dialog.input("Modifcation du commentaire", "Veuillez entrer le commentaire que vous souhaitez inscrire :", oldComment);
+      String title = "Modifcation du commentaire",
+             message = "Veuillez entrer le commentaire que vous souhaitez inscrire :",
+             oldComment = lblComment.getText(),
+             newComment = Dialog.input(title, message, oldComment);
 
-      if(!oldComment.equals(newComment)) {
-        if(itemHandler.updateComment(getItem().getId(), newComment)) {
+      if (!oldComment.equals(newComment)) {
+        if (itemHandler.updateComment(getItem().getId(), newComment)) {
           lblComment.setText(newComment);
         } else {
           Dialog.information("Une erreur est survenue");
@@ -293,7 +292,7 @@ public class ItemViewController extends Controller {
         update.setOnAction(e -> _updatePrice(copy));
 
         delete.setOnAction(e -> {
-          String message = "Souhaitez-vous vraiment supprimer cet exemplaire de " + copy.getItem().getName() + "?";
+          String message = "Souhaitez-vous vraiment supprimer cet exemplaire appartenant à " + copy.getSeller() + "?";
           if (Dialog.confirmation(message) && itemHandler.deleteCopy(copy.getId())) {
             _displayCopies();
             Dialog.information("L'exemplaire de " + copy.getItem().getName() + " a été supprimé");
