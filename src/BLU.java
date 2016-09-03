@@ -39,7 +39,7 @@ public class BLU extends Application {
       Pane window = loader.load();
 
       Scene scene = new Scene(window);
-      scene.getStylesheets().addAll("view/css/window.css", "view/css/memberForm.css", "view/css/recherche.css", "view/css/memberView.css", "view/css/itemForm.css");
+      scene.getStylesheets().addAll("view/css/window.css");
       primaryStage.setScene(scene);
       primaryStage.show();
     } catch(IOException e) {
