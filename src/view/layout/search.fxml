@@ -1,46 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="186.0" prefWidth="669.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SearchController">
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SearchController">
   <fx:define>
-    <ToggleGroup fx:id="type_recherche" />
+    <ToggleGroup fx:id="type"/>
   </fx:define>
-  <children>
-      <Pane id="main_pane_recherche">
-         <children>
-            <Label id="titre_recherche" fx:id="titre_recherche" text="Recherche dans le système"/>
-            <TextField id="tf_recherche" fx:id="txtf_recherche" />
 
-            <Button id="btn_lancer_recherche" fx:id="btn_recherche" mnemonicParsing="false" text="Recherche" />
-            <RadioButton id="rb_membre" fx:id="rb_membre" mnemonicParsing="false" text="Un membre" toggleGroup="$type_recherche" userData="membre" />
-            <RadioButton id="rb_article" fx:id="rb_article"  mnemonicParsing="false" text="Un ouvrage" toggleGroup="$type_recherche" userData="article" />
-            <CheckBox id="cb_desactive" fx:id="cb_desactive" text="Chercher dans les comptes désactivés" userData="desactive" />
-             <Button id="lb_message" fx:id="btn_add"  layoutX="13.0" layoutY="165.0" text="Ajouter" textFill="#424b38" />
-             <Label id="lb_message" fx:id="lb_message" text="Aucun résultat trouvé" />
+  <VBox spacing="10" styleClass="main">
+    <!-- Search Dialog -->
+    <Label styleClass="h1" fx:id="lblTitle" text="Recherche dans le système"/>
+    <TextField fx:id="txtSearch"/>
 
-            <TableView id="resultat_membre" fx:id="resultat_membre">
-              <columns>
-                <TableColumn prefWidth="205.0" text="No" id="col_no" fx:id="col_no" />
-                <TableColumn prefWidth="205.0" text="Prénom" id="col_prenom" fx:id="col_prenom" />
-                <TableColumn prefWidth="205.0" text="Nom" id="col_nom" fx:id="col_nom" />
-              </columns>
-            </TableView>
+    <HBox spacing="10">
+      <RadioButton fx:id="rbMembers" text="Un member" toggleGroup="$type" userData="member"/>
+      <RadioButton fx:id="rbItems" text="Un ouvrage" toggleGroup="$type" userData="item"/>
+    </HBox>
 
-            <TableView id="resultat_article" fx:id="resultat_article">
-              <columns>
-                <TableColumn prefWidth="270.0" text="Titre" id="col_titre" fx:id="col_titre" />
-                <TableColumn prefWidth="60.0" text="Édition" id="col_edition" fx:id="col_edition" />
-                <TableColumn prefWidth="120.0" text="Éditeur" id="col_editeur" fx:id="col_editeur" />
-                <TableColumn prefWidth="60.0" text="Année" id="col_annee" fx:id="col_annee" />
-                <TableColumn prefWidth="90.0" text="Auteur.e.s" id="col_auteur" fx:id="col_auteur" />
-              </columns>
-            </TableView>
+    <CheckBox fx:id="cbDeactivated" text="Chercher dans les comptes désactivés" userData="desactive"/>
 
-         </children>
-      </Pane>
-   </children>
+    <AnchorPane>
+      <Button styleClass="form-button" fx:id="btnSearch" text="Recherche" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
+    </AnchorPane>
+
+    <!-- Results -->
+    <Label styleClass="h2" text="Résultats" />
+    <Button styleClass="form-button" fx:id="btnAdd" text="Ajouter"/>
+
+    <Label styleClass="h3" fx:id="lblMessage" text="Aucun résultat trouvé"/>
+
+    <TableView fx:id="tblMemberResults">
+      <columns>
+        <TableColumn prefWidth="205.0" text="No" fx:id="colNo"/>
+        <TableColumn prefWidth="205.0" text="Prénom" fx:id="colFirstName"/>
+        <TableColumn prefWidth="205.0" text="Nom" fx:id="colLastName"/>
+      </columns>
+    </TableView>
+
+    <TableView fx:id="tblItemResults">
+      <columns>
+        <TableColumn prefWidth="270.0" text="Titre" fx:id="colTitle"/>
+        <TableColumn prefWidth="60.0" text="Édition" fx:id="colEdition"/>
+        <TableColumn prefWidth="120.0" text="Éditeur" fx:id="colEditor"/>
+        <TableColumn prefWidth="60.0" text="Année" fx:id="colPublication"/>
+        <TableColumn prefWidth="90.0" text="Auteur.e.s" fx:id="colAuthors"/>
+      </columns>
+    </TableView>
+  </VBox>
 </Pane>

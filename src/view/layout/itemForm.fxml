@@ -1,98 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="646.0" prefWidth="672.0" xmlns="http://javafx.com/javafx/8" fx:controller="controller.ItemFormController" >
-    <children>
-        <Pane id="pane_ajout_article" prefHeight="500.0" prefWidth="615.0">
-            <children>
-                <Label id="titre_ajout_article" text="Ajouter un article" />
-                <TabPane id="tabpane_ajout_article" tabClosingPolicy="UNAVAILABLE" prefHeight="440.0" >
-                    <tabs>
-                        <Tab text="Ouvrage">
-                            <content>
-                                <AnchorPane prefWidth="580.0">
-                                    <children>
-                                        <Label text="Titre* :" id="titre_tabpane_ouvrage"/>
-                                        <TextField id="ouvrage_titre" fx:id="ouvrage_titre" />
+<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+      fx:controller="controller.ItemFormController">
+  <VBox styleClass="main" spacing="10">
+    <Label styleClass="h1" text="Ajouter un item"/>
+    <TabPane tabClosingPolicy="UNAVAILABLE">
+      <Tab styleClass="form-button" text="Ouvrage">
+          <VBox spacing="10" styleClass="main">
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Titre* :"/>
+              <TextField fx:id="txtTitle"/>
+            </HBox>
 
-                                        <Label id="lbl_ouvrage_no" text="Numéro d'édition :"  />
-                                        <TextField id="ouvrage_no_edition" fx:id="ouvrage_no_edition"   />
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="No d'édition :"/>
+              <TextField fx:id="txtEdition"/>
+            </HBox>
 
-                                        <Label id="lbl_ouvrage_auteur" text="Auteur"/>
+            <VBox fx:id="authors" spacing="10">
+              <Label styleClass="h3" text="Auteur"/>
+              <HBox spacing="10">
+                <Label styleClass="form-label" text="Prénom :"/>
+                <TextField fx:id="txtAuthorFirstName"/>
+                <Label text="Nom* :"/>
+                <TextField fx:id="txtAuthorLastName"/>
+              </HBox>
+              <AnchorPane>
+                <HBox spacing="10" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0">
+                  <Button styleClass="form-button" fx:id="btnAddAuthor" text="+"/>
+                  <Button styleClass="form-button" fx:id="btnRemoveAuthor" text=" -"/>
+                </HBox>
+              </AnchorPane>
+            </VBox>
 
-                                        <Label id="lbl_ouvrage_prenom" text="Prénom :"  />
-                                        <TextField id="txtf_auteurPrenom_1" fx:id="txtf_auteurPrenom_1"   />
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Éditeur* :"/>
+              <TextField fx:id="txtEditor"/>
+            </HBox>
 
-                                        <Label id="lbl_ouvrage_nom" text="Nom* :"   />
-                                        <TextField id="txtf_auteurNom_1" fx:id="txtf_auteurNom_1"   />
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Année* :"/>
+              <TextField fx:id="txtPublication"/>
+            </HBox>
 
-                                        <Button id="btn_ajoutAuteur" fx:id="btn_ajoutAuteur" mnemonicParsing="false" text="+" />
-                                        <Button id="btn_retireAuteur" fx:id="btn_retireAuteur" mnemonicParsing="false" text=" -"  />
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Code EAN13* :"/>
+              <TextField fx:id="txtEan13"/>
+              <CheckBox fx:id="cbHasEan13" text="Pas de code"/>
+            </HBox>
 
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Catégorie :"/>
+              <ComboBox fx:id="cbCategories"/>
+            </HBox>
 
-                                        <Label fx:id="lbl_auteurPrenom_2" text="Prénom :" visible="false"  />
-                                        <TextField id="txtf_auteurPrenom_2" fx:id="txtf_auteurPrenom_2" visible="false"   />
-                                        <Label fx:id="lbl_auteurNom_2" text="Nom* :" visible="false"   />
-                                        <TextField id="txtf_auteurNom_2" fx:id="txtf_auteurNom_2" visible="false"   />
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Matière* :"/>
+              <ComboBox fx:id="cbSubject"/>
+            </HBox>
 
-                                        <Label fx:id="lbl_auteurPrenom_3" text="Prénom :" visible="false"  />
-                                        <TextField id="txtf_auteurPrenom_3" fx:id="txtf_auteurPrenom_3" visible="false"   />
-                                        <Label fx:id="lbl_auteurNom_3" text="Nom* :" visible="false"   />
-                                        <TextField id="txtf_auteurNom_3" fx:id="txtf_auteurNom_3" visible="false"   />
+            <AnchorPane>
+              <Button styleClass="form-button" fx:id="btnAddBook" text="Ajouter l'ouvrage" AnchorPane.bottomAnchor="0"
+                      AnchorPane.rightAnchor="0"/>
+            </AnchorPane>
+          </VBox>
+      </Tab>
+      <Tab styleClass="form-button" text="Objet">
+          <VBox spacing="10" styleClass="main">
+            <HBox spacing="10">
+              <Label styleClass="form-label" text="Nom * :"/>
+              <TextField fx:id="txtItemName"/>
+            </HBox>
 
-                                        <Label fx:id="lbl_auteurPrenom_4" text="Prénom :" visible="false"  />
-                                        <TextField id="txtf_auteurPrenom_4" fx:id="txtf_auteurPrenom_4" visible="false"   />
-                                        <Label fx:id="lbl_auteurNom_4" text="Nom* :" visible="false"   />
-                                        <TextField id="txtf_auteurNom_4" fx:id="txtf_auteurNom_4" visible="false"   />
+            <HBox spacing="10">
+              <Label text="Commentaire :"/>
+              <TextArea fx:id="txtComment"/>
+            </HBox>
 
-                                        <Label fx:id="lbl_auteurPrenom_5" text="Prénom :" visible="false"  />
-                                        <TextField id="txtf_auteurPrenom_5" fx:id="txtf_auteurPrenom_5" visible="false"   />
-                                        <Label fx:id="lbl_auteurNom_5" text="Nom* :" visible="false"   />
-                                        <TextField id="txtf_auteurNom_5" fx:id="txtf_auteurNom_5" visible="false"   />
-
-                                        <Label id="lbl_ouvrage_editeur" text="Éditeur* :"  />
-                                        <TextField id="txtf_editeur" fx:id="editeur_nom"   />
-
-                                        <Label id="lbl_ouvrage_annee" text="Année* :"  />
-                                        <TextField id="txtf_annee" fx:id="ouvrage_parution"   />
-
-                                        <Label id="lbl_ouvrage_codeEAN" text="Code EAN13* :"  />
-                                        <TextField id="txtf_code" fx:id="ouvrage_ean13"   />
-                                        <CheckBox id="cb_code" fx:id="cb_code" mnemonicParsing="false" text="Pas de code"   />
-
-                                        <Label id="lbl_ouvrage_matiere" text="Matière* :"  />
-                                        <ComboBox id="cbb_matiere" fx:id="matiere" prefWidth="150.0"   />
-
-                                        <Button id="btn_ajoutOuvrage" fx:id="btn_ajoutOuvrage" mnemonicParsing="false" text="Ajouter l'ouvrage"/>
-                                    </children>
-                                </AnchorPane>
-                            </content>
-                        </Tab>
-                        <Tab text="Objet">
-                            <content>
-                                <AnchorPane prefWidth="580.0" >
-                                    <children>
-                                        <Label id="lbl_objet_nom" text="Nom * :" />
-                                        <TextField id="txt_objet_nom" fx:id="nom" />
-
-                                        <Label id="lbl_objet_cat" text="Catégorie :" />
-                                        <ComboBox id="cbb_categorie" fx:id="categorie" prefWidth="150.0" />
-
-                                        <Label id="lbl_objet_comm" text="Commentaire :" />
-                                        <TextArea id="ta_objet_comm" fx:id="commentaire"  prefHeight="100.0" prefWidth="400.0" />
-
-                                        <Button id="btn_ajoutObjet" fx:id="btn_ajoutObjet" mnemonicParsing="false" prefHeight="25.0" prefWidth="136.0" text="Ajouter l'objet" />
-                                    </children>
-                                </AnchorPane>
-                            </content>
-                        </Tab>
-                    </tabs>
-                </TabPane>
-            </children>
-        </Pane>
-    </children>
+            <AnchorPane>
+              <Button styleClass="form-button" fx:id="btnAddItem" text="Ajouter l'objet" AnchorPane.rightAnchor="0"
+                      AnchorPane.bottomAnchor="0"/>
+            </AnchorPane>
+          </VBox>
+      </Tab>
+    </TabPane>
+  </VBox>
 </Pane>

@@ -1,29 +1,77 @@
-#left_menu{
-    -fx-background-color: #96ad83;
+.menu, .menu-item {
+  -fx-cursor: hand;
 }
 
-#left_menu .button{
-    -fx-background-color: #96ad83;
+.aside {
+  -fx-background-color: #96ad83;
 }
 
-#left_menu .button:hover{
-    -fx-background-color: #647a52;
-    -fx-cursor: hand;
+.aside .button {
+  -fx-background-color: #96ad83;
+  -fx-font-size: 24;
+  -fx-text-fill: #FFF;
+  -fx-pref-height: 50;
+  -fx-pref-width: 200;
+  -fx-alignment: "center-left";
 }
 
-#menu_fichier *:hover, #menu_edit *:hover, #menu_aide *:hover{
-    -fx-cursor: hand;
+.aside .button:hover {
+  -fx-background-color: #647a52;
+  -fx-cursor: hand;
 }
 
-.tab{
-    -fx-background-color: #96ad83;
+.root {
+  .fx-font-size: 15;
 }
 
-.tab:hover{
-    -fx-background-color: #647a52;
-    -fx-cursor: hand;
+.main {
+  -fx-background-color: #cad6c1;
+  -fx-padding: 20;
 }
 
-.tab:selected { 
-    -fx-background-color: #647a52;
+.section {
+  -fx-padding: 15 0 20 0;
+}
+
+.h1 {
+  -fx-font-size: 24;
+  -fx-font-weight: bold;
+}
+
+.border {
+  -fx-border-color: #000;
+  -fx-border-width: 1;
+}
+
+.h2 {
+  -fx-font-size: 18;
+  -fx-font-weight: bold;
+}
+
+.h3 {
+  -fx-font-size: 16;
+  -fx-font-weight: bold;
+}
+
+.form-label {
+ -fx-pref-width: 120;
+}
+
+.form-button {
+  -fx-background-color: #647a52;
+  -fx-padding: 10 15 10 15;
+  -fx-text-fill: white;
+}
+
+.form-button:hover{
+  -fx-background-color: #96ad83;
+  -fx-cursor: hand;
+}
+
+.check-box:hover {
+  -fx-cursor: hand;
+}
+
+.combo-box:hover {
+  -fx-cursor: hand;
 }

@@ -1,38 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="186.0" prefWidth="669.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CopyFormController">
-  <Label layoutX="22.0" layoutY="21.0" text="Ajouter des livres à vendre" textFill="#424b38">
-    <font>
-      <Font size="22.0" />
-    </font>
-  </Label>
-  <Label fx:id="nomMembre" layoutX="22.0" layoutY="50.0" textFill="#424b38">
-    <font>
-      <Font size="22.0" />
-    </font>
-  </Label>
-  <TableView layoutX="22.0" layoutY="80.0" prefWidth="185.0" prefHeight="50.0"  fx:id="listeExemplaires">
-    <columns>
-      <TableColumn prefWidth="100.0" text="Article" fx:id="col_article" />
-      <TableColumn prefWidth="80.0" text="Prix" fx:id="col_prix" />
-    </columns>
-  </TableView>
-  <AnchorPane layoutX="22.0" layoutY="150.0"  fx:id="setPrix" >
-    <Label fx:id="nomArticle" layoutY="75.0">
-      <font>
-        <Font size="18.0" />
-      </font>
-    </Label>
-    <Label  layoutY="100.0"  text="Veuillez indiquer le prix de vente de cet article" />
-    <TextField layoutY="120.0"  fx:id="txt_prix" />
-    <Button layoutX="30.0" layoutY="160.0" fx:id="btn_cancel" text="Annuler"/>
-    <Button layoutX="110.0" layoutY="160.0" fx:id="btn_add" text="Ajouter"/>
-  </AnchorPane>
-  <AnchorPane layoutY="150.0" fx:id="ressources" >
-     <fx:include source="search.fxml"/>
-  </AnchorPane>
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.CopyFormController">
+  <VBox styleClass="main" spacing="10">
+    <Label styleClass="h2" text="Ajouter des livres à vendre"/>
+    <Label styleClass="h3" fx:id="memberName"/>
+
+    <TableView fx:id="tblCopies">
+      <columns>
+        <TableColumn prefWidth="100.0" text="Article" fx:id="colItem"/>
+        <TableColumn prefWidth="80.0" text="Prix" fx:id="colPrice"/>
+      </columns>
+    </TableView>
+
+    <VBox fx:id="setPrice" spacing="10">
+      <Label styleClass="h3" fx:id="itemTitle"/>
+      <Label text="Veuillez indiquer le prix de vente de cet item"/>
+      <TextField fx:id="txtPrice"/>
+      <AnchorPane>
+        <HBox spacing="10" AnchorPane.rightAnchor="0">
+          <Button styleClass="form-button" fx:id="btnCancel" text="Annuler"/>
+          <Button styleClass="form-button" fx:id="btnAdd" text="Ajouter"/>
+        </HBox>
+      </AnchorPane>
+    </VBox>
+
+    <Pane fx:id="ressources">
+      <fx:include source="search.fxml"/>
+    </Pane>
+  </VBox>
 </Pane>

@@ -1,645 +1,426 @@
 package controller;
 
-import java.net.URL;
-import java.util.Date;
-import java.util.ResourceBundle;
+import handler.ItemHandler;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import model.article.Article;
-import model.article.Exemplaire;
-import model.article.Objet;
-import model.article.Ouvrage;
-import hanlder.ItemHandler;
-import hanlder.MemberHandler;
-import model.transaction.Transaction;
-import ressources.Dialogue;
+import model.item.Book;
+import model.item.Copy;
+import model.item.Item;
+import model.item.Storage;
+import ressources.Dialog;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.ResourceBundle;
 
 /**
- * Controller de la fenêtre d'une fiche d'article
+ * Controller de la fenêtre d'une fiche d'item
  *
  * @author Jessy Lachapelle
  * @since 29/11/2015
  * @version 0.1
  */
-@SuppressWarnings({"Convert2Lambda", "Convert2Diamond"})
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class ItemViewController extends Controller {
+  private ItemHandler itemHandler;
 
-  private Article article;
-  private ItemHandler gArticle;
+  @FXML private Label lblTitle;
+  @FXML private Label lblDescription;
+  @FXML private Label lblAuthor;
+  @FXML private Label lblEdition;
+  @FXML private Label lblEditor;
+  @FXML private Label lblPublication;
+  @FXML private Label lblEan13;
+  @FXML private Label lblComment;
+  @FXML private Button btnAddComment;
+  @FXML private Label lblStatus;
+  @FXML private Label lblCategory;
+  @FXML private Label lblSubject;
+  @FXML private Button btnStorage;
+  @FXML private Label lblStorage;
+  @FXML private Button btnReserve;
 
-  @FXML
-  private Label lbl_titre;
-  @FXML
-  private Label lbl_description;
-  @FXML
-  private Label lbl_auteur;
-  @FXML
-  private Label lbl_edition;
-  @FXML
-  private Label lbl_editeur;
-  @FXML
-  private Label lbl_annee;
-  @FXML
-  private Label lbl_code;
-  @FXML
-  private Label lbl_commentaire;
-  @FXML
-  private Button btn_commentaire;
-  @FXML
-  private Label lbl_statut;
-  @FXML
-  private Label lbl_categorie;
-  @FXML
-  private Label lbl_matiere;
-  @FXML
-  private Button btn_rangement;
-  @FXML
-  private Label lbl_rangement;
-  @FXML
-  private Button btn_faire_reservation;
-  @FXML
-  private TableView<?> tbl_statOuvrage;
-  @FXML
-  private Button btn_reservation;
-  @FXML
-  private TableView<Exemplaire> tbl_reservation;
-  @FXML
-  private Button btn_aVendre;
-  @FXML
-  private TableView<Exemplaire> tbl_aVendre;
-  @FXML
-  private Button btn_vendu;
-  @FXML
-  private TableView<Exemplaire> tbl_vendu;
-  @FXML
-  private Button btn_remis;
-  @FXML
-  private TableView<Exemplaire> tbl_remis;
-  @FXML
-  private Button btn_modif;
-  @FXML
-  private Button btn_suppOuv;
-  @FXML
-  private Button btn_fusion;
-  @FXML
-  private TableColumn<Exemplaire, String> col_reservation_membre;
-  @FXML
-  private TableColumn<Exemplaire, String> col_reservation_vendeur;
-  @FXML
-  private TableColumn<Exemplaire, String> col_reservation_ajout;
-  @FXML
-  private TableColumn<Exemplaire, String> col_reservation_date;
-  @FXML
-  private TableColumn<Exemplaire, String> col_reservation_prix;
-  @FXML
-  private TableColumn<Exemplaire, String> col_aVendre_vendeur;
-  @FXML
-  private TableColumn<Exemplaire, String> col_aVendre_ajout;
-  @FXML
-  private TableColumn<Exemplaire, String> col_aVendre_prix;
-  @FXML
-  private TableColumn<Exemplaire, String> col_aVendre_action;
-  @FXML
-  private TableColumn<Exemplaire, String> col_vendu_vendeur;
-  @FXML
-  private TableColumn<Exemplaire, String> col_vendu_ajout;
-  @FXML
-  private TableColumn<Exemplaire, String> col_vendu_vente;
-  @FXML
-  private TableColumn<Exemplaire, String> col_vendu_prix;
-  @FXML
-  private TableColumn<Exemplaire, String> col_remis_vendeur;
-  @FXML
-  private TableColumn<Exemplaire, String> col_remis_ajout;
-  @FXML
-  private TableColumn<Exemplaire, String> col_remis_vente;
-  @FXML
-  private TableColumn<Exemplaire, String> col_remis_date;
-  @FXML
-  private TableColumn<Exemplaire, String> col_remis_prix;
-  @FXML
-  private Button monte_statut;
-  @FXML
-  private Button baisse_statut;
+  @FXML private TableView<?> tblItemStatistics;
+
+  @FXML private Button btnDisplayReservations;
+  @FXML private TableView<Copy> tblReservations;
+  @FXML private TableColumn<Copy, String> colReservationMember;
+  @FXML private TableColumn<Copy, String> colReservationSeller;
+  @FXML private TableColumn<Copy, String> colReservationAdded;
+  @FXML private TableColumn<Copy, String> colReservationDate;
+  @FXML private TableColumn<Copy, String> colReservationPrice;
+
+  @FXML private Button btnDisplayAvailable;
+  @FXML private TableView<Copy> tblAvailable;
+  @FXML private TableColumn<Copy, String> colAvailableSeller;
+  @FXML private TableColumn<Copy, String> colAvailableAdded;
+  @FXML private TableColumn<Copy, String> colAvailablePrice;
+
+  @FXML private Button btnSold;
+  @FXML private TableView<Copy> tblSold;
+  @FXML private TableColumn<Copy, String> colSoldSeller;
+  @FXML private TableColumn<Copy, String> colSoldAdded;
+  @FXML private TableColumn<Copy, String> colSoldDateSold;
+  @FXML private TableColumn<Copy, String> colSoldPrice;
+
+  @FXML private Button btnPaid;
+  @FXML private TableView<Copy> tblPaid;
+  @FXML private TableColumn<Copy, String> colPaidSeller;
+  @FXML private TableColumn<Copy, String> colPaidAdded;
+  @FXML private TableColumn<Copy, String> colPaidDateSold;
+  @FXML private TableColumn<Copy, String> colPaidDatePaid;
+  @FXML private TableColumn<Copy, String> colPaidPrice;
+
+  @FXML private Button btnUpdate;
+  @FXML private Button btnDelete;
+  @FXML private Button btnMerge;
+
+  @FXML private Button statusUp;
+  @FXML private Button statusDown;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    gArticle = new ItemHandler();
-    assertions();
-    eventHandlers();
-    dataBinding();
+    itemHandler = new ItemHandler();
+    _eventHandlers();
+    _dataBinding();
   }
 
-   public void loadArticle(Article article) {
-    monte_statut.setVisible(article instanceof Ouvrage);
-    baisse_statut.setVisible(article instanceof Ouvrage);
-    afficheArticle();
-  }
-  public void loadArticle(int idArticle) {
-    article = gArticle.consulteArticle(idArticle);
-    monte_statut.setVisible(article instanceof Ouvrage);
-    baisse_statut.setVisible(article instanceof Ouvrage);
-    afficheArticle();
+  public void loadItem(Item item) {
+    boolean isBook = item instanceof Book;
+    itemHandler.setItem(item);
+    statusUp.setVisible(isBook);
+    statusDown.setVisible(isBook);
+    _displayItem(isBook);
   }
 
-  public void loadArticle(String ean13) {
-    article = gArticle.consulteArticle(Integer.parseInt(ean13));
-    monte_statut.setVisible(article instanceof Ouvrage);
-    baisse_statut.setVisible(article instanceof Ouvrage);
-    afficheArticle();
+  public void loadItem(int id) {
+    loadItem(itemHandler.selectItem(id));
   }
 
-  public Article getArticle() {
-    return article;
+  public void loadItem(String ean13) {
+    loadItem(itemHandler.selectItem(ean13));
   }
 
-  public TableView[] getTableauxExemplaires() {
-    TableView[] tableView = {tbl_reservation, tbl_aVendre, tbl_vendu, tbl_remis};
-    return tableView;
+  public Item getItem() {
+    return itemHandler.getItem();
   }
 
-  public Button getButtonModifier() {
-    return btn_modif;
+  public TableView[] getCopyTables() {
+    return new TableView[]{ tblReservations, tblAvailable, tblSold, tblPaid };
   }
 
-  private void assertions() {
-    assert lbl_titre != null : "fx:id=\"lbl_titre\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert lbl_description != null : "fx:id=\"lbl_description\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert lbl_auteur != null : "fx:id=\"lbl_auteur\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert lbl_edition != null : "fx:id=\"lbl_edition\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert lbl_editeur != null : "fx:id=\"lbl_editeur\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert lbl_annee != null : "fx:id=\"lbl_annee\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert lbl_code != null : "fx:id=\"lbl_code\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert lbl_commentaire != null : "fx:id=\"lbl_commentaire\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert lbl_statut != null : "fx:id=\"lbl_statut\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert lbl_categorie != null : "fx:id=\"lbl_categorie\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert lbl_matiere != null : "fx:id=\"lbl_matiere\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert btn_rangement != null : "fx:id=\"btn_rangement\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert lbl_rangement != null : "fx:id=\"lbl_rangement\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert btn_commentaire != null : "fx:id=\"btn_commentaire\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert btn_faire_reservation != null : "fx:id=\"btn_faire_reservation\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert tbl_statOuvrage != null : "fx:id=\"tbl_statOuvrage\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert btn_reservation != null : "fx:id=\"btn_reservation\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert tbl_reservation != null : "fx:id=\"tbl_reservation\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert btn_aVendre != null : "fx:id=\"btn_aVendre\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert tbl_aVendre != null : "fx:id=\"tbl_aVendre\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert btn_vendu != null : "fx:id=\"btn_vendu\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert tbl_vendu != null : "fx:id=\"tbl_vendu\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert btn_remis != null : "fx:id=\"btn_remis\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert tbl_remis != null : "fx:id=\"tbl_remis\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert btn_modif != null : "fx:id=\"btn_modif\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert btn_suppOuv != null : "fx:id=\"btn_suppOuv\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert btn_fusion != null : "fx:id=\"btn_fusion\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_aVendre_action != null : "fx:id=\"col_aVendre_action\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_aVendre_ajout != null : "fx:id=\"col_aVendre_ajout\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_aVendre_prix != null : "fx:id=\"col_aVendre_prix\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_aVendre_vendeur != null : "fx:id=\"col_aVendre_vendeur\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_remis_ajout != null : "fx:id=\"col_remis_ajout\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_remis_date != null : "fx:id=\"col_remis_date\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_remis_prix != null : "fx:id=\"col_remis_prix\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_remis_vendeur != null : "fx:id=\"col_remis_vendeur\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_remis_vente != null : "fx:id=\"col_remis_vente\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_reservation_ajout != null : "fx:id=\"col_reservation_ajout\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_reservation_date != null : "fx:id=\"col_reservation_date\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_reservation_membre != null : "fx:id=\"col_reservation_membre\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_reservation_prix != null : "fx:id=\"col_reservation_prix\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_reservation_vendeur != null : "fx:id=\"col_reservation_vendeur\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_vendu_ajout != null : "fx:id=\"col_vendu_ajout\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_vendu_prix != null : "fx:id=\"col_vendu_prix\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_vendu_vendeur != null : "fx:id=\"col_vendu_vendeur\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert col_vendu_vente != null : "fx:id=\"col_vendu_vente\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert monte_statut != null : "fx:id=\"monte_statut\" was not injected: check your FXML file 'itemView.fxml'.";
-    assert baisse_statut != null : "fx:id=\"baisse_statut\" was not injected: check your FXML file 'itemView.fxml'.";
+  public Button getBtnUpdate() {
+    return btnUpdate;
   }
 
-  private void eventHandlers() {
-    btn_commentaire.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        String commentaireVieux = lbl_commentaire.getText();
-        String commentaireNouveau = Dialogue.dialogueSaisie("Modifcation du commentaire", "Veuillez entrer le commentaire que vous souhaitez inscrire :", lbl_commentaire.getText());
+  private void _eventHandlers() {
+    btnAddComment.setOnAction(event -> {
+      String title = "Modifcation du commentaire",
+             message = "Veuillez entrer le commentaire que vous souhaitez inscrire :",
+             oldComment = lblComment.getText(),
+             newComment = Dialog.input(title, message, oldComment);
 
-        if(!commentaireVieux.equals("") && commentaireNouveau.equals("")) {
-          if(gArticle.supprimeCommentaire(article.getNoArticle()))
-            lbl_commentaire.setText("");
-        } else if(!commentaireVieux.equals("") && !commentaireNouveau.equals("")) {
-          if(gArticle.modifieCommentaire(article.getNoArticle(), commentaireNouveau))
-            lbl_commentaire.setText(commentaireNouveau);
+      if (!oldComment.equals(newComment)) {
+        if (itemHandler.updateComment(getItem().getId(), newComment)) {
+          _displayBook();
         } else {
-          if(gArticle.ajoutCommentaire(article.getNoArticle(), commentaireNouveau))
-            lbl_commentaire.setText(commentaireNouveau);
+          Dialog.information("Une erreur est survenue");
         }
       }
     });
 
-    monte_statut.setOnAction(new EventHandler<ActionEvent>(){
-      @Override
-      public void handle(ActionEvent event) {
-        if(((Ouvrage)article).getStatut().equals("Retiré")) {
-          if(gArticle.supprimeDateRetire(article.getNoArticle())) {
-            ((Ouvrage)article).setDateRetire("");
-          }
-        } else if(((Ouvrage)article).getStatut().equals("Désuet")) {
-          if(gArticle.supprimeDateDesuet(article.getNoArticle())) {
-            ((Ouvrage)article).setDateDesuet("");
-          }
+    statusUp.setOnAction(event -> {
+      if (((Book) getItem()).getStatus().equals("REMOVED")) {
+        if (itemHandler.setStatus(getItem().getId(), "OUTDATED")) {
+          ((Book) getItem()).setRemoved("");
         }
-        lbl_statut.setText(((Ouvrage)article).getStatut());
+      } else if (((Book) getItem()).getStatus().equals("OUTDATED")) {
+        if (itemHandler.setStatus(getItem().getId(), "VALID")) {
+          ((Book) getItem()).setOutdated("");
+        }
+      }
+
+      lblStatus.setText(((Book) getItem()).getStatus());
+    });
+
+    statusDown.setOnAction(event -> {
+      if (((Book) getItem()).getStatus().equals("VALID")) {
+        if (itemHandler.setStatus(getItem().getId(), "OUTDATED")) {
+          ((Book) getItem()).setOutdated(new Date());
+        }
+      } else if (((Book) getItem()).getStatus().equals("OUTDATED")) {
+        if (itemHandler.setStatus(getItem().getId(), "REMOVED")) {
+          ((Book) getItem()).setRemoved(new Date());
+        }
+      }
+
+      lblStatus.setText(((Book) getItem()).getStatus());
+    });
+
+    btnStorage.setOnAction(event -> {
+      String title = "Caisses de rangement",
+             message = "Veuillez noter les caisses de rangement séparer par un \";\" :";
+      String input = Dialog.input(title, message, lblStorage.getText());
+      String[] storageArray = input.replace(" ", "").split(";");
+
+      if (itemHandler.updateStorage(getItem().getId(), storageArray)) {
+        ArrayList<Storage> storage = new ArrayList<>();
+
+        for (String unit : storageArray) {
+          Storage storageUnit = new Storage();
+          storageUnit.setCode(unit);
+        }
+
+        getItem().setStorage(storage);
+      } else {
+        Dialog.information("Une erreur est survenue");
       }
     });
 
-    baisse_statut.setOnAction(new EventHandler<ActionEvent>(){
-      @Override
-      public void handle(ActionEvent event) {
-        if(((Ouvrage)article).getStatut().equals("Valide")) {
-          if(gArticle.ajoutDateDesuet(article.getNoArticle())) {
-            ((Ouvrage)article).setDateDesuet(new Date());
-          }
-        } else if(((Ouvrage)article).getStatut().equals("Désuet")) {
-          if(gArticle.ajoutDateRetire(article.getNoArticle())) {
-            ((Ouvrage)article).setDateRetire(new Date());
-          }
-        }
-        lbl_statut.setText(((Ouvrage)article).getStatut());
-      }
+    btnReserve.setOnAction(event -> {
+      // TODO: Handle reservations
+//      String input = "";
+//      int memberNo = 0;
+//      boolean isMember = false;
+//
+//      while (!isMember) {
+//        try {
+//          input = Dialog.input("Réserver cet item", "Entrez le numéro de l'étudiant qui fait la réservation");
+//          memberNo = Integer.parseInt(input);
+//
+//          MemberHandler memberHandler = new MemberHandler();
+//          isMember = memberHandler.exist(memberNo);
+//        } catch (NumberFormatException e) {
+//          if (input.equals("")) {
+//            return;
+//          }
+//        }
+//      }
+//
+//      if (itemHandler.addItemReservation(memberNo)) {
+//        _displayCopies();
+//      }
     });
 
-    btn_rangement.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        String rangement = Dialogue.dialogueSaisie("Caisses de rangement", "Veuillez noter les caisses de rangement séparer par un \";\" :", lbl_rangement.getText());
-        rangement = rangement.replace(" ", "");
+    btnDisplayReservations.setOnAction(event -> tblReservations.setVisible(!tblReservations.isVisible()));
 
-        String[] caisses = rangement.split(";");
-        /*
-        if(!commentaireVieux.equals("") && commentaireNouveau.equals("")) {
-          if(gArticle.supprimeCommentaire(article.getNoArticle()))
-            lbl_commentaire.setText("");
-        } else if(!commentaireVieux.equals("") && !commentaireNouveau.equals("")) {
-          if(gArticle.modifieCommentaire(article.getNoArticle(), commentaireNouveau))
-            lbl_commentaire.setText(commentaireNouveau);
+    tblReservations.setOnMouseClicked(event -> {
+      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      Copy copy = (Copy) row.getItem();
+
+      if (event.getButton() == MouseButton.SECONDARY) {
+        final ContextMenu contextMenu = new ContextMenu();
+
+        MenuItem sell = new MenuItem("Vendre");
+        MenuItem update = new MenuItem("Modifier le prix");
+        MenuItem cancel = new MenuItem("Annuler réservation");
+
+        if (copy.getId() == 0) {
+          contextMenu.getItems().addAll(cancel);
         } else {
-          if(gArticle.ajoutCommentaire(article.getNoArticle(), commentaireNouveau))
-            lbl_commentaire.setText(commentaireNouveau);
-        }*/
-      }
-    });
+          contextMenu.getItems().addAll(sell, update, cancel);
+        }
 
-    btn_faire_reservation.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        String saisie = "";
-        int noMembre = 0;
-        boolean isMembre = false;
+        row.setContextMenu(contextMenu);
 
-        while(!isMembre) {
-          try {
-            saisie = Dialogue.dialogueSaisie("Réserver cet article", "Entrez le numéro de l'étudiant qui fait la réservation");
-            noMembre = Integer.parseInt(saisie);
-
-            MemberHandler gm = new MemberHandler();
-            isMembre = gm.membreExiste(noMembre);
-          } catch(NumberFormatException e) {
-            if(saisie.equals(""))
-              return;
+        sell.setOnAction(e -> {
+          if (itemHandler.addTransaction(copy.getMember().getNo(), copy.getId(), "SELL_PARENT")) {
+            _displayCopies();
           }
-        }
+        });
 
-        if(gArticle.ajoutDemandeReservation(noMembre, article.getNoArticle())) {
-          Exemplaire e = new Exemplaire();
-          Transaction t = new Transaction();
+        update.setOnAction(e -> _updatePrice(copy));
 
-          t.setType(5);
-          t.setDate(new Date());
-          e.ajouterTransaction(t);
-
-          article.ajoutReservation(e);
-          afficheExemplaires();
-        }
+        cancel.setOnAction(e -> {
+          // TODO: Handle reservations
+//          if (copy.getId() == 0) {
+//            itemHandler.deleteReservation(copy.getParent().getNo(), getItem().getId());
+//            getItem().getReserved().remove(copy);
+//          } else {
+//            itemHandler.deleteReservation(copy.getId());
+//            getItem().getReserved().remove(copy);
+//
+//            for (int noTransaction = 0; noTransaction < copy.getAllTransactions().size(); noTransaction++) {
+//              if (copy.getAllTransactions().get(noTransaction).getType().equals("RESERVE")) {
+//                copy.getAllTransactions().remove(noTransaction);
+//              }
+//            }
+//            getItem().getCopies().add(copy);
+//          }
+//
+//          _displayCopies();
+        });
       }
     });
 
-    btn_reservation.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        tbl_reservation.setVisible(!tbl_reservation.isVisible());
+    btnDisplayAvailable.setOnAction(event -> tblAvailable.setVisible(!tblAvailable.isVisible()));
+
+    tblAvailable.setOnMouseClicked(event -> {
+      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      Copy copy = (Copy) row.getItem();
+
+      if (event.getButton() == MouseButton.SECONDARY) {
+        final ContextMenu contextMenu = new ContextMenu();
+
+        MenuItem sell = new MenuItem("Vendre");
+        MenuItem sellParent = new MenuItem("Vendre à 50%");
+        MenuItem update = new MenuItem("Modifier le prix");
+        MenuItem delete = new MenuItem("Supprimer");
+
+        contextMenu.getItems().addAll(sell, sellParent, update, delete);
+        row.setContextMenu(contextMenu);
+
+        sell.setOnAction(e -> {
+          if (itemHandler.addTransaction(copy.getMember().getNo(), copy.getId(), "SELL")) {
+            _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue");
+          }
+        });
+
+        sellParent.setOnAction(e -> {
+          if (itemHandler.addTransaction(copy.getMember().getNo(), copy.getId(), "SELL_PARENT")) {
+            _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue");
+          }
+        });
+
+        update.setOnAction(e -> _updatePrice(copy));
+
+        delete.setOnAction(e -> {
+          String message = "Souhaitez-vous vraiment supprimer cet exemplaire appartenant à " + copy.getSeller() + "?";
+          if (Dialog.confirmation(message) && itemHandler.deleteCopy(copy.getId())) {
+            _displayCopies();
+            Dialog.information("L'exemplaire de " + copy.getItem().getName() + " a été supprimé");
+          } else {
+            Dialog.information("Une erreur est survenue lors de la suppression de l'exemplaire");
+          }
+        });
       }
     });
 
-    tbl_reservation.setOnMouseClicked(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent event) {
-        Node node = ((Node) event.getTarget()).getParent();
-        TableRow row;
+    btnSold.setOnAction(event -> tblSold.setVisible(!tblSold.isVisible()));
 
-        if (node instanceof TableRow) {
-          row = (TableRow) node;
-        } else {
-          row = (TableRow) node.getParent();
-        }
+    tblSold.setOnMouseClicked(event -> {
+      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      Copy copy = (Copy) row.getItem();
 
-        final Exemplaire e = (Exemplaire) row.getItem();
+      if (event.getButton() == MouseButton.SECONDARY) {
+        final ContextMenu contextMenu = new ContextMenu();
+        MenuItem cancel = new MenuItem("Annuler la vente");
 
-        //TODO clique sur les noms et le prix
-        if (event.isPrimaryButtonDown()) {
+        contextMenu.getItems().addAll(cancel);
+        row.setContextMenu(contextMenu);
 
-        } else if (event.getButton() == MouseButton.SECONDARY) {
-          final ContextMenu contextMenu = new ContextMenu();
-
-          MenuItem vendre = new MenuItem("Vendre");
-          MenuItem annuler = new MenuItem("Annuler réservation");
-
-          if(e.getNoExemplaire() == 0)
-            contextMenu.getItems().addAll(annuler);
-          else
-            contextMenu.getItems().addAll(vendre, annuler);
-
-          row.setContextMenu(contextMenu);
-
-          vendre.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              if(gArticle.vendreExemplaire(e.getMembre().getNoMembre(), e.getNoExemplaire(), true)) {
-                gArticle.supprimeReservation(e.getNoExemplaire());
-
-                Transaction t = new Transaction();
-                t.setDate(new Date());
-                t.setType(3);
-
-                article.getReserve().remove(e);
-                e.ajouterTransaction(t);
-                article.getVendu().add(e);
-
-                afficheExemplaires();
-              }
-            }
-          });
-
-          annuler.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              if(e.getNoExemplaire() == 0) {
-                gArticle.supprimeDemandeReservation(e.getParent().getNoMembre(), article.getNoArticle());
-                article.getReserve().remove(e);
-              } else {
-                gArticle.supprimeReservation(e.getNoExemplaire());
-                article.getReserve().remove(e);
-
-                for(int noTransaction = 0; noTransaction < e.getTousTransactions().size(); noTransaction++)
-                  if(e.getTousTransactions().get(noTransaction).getType() == 5)
-                    e.getTousTransactions().remove(noTransaction);
-                article.getEnVente().add(e);
-              }
-
-              afficheExemplaires();
-            }
-          });
-        }
+        cancel.setOnAction(e -> {
+          if (itemHandler.cancelSell(copy.getId())) {
+            _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue lors de l'annulation de la vente");
+          }
+        });
       }
     });
 
-    btn_aVendre.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        tbl_aVendre.setVisible(!tbl_aVendre.isVisible());
-      }
-    });
-
-    tbl_aVendre.setOnMouseClicked(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent event) {
-        Node node = ((Node) event.getTarget()).getParent();
-        TableRow row;
-
-        if (node instanceof TableRow) {
-          row = (TableRow) node;
-        } else {
-          row = (TableRow) node.getParent();
-        }
-
-        final Exemplaire e = (Exemplaire) row.getItem();
-
-        //TODO clique sur $$$ pour vente
-        if (event.isPrimaryButtonDown()) {
-
-        } else if (event.getButton() == MouseButton.SECONDARY) {
-          final ContextMenu contextMenu = new ContextMenu();
-
-          MenuItem vendre = new MenuItem("Vendre");
-          MenuItem vendreParent = new MenuItem("Vendre à 50%");
-          MenuItem modifier = new MenuItem("Modifier le prix");
-          MenuItem supprimer = new MenuItem("Supprimer");
-
-          contextMenu.getItems().addAll(vendre, vendreParent, modifier, supprimer);
-          row.setContextMenu(contextMenu);
-
-          vendre.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              if(gArticle.vendreExemplaire(e.getMembre().getNoMembre(), e.getNoExemplaire())) {
-                Transaction t = new Transaction();
-                t.setDate(new Date());
-                t.setType(2);
-
-                article.getEnVente().remove(e);
-                e.ajouterTransaction(t);
-                article.getVendu().add(e);
-
-                afficheExemplaires();
-              }
-            }
-          });
-
-          vendreParent.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              if(gArticle.vendreExemplaire(e.getMembre().getNoMembre(), e.getNoExemplaire(), true)) {
-                Transaction t = new Transaction();
-                t.setDate(new Date());
-                t.setType(3);
-
-                article.getEnVente().remove(e);
-                e.ajouterTransaction(t);
-                article.getVendu().add(e);
-
-                afficheExemplaires();
-              }
-            }
-          });
-
-          modifier.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              boolean estDouble = false;
-              double prix = e.getPrix();
-
-              while (!estDouble) {
-                try {
-                  prix = Double.parseDouble(Dialogue.dialogueSaisie("Modification du prix", "Entrez le nouveau montant :", Double.toString(e.getPrix())));
-
-                  if (prix == 0)
-                    Dialogue.dialogueInformation("Vous devez entrer un montant valide");
-                  else
-                    estDouble = true;
-                } catch (NumberFormatException e) {
-                  Dialogue.dialogueInformation("Vous devez entrer un montant valide");
-                }
-              }
-
-              if(gArticle.modifieExemplaire(e.getNoExemplaire(), prix)) {
-                article.getEnVente().remove(e);
-                e.setPrix(prix);
-                article.getEnVente().add(e);
-
-                afficheExemplaires();
-              }
-            }
-          });
-
-          supprimer.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              if(gArticle.retireExemplaire(e.getNoExemplaire())) {
-                article.getEnVente().remove(e);
-                afficheExemplaires();
-              }
-            }
-          });
-        }
-      }
-    });
-
-    btn_vendu.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        tbl_vendu.setVisible(!tbl_vendu.isVisible());
-      }
-    });
-
-    tbl_vendu.setOnMouseClicked(new EventHandler<MouseEvent>() {
-      @Override
-      public void handle(MouseEvent event) {
-        Node node = ((Node) event.getTarget()).getParent();
-        TableRow row;
-
-        if (node instanceof TableRow) {
-          row = (TableRow) node;
-        } else {
-          row = (TableRow) node.getParent();
-        }
-
-        final Exemplaire e = (Exemplaire) row.getItem();
-
-        if (event.getButton() == MouseButton.SECONDARY) {
-          final ContextMenu contextMenu = new ContextMenu();
-          MenuItem annuler = new MenuItem("Annuler la vente");
-
-          contextMenu.getItems().addAll(annuler);
-          row.setContextMenu(contextMenu);
-
-          annuler.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-              if(gArticle.annuleVente(e.getNoExemplaire())) {
-                article.getVendu().remove(e);
-
-                for(int noTransaction = 0; noTransaction < e.getTousTransactions().size(); noTransaction++)
-                  if(e.getTousTransactions().get(noTransaction).getType() == 2 || e.getTousTransactions().get(noTransaction).getType() == 3)
-                    e.getTousTransactions().remove(noTransaction);
-
-                article.getEnVente().add(e);
-                afficheExemplaires();
-              }
-            }
-          });
-        }
-      }
-    });
-
-    btn_remis.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        tbl_remis.setVisible(!tbl_remis.isVisible());
-      }
-    });
+    btnPaid.setOnAction(event -> tblPaid.setVisible(!tblPaid.isVisible()));
   }
 
-  private void dataBinding() {
-    col_reservation_membre.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("reservant"));
-    col_reservation_vendeur.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("vendeur"));
-    col_reservation_ajout.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateAjout"));
-    col_reservation_date.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateReservation"));
-    col_reservation_prix.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("strPrix"));
+  private void _dataBinding() {
+    tblReservations.managedProperty().bind(tblReservations.visibleProperty());
+    tblAvailable.managedProperty().bind(tblAvailable.visibleProperty());
+    tblSold.managedProperty().bind(tblSold.visibleProperty());
+    tblPaid.managedProperty().bind(tblPaid.visibleProperty());
 
-    col_aVendre_vendeur.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("vendeur"));
-    col_aVendre_ajout.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateAjout"));
-    col_aVendre_prix.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("strPrix"));
-    col_aVendre_action.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("etiquetteVente"));
+    colReservationMember.setCellValueFactory(new PropertyValueFactory<>("reservee"));
+    colReservationSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
+    colReservationAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colReservationDate.setCellValueFactory(new PropertyValueFactory<>("dateReserved"));
+    colReservationPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
 
-    col_vendu_vendeur.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("vendeur"));
-    col_vendu_ajout.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateAjout"));
-    col_vendu_vente.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateVente"));
-    col_vendu_prix.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("strPrix"));
+    colAvailableSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
+    colAvailableAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colAvailablePrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
 
-    col_remis_vendeur.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("vendeur"));
-    col_remis_ajout.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateAjout"));
-    col_remis_vente.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateVente"));
-    col_remis_date.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("dateRemise"));
-    col_remis_prix.setCellValueFactory(new PropertyValueFactory<Exemplaire, String>("strPrix"));
+    colSoldSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
+    colSoldAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colSoldDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
+    colSoldPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
+
+    colPaidSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
+    colPaidAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colPaidDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
+    colPaidDatePaid.setCellValueFactory(new PropertyValueFactory<>("datePaid"));
+    colPaidPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
   }
 
-  private void afficheArticle() {
-    lbl_titre.setText(article.getNom());
-    lbl_matiere.setText(article.getMatiere().getNom());
-    lbl_categorie.setText(article.getMatiere().getCategorie());
-    lbl_code.setText(article.getCodeBar());
-    lbl_rangement.setText(article.rangementStr());
-    lbl_commentaire.setText(article.getCommentaire());
+  private void _displayItem(boolean isBook) {
+    lblTitle.setText(getItem().getName());
+    lblSubject.setText(getItem().getSubject().getName());
+    lblCategory.setText(getItem().getSubject().getCategory().getName());
+    lblEan13.setText(getItem().getEan13());
+    lblStorage.setText(getItem().getStorageString());
 
-    if(article instanceof Ouvrage) {
-      afficheOuvrage();
-    } else if(article instanceof Objet) {
-      afficheObjet();
+    if (isBook) {
+      _displayBook();
+    } else {
+      lblDescription.setText(getItem().getDescription());
     }
 
-    afficheExemplaires();
+    _displayCopies();
   }
 
-  private void afficheOuvrage() {
-    lbl_annee.setText(Integer.toString(((Ouvrage)article).getAnnee()));
-    lbl_auteur.setText(((Ouvrage)article).getAuteurToString());
-    lbl_editeur.setText(((Ouvrage)article).getEditeur());
-    lbl_edition.setText(Integer.toString(((Ouvrage)article).getNoEdition()));
-    lbl_statut.setText(((Ouvrage)article).getStatut());
+  private void _updatePrice(Copy copy) {
+    String titre = "Modification du price",
+           message = "Entrez le nouveau montant :";
+    boolean isDouble = false;
+    double price = copy.getPrice();
+
+    while (!isDouble) {
+      try {
+
+        price = Double.parseDouble(Dialog.input(titre, message, Double.toString(copy.getPrice())));
+        isDouble = true;
+      } catch (NumberFormatException e) {
+        Dialog.information("Vous devez entrer un montant valide");
+      }
+    }
+
+    if (itemHandler.updateCopyPrice(copy.getId(), price)) {
+      _displayCopies();
+    } else {
+      Dialog.information("Une erreur est survenue");
+    }
   }
 
-  private void afficheObjet() {
-    lbl_description.setText(((Objet)article).getDescription());
+  private void _displayBook() {
+    lblComment.setText(getItem().getDescription());
+    lblPublication.setText(((Book) getItem()).getPublication());
+    lblAuthor.setText(((Book) getItem()).getAuthorString());
+    lblEditor.setText(((Book) getItem()).getEditor());
+    lblEdition.setText(Integer.toString(((Book) getItem()).getEdition()));
+    lblStatus.setText(((Book) getItem()).getStatus());
   }
 
-  private void afficheExemplaires() {
-    ObservableList<Exemplaire> reserve = FXCollections.observableArrayList(article.getReserve());
-    ObservableList<Exemplaire> aVendre = FXCollections.observableArrayList(article.getEnVente());
-    ObservableList<Exemplaire> vendu = FXCollections.observableArrayList(article.getVendu());
-    ObservableList<Exemplaire> argentRemis = FXCollections.observableArrayList(article.getArgentRemis());
+  private void _displayCopies() {
+    tblReservations.setItems(FXCollections.observableArrayList(getItem().getReserved()));
+    tblAvailable.setItems(FXCollections.observableArrayList(getItem().getAvailable()));
+    tblSold.setItems(FXCollections.observableArrayList(getItem().getSold()));
+    tblPaid.setItems(FXCollections.observableArrayList(getItem().getPaid()));
 
-    tbl_reservation.setItems(reserve);
-    tbl_aVendre.setItems(aVendre);
-    tbl_vendu.setItems(vendu);
-    tbl_remis.setItems(argentRemis);
+    tblReservations.refresh();
+    tblAvailable.refresh();
+    tblSold.refresh();
+    tblPaid.refresh();
+
+    tblReservations.setVisible(!tblReservations.getItems().isEmpty());
+    tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
+    tblSold.setVisible(!tblSold.getItems().isEmpty());
+    tblPaid.setVisible(!tblPaid.getItems().isEmpty());
   }
 }
