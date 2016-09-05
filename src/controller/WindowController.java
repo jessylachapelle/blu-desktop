@@ -242,12 +242,16 @@ public class WindowController extends Controller {
   private void _setItemFormEventHandlers() {
     ItemFormController itemFormController = (ItemFormController) controller;
 
-    itemFormController.getBtnAjoutObjet().setOnAction(event -> {
-
+    itemFormController.getBtnSaveItem().setOnAction(event -> {
+      if (itemFormController.save()) {
+        _displayItemViewPanel().loadItem(itemFormController.getItem());
+      } else {
+        Dialog.information("Une erreur est survenue lors de l'enregistrement");
+      }
     });
 
-    itemFormController.getBtnAjoutOuvrage().setOnAction(event -> {
-
+    itemFormController.getBtnSaveBook().setOnAction(event -> {
+      System.out.println(event);
     });
   }
 

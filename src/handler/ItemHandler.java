@@ -132,22 +132,12 @@ public class ItemHandler {
    * @param item The item's information
    * @return The item
    */
-  public Item addItem(JSONObject item) {
-    int id = 0;
-
-    try {
-      if (item.has("id")) {
-        id = item.getInt("id");
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+  public boolean saveItem(JSONObject item) {
+    if (this.item.getId() > 0) {
+      return _updateItem(item);
     }
 
-    if (id > 0) {
-      return updateItem(item);
-    }
-
-    return insertItem(item);
+    return _insertItem(item);
   }
 
   public Item selectItem(int id) {
@@ -197,43 +187,56 @@ public class ItemHandler {
     return null;
   }
 
-  public Item insertItem(JSONObject item) {
-    JSONObject json = new JSONObject();
+  private boolean _insertItem(JSONObject item) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
 
     try {
-      json.put("object", "item");
-      json.put("function", "insert");
-      json.put("data", item);
+      data.put("item", item);
 
-      JSONObject res = APIConnector.call(json);
-      JSONObject data = res.getJSONObject("data");
-      item.put("id", data.getInt("id"));
+      req.put("object", "item");
+      req.put("function", "insert");
+      req.put("data", data);
+
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+
+      if (data.has("id")) {
+        this.item.setId(data.getInt("id"));
+        return true;
+      }
     } catch (JSONException e) {
       e.printStackTrace();
     }
 
-    return new Item(item);
+    return false;
   }
 
   public void setItem(Item item) {
     this.item = item;
   }
 
-  public Item updateItem(JSONObject item) {
-    JSONObject json = new JSONObject();
+  private boolean _updateItem(JSONObject item) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
 
     try {
-      json.put("object", "item");
-      json.put("function", "update");
-      json.put("data", item);
+      data.put("id", this.item.getId());
+      data.put("item", item);
 
-      JSONObject res = APIConnector.call(json);
-      JSONObject data = res.getJSONObject("data");
+      req.put("object", "item");
+      req.put("function", "update");
+      req.put("data", data);
+
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+
+      return data.has("code") && data.getInt("code") == 200;
     } catch (JSONException e) {
       e.printStackTrace();
     }
 
-    return new Item(item);
+    return false;
   }
 
   /**

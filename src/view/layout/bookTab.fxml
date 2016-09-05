@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="controller.ItemFormController">
+<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="controller.BookTabController">
   <VBox spacing="10" styleClass="main">
     <HBox spacing="10">
       <Label styleClass="form-label" text="Titre* :"/>
@@ -17,7 +17,12 @@
 
     <VBox fx:id="authors" spacing="10">
       <Label styleClass="h3" text="Auteur"/>
-      <fx:include source="author.fxml"/>
+      <HBox spacing="10">
+        <Label styleClass="form-label" text="Prénom :"/>
+        <TextField fx:id="txtAuthorFirstName"/>
+        <Label text="Nom* :"/>
+        <TextField fx:id="txtAuthorLastName"/>
+      </HBox>
       <AnchorPane>
         <HBox spacing="10" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0">
           <Button styleClass="form-button" fx:id="btnAddAuthor" text="+"/>
@@ -43,13 +48,17 @@
     </HBox>
 
     <HBox spacing="10">
+      <Label styleClass="form-label" text="Catégorie :"/>
+      <ComboBox fx:id="cbCategories"/>
+    </HBox>
+
+    <HBox spacing="10">
       <Label styleClass="form-label" text="Matière* :"/>
       <ComboBox fx:id="cbSubject"/>
     </HBox>
 
     <AnchorPane>
-      <Button styleClass="form-button" fx:id="btnAddBook" text="Ajouter l'ouvrage" AnchorPane.bottomAnchor="0"
-              AnchorPane.rightAnchor="0"/>
+      <Button styleClass="form-button" fx:id="btnSave" text="Ajouter l'ouvrage" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0"/>
     </AnchorPane>
   </VBox>
 </Pane>
