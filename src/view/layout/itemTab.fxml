@@ -26,7 +26,8 @@
     </HBox>
 
     <AnchorPane>
-      <Button styleClass="form-button" fx:id="btnSave" text="Ajouter l'objet" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
+      <Button styleClass="form-button" fx:id="btnCancel" text="Annuler" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
+      <Button styleClass="form-button" fx:id="btnSave" text="Enregistrer" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
     </AnchorPane>
   </VBox>
 </Pane>

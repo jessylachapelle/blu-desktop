@@ -39,6 +39,7 @@ public class BookTabController extends Controller {
   @FXML private TextField txtAuthorFirstName;
   @FXML private TextField txtAuthorLastName;
 
+  @FXML private Button btnCancel;
   @FXML private Button btnSave;
 
 
@@ -72,7 +73,7 @@ public class BookTabController extends Controller {
   }
 
   public boolean save() {
-    return itemHandler.saveItem(toJSON());
+    return itemHandler.saveItem(_toJSON());
   }
 
   private boolean _canSave() {
@@ -80,7 +81,7 @@ public class BookTabController extends Controller {
     return !txtTitle.getText().isEmpty();
   }
 
-  public JSONObject toJSON() {
+  private JSONObject _toJSON() {
     // TODO: Complete field extraction
     JSONObject form = new JSONObject();
 
@@ -96,6 +97,20 @@ public class BookTabController extends Controller {
   }
 
   private void _eventHandlers() {
+    btnCancel.setOnAction(event -> ((ItemViewController) loadMainPanel("view/layout/itemView.fxml")).loadItem(itemHandler.getItem()));
+
+    btnSave.setOnAction(event -> {
+      if (_canSave()) {
+        if (itemHandler.saveItem(_toJSON())) {
+          ((ItemViewController) loadMainPanel("view/layout/itemView.fxml")).loadItem(itemHandler.getItem());
+        } else {
+          ressources.Dialog.information("Une erreur est survenue");
+        }
+      } else {
+        ressources.Dialog.information("Veuillez remplir tous les champs obligatoires avant de sauvegarder");
+      }
+    });
+
     cbCategories.setOnAction(event -> _setSubjectList(cbCategories.getValue()));
   }
 

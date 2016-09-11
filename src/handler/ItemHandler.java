@@ -25,7 +25,7 @@ public class ItemHandler {
   private static ArrayList<Category> categories;
 
   public ItemHandler() {
-    item = null;
+    item = new Item();
     items = new ArrayList<>();
 
     if (categories == null || categories.size() == 0) {

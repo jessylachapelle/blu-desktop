@@ -89,16 +89,8 @@ public class MemberViewController extends Controller {
     _dataBinding();
   }
 
-  public Button getAddCopyButton() {
-    return btnAddCopy;
-  }
-
   public TableView[] getCopyTables() {
     return new TableView[]{tblReservation, tblAvailable, tblSold, tblPaid};
-  }
-
-  public Button getEditButton() {
-    return btnUpdate;
   }
 
   public Member getMember() {
@@ -321,6 +313,23 @@ public class MemberViewController extends Controller {
         Dialog.information("Erreur lors de la suppression");
       }
     });
+
+    btnUpdate.setOnAction(e -> ((MemberFormController) loadMainPanel("view/layout/memberForm.fxml")).loadMember(memberHandler.getMember()));
+
+    for (TableView table : getCopyTables()) {
+      table.setOnMousePressed(event -> {
+        if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+          TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+          Copy copy = (Copy) row.getItem();
+
+          if (copy != null) {
+            ((ItemViewController) loadMainPanel("view/layout/itemView.fxml")).loadItem(copy.getItem().getId());
+          }
+        }
+      });
+    }
+
+    btnAddCopy.setOnAction(event -> ((CopyFormController) loadMainPanel("view/layout/copyForm.fxml")).loadMembre(memberHandler.getMember()));
   }
 
   private void _dataBinding() {

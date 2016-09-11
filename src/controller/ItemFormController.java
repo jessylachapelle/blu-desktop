@@ -1,9 +1,11 @@
 package controller;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 
 import model.item.Book;
@@ -24,8 +26,8 @@ public class ItemFormController extends Controller {
 
   @Override
   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-    bookTab = new BookTabController();
-    itemTab = new ItemTabController();
+    bookTab = (BookTabController) _loadPanel("view/layout/bookTab.fxml", 0);
+    itemTab = (ItemTabController) _loadPanel("view/layout/itemTab.fxml", 1);
   }
 
   public Button getBtnSaveBook() {
@@ -71,5 +73,17 @@ public class ItemFormController extends Controller {
     return tabpane.getSelectionModel().getSelectedItem().getText().equals("Ouvrage");
   }
 
+  private Controller _loadPanel(String resource, int tabIndex) {
+    FXMLLoader loader = new FXMLLoader();
+    loader.setLocation(WindowController.class.getClassLoader().getResource(resource));
 
+    try {
+      tabpane.getTabs().get(tabIndex).setContent(loader.load());
+      return loader.getController();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
 }

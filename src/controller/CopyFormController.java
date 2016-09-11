@@ -132,6 +132,8 @@ public class CopyFormController extends Controller {
         });
       }
     });
+
+    memberName.setOnMouseClicked(event -> ((MemberViewController) loadMainPanel("view/layout/memberView.fxml")).loadMember(getMember()));
   }
 
   @SuppressWarnings("unchecked")
@@ -191,14 +193,6 @@ public class CopyFormController extends Controller {
   public void loadMembre(Member member) {
     this.member = member;
     memberName.setText(this.member.getFirstName() + " " + this.member.getLastName());
-  }
-
-  /**
-   * Rendre le Label du nom du member publique
-   * @return Le label du nom du member
-   */
-  public Label getMemberName() {
-    return memberName;
   }
 
   /**

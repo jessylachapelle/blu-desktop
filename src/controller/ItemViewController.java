@@ -329,6 +329,21 @@ public class ItemViewController extends Controller {
     });
 
     btnPaid.setOnAction(event -> tblPaid.setVisible(!tblPaid.isVisible()));
+
+    btnUpdate.setOnAction(event -> ((ItemFormController) loadMainPanel("view/layout/itemForm.fxml")).loadItem(itemHandler.getItem()));
+
+    for (TableView table : getCopyTables()) {
+      table.setOnMousePressed(event -> {
+        if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+          TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+          Copy copy = (Copy) row.getItem();
+
+          if (copy != null) {
+            ((MemberViewController) loadMainPanel("view/layout/memberView.fxml")).loadMember(copy.getMember().getNo());
+          }
+        }
+      });
+    }
   }
 
   private void _dataBinding() {

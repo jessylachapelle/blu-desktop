@@ -13,6 +13,7 @@ import model.item.Item;
 import model.item.Subject;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ressources.Dialog;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -30,6 +31,8 @@ public class ItemTabController extends Controller {
   @FXML private ComboBox<Category> cbCategories;
   @FXML private ComboBox<Subject> cbSubjects;
   @FXML private TextArea txtDescription;
+
+  @FXML private Button btnCancel;
   @FXML private Button btnSave;
 
   @Override
@@ -55,14 +58,14 @@ public class ItemTabController extends Controller {
   }
 
   public boolean save() {
-    return itemHandler.saveItem(toJSON());
+    return itemHandler.saveItem(_toJSON());
   }
 
   private boolean _canSave() {
     return !txtName.getText().isEmpty();
   }
 
-  public JSONObject toJSON() {
+  private JSONObject _toJSON() {
     JSONObject form = new JSONObject();
 
     try {
@@ -78,6 +81,20 @@ public class ItemTabController extends Controller {
   }
 
   private void _eventHandlers() {
+    btnCancel.setOnAction(event -> ((ItemViewController) loadMainPanel("view/layout/itemView.fxml")).loadItem(itemHandler.getItem()));
+
+    btnSave.setOnAction(event -> {
+      if (_canSave()) {
+        if (itemHandler.saveItem(_toJSON())) {
+          ((ItemViewController) loadMainPanel("view/layout/itemView.fxml")).loadItem(itemHandler.getItem());
+        } else {
+          Dialog.information("Une erreur est survenue");
+        }
+      } else {
+        Dialog.information("Veuillez remplir tous les champs obligatoires avant de sauvegarder");
+      }
+    });
+
     cbCategories.setOnAction(event -> _setSubjectList(cbCategories.getValue()));
   }
 
