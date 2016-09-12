@@ -374,4 +374,12 @@ public class Copy {
 
     return copy;
   }
+
+  public String getActivity() {
+    if (member != null && member.getAccount().isDeactivated()) {
+      return "Désactivé";
+    }
+
+    return "";
+  }
 }

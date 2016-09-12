@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
+import javafx.scene.paint.Color;
 import model.item.Book;
 import model.item.Copy;
 import model.item.Item;
@@ -25,7 +26,7 @@ import java.util.ResourceBundle;
  * @since 29/11/2015
  * @version 0.1
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"unused", "WeakerAccess", "unchecked"})
 public class ItemViewController extends Controller {
   private ItemHandler itemHandler;
 
@@ -60,6 +61,7 @@ public class ItemViewController extends Controller {
   @FXML private TableColumn<Copy, String> colAvailableSeller;
   @FXML private TableColumn<Copy, String> colAvailableAdded;
   @FXML private TableColumn<Copy, String> colAvailablePrice;
+  @FXML private TableColumn<Copy, String> colAvailableActivity;
 
   @FXML private Button btnSold;
   @FXML private TableView<Copy> tblSold;
@@ -347,6 +349,29 @@ public class ItemViewController extends Controller {
   }
 
   private void _dataBinding() {
+    for (TableView table : getCopyTables()) {
+      table.setRowFactory(row -> new TableRow<Copy>() {
+        @Override
+        public void updateItem(Copy copy, boolean empty) {
+          super.updateItem(copy, empty);
+
+          if (copy == null || empty) {
+            setStyle("");
+          } else if (copy.getMember().getAccount().isDeactivated()) {
+            for (Node node : getChildren()) {
+              ((Labeled) node).setTextFill(Color.WHITE);
+              node.setStyle("-fx-background-color: grey");
+            }
+          } else {
+            for (Node node : getChildren()) {
+              node.setStyle("");
+              ((Labeled) node).setTextFill(Color.BLACK);
+            }
+          }
+        }
+      });
+    }
+
     tblReservations.managedProperty().bind(tblReservations.visibleProperty());
     tblAvailable.managedProperty().bind(tblAvailable.visibleProperty());
     tblSold.managedProperty().bind(tblSold.visibleProperty());
@@ -361,6 +386,7 @@ public class ItemViewController extends Controller {
     colAvailableSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
     colAvailableAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
     colAvailablePrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
+    colAvailableActivity.setCellValueFactory(new PropertyValueFactory<>("activity"));
 
     colSoldSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
     colSoldAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
