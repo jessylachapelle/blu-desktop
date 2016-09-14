@@ -109,7 +109,6 @@
           <TableColumn fx:id="colAvailableSeller" prefWidth="360.0" text="Vendeur"/>
           <TableColumn fx:id="colAvailableAdded" prefWidth="108.0" text="Date d'ajout"/>
           <TableColumn fx:id="colAvailablePrice" prefWidth="62.0" text="Prix"/>
-          <TableColumn fx:id="colAvailableActivity" prefWidth="62.0" text="Désactivé"/>
         </columns>
       </TableView>
 

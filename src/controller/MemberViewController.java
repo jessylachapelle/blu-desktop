@@ -1,7 +1,6 @@
 package controller;
 
 import java.net.URL;
-import java.util.Date;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
@@ -13,6 +12,8 @@ import javafx.scene.Node;
 
 import handler.MemberHandler;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import model.item.Book;
 import model.item.Copy;
 import model.member.Comment;
 import model.member.Member;
@@ -25,7 +26,7 @@ import ressources.Dialog;
  * @since 2016/07/24
  * @version 1.0
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unchecked"})
 public class MemberViewController extends Controller {
   @FXML private Button btnUpdate;
   @FXML private Button btnDelete;
@@ -361,17 +362,39 @@ public class MemberViewController extends Controller {
     colPaidDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
     colPaidDatePaid.setCellValueFactory(new PropertyValueFactory<>("datePaid"));
     colPaidPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
+
+    for (TableView table : getCopyTables()) {
+      for (int i = 0; i < table.getColumns().size(); i++) {
+        TableColumn tableColumn = (TableColumn) table.getColumns().get(i);
+        tableColumn.setCellFactory(column -> new TableCell<Copy, String>() {
+          @Override
+          protected void updateItem(String data, boolean empty) {
+            TableRow<Copy> row = getTableRow();
+            boolean isBook = row.getItem() != null && row.getItem().getItem() instanceof Book;
+            boolean outdated = isBook && ((Book) row.getItem().getItem()).isOutdated();
+            boolean removed = isBook && ((Book) row.getItem().getItem()).isRemoved();
+
+            super.updateItem(data, empty);
+            setText(data != null ? data : "");
+
+            if (removed) {
+              setStyle("-fx-background-color: black");
+              setTextFill(Color.WHITE);
+            } else if (outdated) {
+              setStyle("-fx-background-color: grey");
+              setTextFill(Color.WHITE);
+            } else {
+              setStyle("");
+              setTextFill(Color.BLACK);
+            }
+          }
+        });
+      }
+    }
   }
 
   private void _displayAccount() {
-    // TODO: Add this to account object instead
-    String state = "Compte actif";
-
-    if (getMember().getAccount().getDeactivation().before(new Date())) {
-      state = "Compte désactivé";
-    }
-
-    lblState.setText(state);
+    lblState.setText(getMember().getAccount().isActive() ? "Compte actif" : "Compte désactivé");
     lblRegistration.setText(getMember().getAccount().getRegistrationString());
     lblLastActivity.setText(getMember().getAccount().getLastActivityString());
     lblDeactivation.setText(getMember().getAccount().getDeactivationString());

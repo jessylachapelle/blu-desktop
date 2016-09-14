@@ -163,14 +163,14 @@ public class ItemHandler {
   }
 
   private Item _selectItem(JSONObject data) {
-    JSONObject json = new JSONObject();
+    JSONObject req = new JSONObject();
 
     try {
-      json.put("object", "item");
-      json.put("function", "select");
-      json.put("data", data);
+      req.put("object", "item");
+      req.put("function", "select");
+      req.put("data", data);
 
-      JSONObject response = APIConnector.call(json);
+      JSONObject response = APIConnector.call(req);
       JSONObject itemData = response.getJSONObject("data");
 
       if (itemData.has("is_book") && itemData.getBoolean("is_book")) {

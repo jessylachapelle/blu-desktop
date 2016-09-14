@@ -75,8 +75,3 @@
 .combo-box:hover {
   -fx-cursor: hand;
 }
-
-.deactivated {
-  -fx-background-color: grey;
-  -fx-text-fill: white;
-}
