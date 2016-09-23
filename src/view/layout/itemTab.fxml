@@ -3,25 +3,31 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="controller.ItemFormController">
+<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="controller.ItemTabController">
   <VBox spacing="10" styleClass="main">
     <HBox spacing="10">
       <Label styleClass="form-label" text="Nom * :"/>
-      <TextField fx:id="name"/>
+      <TextField fx:id="txtName"/>
     </HBox>
 
     <HBox spacing="10">
       <Label styleClass="form-label" text="Catégorie :"/>
-      <ComboBox fx:id="category"/>
+      <ComboBox fx:id="cbCategories"/>
     </HBox>
 
     <HBox spacing="10">
-      <Label text="Commentaire :"/>
-      <TextArea fx:id="comments"/>
+      <Label styleClass="form-label" text="Matière* :"/>
+      <ComboBox fx:id="cbSubjects"/>
+    </HBox>
+
+    <HBox spacing="10">
+      <Label text="Description :"/>
+      <TextArea fx:id="txtDescription"/>
     </HBox>
 
     <AnchorPane>
-      <Button styleClass="form-button" fx:id="btnAddItem" text="Ajouter l'objet" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
+      <Button styleClass="form-button" fx:id="btnCancel" text="Annuler" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
+      <Button styleClass="form-button" fx:id="btnSave" text="Enregistrer" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
     </AnchorPane>
   </VBox>
 </Pane>

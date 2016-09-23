@@ -5,8 +5,10 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
+import javafx.scene.paint.Color;
 import model.item.Book;
 import model.item.Copy;
 import model.item.Item;
@@ -25,7 +27,7 @@ import java.util.ResourceBundle;
  * @since 29/11/2015
  * @version 0.1
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"unused", "WeakerAccess", "unchecked"})
 public class ItemViewController extends Controller {
   private ItemHandler itemHandler;
 
@@ -329,6 +331,21 @@ public class ItemViewController extends Controller {
     });
 
     btnPaid.setOnAction(event -> tblPaid.setVisible(!tblPaid.isVisible()));
+
+    btnUpdate.setOnAction(event -> ((ItemFormController) loadMainPanel("view/layout/itemForm.fxml")).loadItem(itemHandler.getItem()));
+
+    for (TableView table : getCopyTables()) {
+      table.setOnMousePressed(event -> {
+        if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+          TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+          Copy copy = (Copy) row.getItem();
+
+          if (copy != null) {
+            ((MemberViewController) loadMainPanel("view/layout/memberView.fxml")).loadMember(copy.getMember().getNo());
+          }
+        }
+      });
+    }
   }
 
   private void _dataBinding() {
@@ -357,6 +374,24 @@ public class ItemViewController extends Controller {
     colPaidDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
     colPaidDatePaid.setCellValueFactory(new PropertyValueFactory<>("datePaid"));
     colPaidPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
+
+    for (TableView table : getCopyTables()) {
+      for (int i = 0; i < table.getColumns().size(); i++) {
+        TableColumn tableColumn = (TableColumn) table.getColumns().get(i);
+        tableColumn.setCellFactory(column -> new TableCell<Copy, String>() {
+          @Override
+          protected void updateItem(String data, boolean empty) {
+            TableRow<Copy> row = getTableRow();
+            boolean deactivated = data != null && row.getItem().getMember().getAccount().isDeactivated();
+
+            super.updateItem(data, empty);
+            setText(data != null ? data : "");
+            setStyle(deactivated ? "-fx-background-color: grey" : "");
+            setTextFill(deactivated ? Color.WHITE : Color.BLACK);
+          }
+        });
+      }
+    }
   }
 
   private void _displayItem(boolean isBook) {

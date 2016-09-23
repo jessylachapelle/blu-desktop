@@ -5,14 +5,8 @@ import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.item.Item;
 import model.item.Book;
@@ -56,7 +50,7 @@ public class SearchController extends Controller {
   public void initialize(URL location, ResourceBundle resources) {
     searchHandler = new SearchHandler();
     dataBinding();
-    eventHandlers();
+    _eventHandlers();
 
     rbMembers.setSelected(true);
     resetSearch(false);
@@ -79,7 +73,7 @@ public class SearchController extends Controller {
     colAuthors.setCellValueFactory(new PropertyValueFactory<>("authorString"));
   }
 
-  private void eventHandlers() {
+  private void _eventHandlers() {
     txtSearch.setOnAction(event -> _search());
 
     btnSearch.setOnAction(event -> _search());
@@ -106,6 +100,28 @@ public class SearchController extends Controller {
 
       if (!txtSearch.getText().isEmpty()) {
         _search();
+      }
+    });
+
+    tblMemberResults.setOnMousePressed(event -> {
+      if (isDoubleClick(event)) {
+        TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+        Member member = (Member) row.getItem();
+
+        if (member != null) {
+          ((MemberViewController) loadMainPanel("view/layout/memberView.fxml")).loadMember(member.getNo());
+        }
+      }
+    });
+
+    tblItemResults.setOnMousePressed(event -> {
+      if (isDoubleClick(event)) {
+        TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+        Item item = (Item) row.getItem();
+
+        if (item != null) {
+          ((ItemViewController) loadMainPanel("view/layout/itemView.fxml")).loadItem(item.getId());
+        }
       }
     });
   }

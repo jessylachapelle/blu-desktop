@@ -226,6 +226,18 @@ public class Book extends Item {
     return "VALID";
   }
 
+  public boolean isValid() {
+    return getStatus().equals("VALID");
+  }
+
+  public boolean isOutdated() {
+    return getStatus().equals("OUTDATED");
+  }
+
+  public boolean isRemoved() {
+    return getStatus().equals("REMOVED");
+  }
+
   public void fromJSON(JSONObject json) {
     super.fromJSON(json);
 
