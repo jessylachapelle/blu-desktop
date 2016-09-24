@@ -78,7 +78,7 @@ public class MemberFormController extends Controller {
     return getMember();
   }
 
-  public Member loadMember(Member member) {
+  Member loadMember(Member member) {
     memberHandler.setMember(member);
     insertion = false;
 
@@ -109,11 +109,11 @@ public class MemberFormController extends Controller {
     return getMember();
   }
 
-  public Member saveMember() {
+  Member saveMember() {
     JSONObject form = _toJSON();
 
     if (insertion && form.length() > 0) {
-      return memberHandler.insertMember(new Member(form));
+      return memberHandler.insertMember(form);
     } else if (form.length() > 0) {
       return memberHandler.updateMember(form);
     }
@@ -186,16 +186,22 @@ public class MemberFormController extends Controller {
       }
 
       for (int i = 0; i < txtPhones.length; i++) {
-        if (!txtPhones[i][0].getText().isEmpty() && !txtPhones[i][0].getText().equals(getMember().getPhone(i).getNumber())) {
+        if (!txtPhones[i][0].getText().isEmpty() &&
+            (!txtPhones[i][0].getText().equals(getMember().getPhone(i).getNumber()) ||
+             !txtPhones[i][1].getText().equals(getMember().getPhone(i).getNote()))) {
           JSONObject phone = new JSONObject();
 
           if (getMember().getPhone(i).getId() != 0) {
             phone.put("id", getMember().getPhone(i).getId());
           }
 
-          phone.put("number", txtPhones[i][0].getText());
+          phone.put("number", txtPhones[i][0].getText().replaceAll("-", ""));
           phone.put("note", txtPhones[i][1].getText());
 
+          phones.put(phone);
+        } else if (txtPhones[i][0].getText().isEmpty() && getMember().getPhone(i).getId() > 0) {
+          JSONObject phone = new JSONObject();
+          phone.put("id", getMember().getPhone(i).getId());
           phones.put(phone);
         }
       }

@@ -35,7 +35,7 @@ public class MemberHandler {
   }
 
   public void setMember(int no) {
-    member = selectMember(no);
+    member = _selectMember(no);
   }
 
   public void setMember(Member member) {
@@ -43,7 +43,7 @@ public class MemberHandler {
   }
 
   public Member getMember(int no) {
-    selectMember(no);
+    _selectMember(no);
     return member;
   }
 
@@ -51,7 +51,7 @@ public class MemberHandler {
     return member;
   }
 
-  public Member selectMember(int no) {
+  private Member _selectMember(int no) {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
@@ -63,9 +63,11 @@ public class MemberHandler {
       req.put("data", data);
 
       JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
 
-      member = new Member(data);
+      if (res.has("data") && res.get("data") instanceof JSONObject) {
+        data = res.getJSONObject("data");
+        member = new Member(data);
+      }
     } catch (JSONException e) {
       e.printStackTrace();
       member = new Member();
@@ -80,7 +82,7 @@ public class MemberHandler {
    * @param deactivated True if want to search in deactivated accounts
    * @return A List of members
    */
-  public ArrayList<Member> searchMembers(String search, boolean deactivated) {
+  ArrayList<Member> searchMembers(String search, boolean deactivated) {
     ArrayList<Member> members = new ArrayList<>();
     JSONObject json = new JSONObject();
     JSONObject data = new JSONObject();
@@ -110,21 +112,42 @@ public class MemberHandler {
     return members;
   }
 
-  public Member insertMember(Member member) {
+  public Member insertMember(JSONObject memberData) {
     JSONObject req = new JSONObject();
-    JSONObject data = new JSONObject();
 
     try {
-      data.put("member", member.toJSON());
-
       req.put("object", "member");
       req.put("function", "insert");
-      req.put("data", data);
+      req.put("data", memberData);
 
       JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
+      JSONObject data = res.getJSONObject("data");
 
-      member.fromJSON(data);
+      member.fromJSON(memberData);
+
+      if (data.has("city")) {
+        JSONObject city = data.getJSONObject("city");
+        member.setCityId(city.getInt("id"));
+      }
+
+      if (data.has("comment")) {
+        JSONObject comment = data.getJSONObject("comment");
+        member.getAccount().getComments().get(0).setId(comment.getInt("id"));
+      }
+
+      if (data.has("phone")) {
+        JSONArray phones = data.getJSONArray("phone");
+
+        for (int i = 0; i < phones.length(); i++) {
+          JSONObject phone = phones.getJSONObject(i);
+
+          if (member.getPhone(0).getNumber().equals(phone.getString("number"))) {
+            member.getPhone(0).setId(phone.getInt("id"));
+          } else {
+            member.getPhone(1).setId(phone.getInt("id"));
+          }
+        }
+      }
     } catch (JSONException e) {
       e.printStackTrace();
       return null;
@@ -133,13 +156,13 @@ public class MemberHandler {
     return member;
   }
 
-  public Member updateMember(JSONObject member) {
+  public Member updateMember(JSONObject memberData) {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
     try {
-      data.put("no", this.member.getNo());
-      data.put("member", member);
+      data.put("no", member.getNo());
+      data.put("member", memberData);
 
       req.put("object", "member");
       req.put("function", "update");
@@ -148,13 +171,36 @@ public class MemberHandler {
       JSONObject res = APIConnector.call(req);
       data = res.getJSONObject("data");
 
-      this.member.fromJSON(data);
+      member.fromJSON(memberData);
+
+      if (data.has("city")) {
+        JSONObject city = data.getJSONObject("city");
+        member.setCityId(city.getInt("id"));
+      }
+
+      if (data.has("phone")) {
+        JSONArray phones = data.getJSONArray("phone");
+
+        for (int i = 0; i < phones.length(); i++) {
+          JSONObject phone = phones.getJSONObject(i);
+
+          if (phone.has("number")) {
+            if (member.getPhone(0).getNumber().equals(phone.getString("number"))) {
+              member.getPhone(0).setId(phone.getInt("id"));
+            } else {
+              member.getPhone(1).setId(phone.getInt("id"));
+            }
+          } else {
+            member.removePhone(phone.getInt("id"));
+          }
+        }
+      }
     } catch (JSONException e) {
       e.printStackTrace();
       return null;
     }
 
-    return this.member;
+    return member;
   }
 
   public boolean deleteMember() {

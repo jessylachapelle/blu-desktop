@@ -121,6 +121,15 @@ public class Member {
     }
   }
 
+  public void removePhone(int id) {
+    if (phone[1].getId() == id) {
+      phone[1] = null;
+    } else if (phone[0].getId() == id) {
+      phone[0] = phone[1];
+      phone[1] = null;
+    }
+  }
+
   /**
    * Accède au prénom du member
    *
