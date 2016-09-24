@@ -8,28 +8,26 @@ This project started to refresh the current, but outdated, system in place at my
 
 For more information on the BLU, please refer to the [Student Council (AÉCS) website](http://aecs.info)
 
-### Stack
+## Stack
 
 * Java 8 (Platform)
 * JavaFx 2.0 (UI)
-* MySQL (Database) ([Database repo](https://github.com/jessylachapelle/blu-db))
-* PHP >= 5.6 (API) ([API repo](https://github.com/jessylachapelle/blu-api))
+* Maven (Management)
+* PHP >= 5.6 (API) ([API repo](https://github.com/katima-g33k/blu-api))
+* MySQL (Database) ([Database repo](https://github.com/katima-g33k/blu-db))
+
 
 ## Getting Started
-This guide assumes you have [Java 8](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html), [JavaFX](http://docs.oracle.com/javafx/2/installation/jfxpub-installation.htm) and [IntelliJ](https://www.jetbrains.com/idea/) installed and configured on your workstation
+This guide assumes you have [Java 8](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html), [JavaFX](http://docs.oracle.com/javafx/2/installation/jfxpub-installation.htm), [Maven](https://maven.apache.org/) and [IntelliJ](https://www.jetbrains.com/idea/) installed and configured on your workstation
 
 ### Setup setup project
-1. `git clone git@github.com:jessylachapelle/blu-desktop.git`
+1. `git clone git@github.com:katima-g33k/blu-desktop.git`
 2. Open Intellij, select **Import project** and choose repo folder
-3. Follow the steps in the import wizard
-  * Leave project name and project location as is
-  * Make sure all the source folders are checked
-  * Make sure to add the java-json library
-  * Make sure to add modules and dependencies
-  * Select SDK 1.8 (Java 8)
-4. First run
-	* In src folder right click on **BLU.java** and select **Run 'BLU.main()'**
-5. To be able to use the program, you must also installed the [Database](https://github.com/jessylachapelle/blu-db) and the [API](https://github.com/jessylachapelle/blu-api)
+3. Choose to import a Maven project
+4. Follow the steps in the import wizard
+5. First run
+	* In `src/main/java` directory right click on **BLU.java** and select **Run 'BLU.main()'**
+6. To be able to use the program, you must also installed the [Database](https://github.com/katima-g33k/blu-db) and the [API](https://github.com/katima-g33k/blu-api)
 
 ## Documentation
 
@@ -42,7 +40,7 @@ No documentation is available at the moment, working on generating JavaDoc
 
 ## Contributors
 
-* [Jessy Lachapelle](https://bitbucket.org/jlachapelle/)
+* [Jessy Lachapelle](https://github.com/katima-g33k/)
 
 ### Special thanks
 This started as a school project, so I would like to thank my teamates who aided in building the first iteration of the program from which this version is derived.
