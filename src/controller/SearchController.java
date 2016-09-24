@@ -4,16 +4,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.item.Item;
 import model.item.Book;
@@ -26,7 +19,7 @@ import model.member.Member;
  * @since 19/11/2015
  * @version 0.1
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class SearchController extends Controller {
 
   private SearchHandler searchHandler;
@@ -57,13 +50,16 @@ public class SearchController extends Controller {
   public void initialize(URL location, ResourceBundle resources) {
     searchHandler = new SearchHandler();
     dataBinding();
-    eventHandlers();
+    _eventHandlers();
 
     rbMembers.setSelected(true);
     resetSearch(false);
   }
 
   private void dataBinding() {
+    tblMemberResults.managedProperty().bind(tblMemberResults.visibleProperty());
+    tblItemResults.managedProperty().bind(tblItemResults.visibleProperty());
+
     // Member results
     colNo.setCellValueFactory(new PropertyValueFactory<>("no"));
     colFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
@@ -77,7 +73,7 @@ public class SearchController extends Controller {
     colAuthors.setCellValueFactory(new PropertyValueFactory<>("authorString"));
   }
 
-  private void eventHandlers() {
+  private void _eventHandlers() {
     txtSearch.setOnAction(event -> _search());
 
     btnSearch.setOnAction(event -> _search());
@@ -106,6 +102,28 @@ public class SearchController extends Controller {
         _search();
       }
     });
+
+    tblMemberResults.setOnMousePressed(event -> {
+      if (isDoubleClick(event)) {
+        TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+        Member member = (Member) row.getItem();
+
+        if (member != null) {
+          ((MemberViewController) loadMainPanel("view/layout/memberView.fxml")).loadMember(member.getNo());
+        }
+      }
+    });
+
+    tblItemResults.setOnMousePressed(event -> {
+      if (isDoubleClick(event)) {
+        TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+        Item item = (Item) row.getItem();
+
+        if (item != null) {
+          ((ItemViewController) loadMainPanel("view/layout/itemView.fxml")).loadItem(item.getId());
+        }
+      }
+    });
   }
 
   private void _search() {
@@ -119,29 +137,15 @@ public class SearchController extends Controller {
   }
 
   private void _searchMembers() {
-    ObservableList<Member> members = FXCollections.observableArrayList(searchHandler.searchMembers());
-
-    if (members.isEmpty()) {
-      lblMessage.setVisible(true);
-      tblMemberResults.setVisible(false);
-    } else {
-      tblMemberResults.setItems(members);
-      lblMessage.setVisible(false);
-      tblMemberResults.setVisible(true);
-    }
+    tblMemberResults.setItems(FXCollections.observableArrayList(searchHandler.searchMembers()));
+    lblMessage.setVisible(tblMemberResults.getItems().isEmpty());
+    tblMemberResults.setVisible(!tblMemberResults.getItems().isEmpty());
   }
 
   private void _searchItems() {
-    ObservableList<Item> items = FXCollections.observableArrayList(searchHandler.searchItems());
-
-    if (items.isEmpty()) {
-      lblMessage.setVisible(true);
-      tblItemResults.setVisible(false);
-    } else {
-      tblItemResults.setItems(items);
-      lblMessage.setVisible(false);
-      tblItemResults.setVisible(true);
-    }
+    tblItemResults.setItems(FXCollections.observableArrayList(searchHandler.searchItems()));
+    lblMessage.setVisible(tblItemResults.getItems().isEmpty());
+    tblItemResults.setVisible(!tblItemResults.getItems().isEmpty());
   }
 
   public TableView<Member> getTblMemberResults() {

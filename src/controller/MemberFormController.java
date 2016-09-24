@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import handler.MemberHandler;
 import model.member.Member;
+import ressources.Dialog;
 
 /**
  * La classe qui fait le pont entre la vue(ajoutMembre) et le modèle
@@ -21,7 +22,7 @@ import model.member.Member;
  *
  * @author Marc
  */
-@SuppressWarnings("FieldCanBeLocal")
+@SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
 public class MemberFormController extends Controller {
   private final String DEFAULT_STATE = "QC";
 
@@ -59,24 +60,17 @@ public class MemberFormController extends Controller {
 
     memberHandler = new MemberHandler();
     _populeState();
+    _eventHandlers();
 
     insertion = true;
     btnCancel.setVisible(false);
-  }
-
-  Button getCancelButton() {
-    return btnCancel;
   }
 
   public Member getMember() {
     return memberHandler.getMember();
   }
 
-  Button getSaveButton() {
-    return btnSave;
-  }
-
-  Member loadMember(int memberNo) {
+  public Member loadMember(int memberNo) {
     insertion = true;
     getMember().setNo(memberNo);
     txtNo.setText(Integer.toString(memberNo));
@@ -127,7 +121,7 @@ public class MemberFormController extends Controller {
     return getMember();
   }
 
-  boolean canSave() {
+  private boolean _canSave() {
     TextField[] mandatory = { txtFirstName, txtLastName, txtEmail };
 
     for (TextField textField : mandatory) {
@@ -230,5 +224,17 @@ public class MemberFormController extends Controller {
     }
 
     return no;
+  }
+
+  private void _eventHandlers() {
+    btnCancel.setOnAction(e -> ((MemberViewController) loadMainPanel("view/layout/memberView.fxml")).loadMember(memberHandler.getMember()));
+
+    btnSave.setOnAction(e -> {
+      if (_canSave()) {
+        ((MemberViewController) loadMainPanel("view/layout/memberView.fxml")).loadMember(saveMember());
+      } else {
+        Dialog.information("Assurez-vous d'avoir bien rempli tous les champs obligatoires avant d'enregistrer");
+      }
+    });
   }
 }

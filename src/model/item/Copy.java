@@ -113,8 +113,9 @@ public class Copy {
    * @return Le price en string
    */
   public String getPriceString() {
-    if(price == 0)
-      return "";
+    if (price == 0) {
+      return "Gratuit";
+    }
     return (int) price + " $";
   }
 
@@ -308,6 +309,14 @@ public class Copy {
     return "";
   }
 
+  public String getSeller() {
+    if (member != null) {
+      return member.getFirstName() + " " + member.getLastName();
+    }
+
+    return "";
+  }
+
   public void fromJSON(JSONObject json) {
     try {
       if (json.has("id")) {
@@ -364,5 +373,13 @@ public class Copy {
     }
 
     return copy;
+  }
+
+  public String getActivity() {
+    if (member != null && member.getAccount().isDeactivated()) {
+      return "Désactivé";
+    }
+
+    return "";
   }
 }

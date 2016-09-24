@@ -25,7 +25,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 import javafx.scene.layout.VBox;
-import model.item.Book;
 import model.item.Copy;
 import model.item.Item;
 import handler.CopyHandler;
@@ -41,6 +40,7 @@ import ressources.Dialog;
  * @since 28/03/2016
  * @version 1.0
  */
+@SuppressWarnings("WeakerAccess")
 public class CopyFormController extends Controller {
   private Controller controller;
 
@@ -132,6 +132,8 @@ public class CopyFormController extends Controller {
         });
       }
     });
+
+    memberName.setOnMouseClicked(event -> ((MemberViewController) loadMainPanel("view/layout/memberView.fxml")).loadMember(getMember()));
   }
 
   @SuppressWarnings("unchecked")
@@ -160,24 +162,26 @@ public class CopyFormController extends Controller {
   private void _itemFormEventHandlers() {
     ItemFormController itemFormController = (ItemFormController) controller;
 
-    itemFormController.getBtnAjoutOuvrage().setOnAction((ActionEvent event) -> {
-      Book item = (Book) itemFormController.addItem();
-      currentCopy = new Copy();
-      currentCopy.setItem(item);
-      itemTitle.setText(item.getName());
+    itemFormController.getBtnSaveBook().setOnAction((ActionEvent event) -> {
+      if (itemFormController.save()) {
+        currentCopy = new Copy();
+        currentCopy.setItem(itemFormController.getItem());
+        itemTitle.setText(itemFormController.getItem().getName());
 
-      _displaySearchPanel();
-      _toggleView(true, true);
+        _displaySearchPanel();
+        _toggleView(true, true);
+      }
     });
 
-    itemFormController.getBtnAjoutObjet().setOnAction((ActionEvent event) -> {
-      Item item = itemFormController.addItem();
-      currentCopy = new Copy();
-      currentCopy.setItem(item);
-      itemTitle.setText(item.getName());
+    itemFormController.getBtnSaveItem().setOnAction((ActionEvent event) -> {
+      if (itemFormController.save()) {
+        currentCopy = new Copy();
+        currentCopy.setItem(itemFormController.getItem());
+        itemTitle.setText(itemFormController.getItem().getName());
 
-      _displaySearchPanel();
-      _toggleView(true, true);
+        _displaySearchPanel();
+        _toggleView(true, true);
+      }
     });
   }
 
@@ -189,14 +193,6 @@ public class CopyFormController extends Controller {
   public void loadMembre(Member member) {
     this.member = member;
     memberName.setText(this.member.getFirstName() + " " + this.member.getLastName());
-  }
-
-  /**
-   * Rendre le Label du nom du member publique
-   * @return Le label du nom du member
-   */
-  public Label getMemberName() {
-    return memberName;
   }
 
   /**

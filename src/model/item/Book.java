@@ -16,7 +16,7 @@ import java.util.Date;
  * @since 12/07/2016
  * @version 1.1
  */
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Book extends Item {
 
   private String publication;
@@ -31,7 +31,6 @@ public class Book extends Item {
    * Default constructor for Book
    */
   public Book() {
-    super();
     init();
   }
 
@@ -40,7 +39,6 @@ public class Book extends Item {
    * @param book JSON formatted book data
    */
   public Book(JSONObject book) {
-    super();
     init();
     fromJSON(book);
   }
@@ -49,6 +47,7 @@ public class Book extends Item {
    * Initializes object with default data
    */
   public void init() {
+    super.init();
     publication = "";
     author = new ArrayList<>();
     editor = "";
@@ -225,6 +224,18 @@ public class Book extends Item {
     }
 
     return "VALID";
+  }
+
+  public boolean isValid() {
+    return getStatus().equals("VALID");
+  }
+
+  public boolean isOutdated() {
+    return getStatus().equals("OUTDATED");
+  }
+
+  public boolean isRemoved() {
+    return getStatus().equals("REMOVED");
   }
 
   public void fromJSON(JSONObject json) {

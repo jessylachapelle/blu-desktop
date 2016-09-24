@@ -5,7 +5,7 @@
 
 <Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
       fx:controller="controller.ItemViewController">
-  <ScrollPane>
+  <ScrollPane prefHeight="1200">
     <VBox spacing="10" styleClass="main">
       <Label styleClass="h1" text="Ouvrage"/>
 
@@ -92,7 +92,6 @@
         </TableView>
       </VBox>
 
-
       <Button fx:id="btnDisplayReservations" text="Réservation  v"/>
       <TableView fx:id="tblReservations">
         <columns>
@@ -110,7 +109,6 @@
           <TableColumn fx:id="colAvailableSeller" prefWidth="360.0" text="Vendeur"/>
           <TableColumn fx:id="colAvailableAdded" prefWidth="108.0" text="Date d'ajout"/>
           <TableColumn fx:id="colAvailablePrice" prefWidth="62.0" text="Prix"/>
-          <TableColumn fx:id="colAvailableAction" prefWidth="37.0" text="Action"/>
         </columns>
       </TableView>
 

@@ -17,7 +17,7 @@ import org.json.JSONObject;
  * @version 1.1
  * @since 2016/19/07
  */
-@SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "unused"})
+@SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "unused", "WeakerAccess"})
 public class ItemHandler {
 
   private ArrayList<Item> items;
@@ -25,7 +25,7 @@ public class ItemHandler {
   private static ArrayList<Category> categories;
 
   public ItemHandler() {
-    item = null;
+    item = new Item();
     items = new ArrayList<>();
 
     if (categories == null || categories.size() == 0) {
@@ -39,7 +39,7 @@ public class ItemHandler {
 
     try {
       data.put("id", id);
-      data.put("comment", comment);
+      data.put("comment", comment.replaceAll("'", "''"));
 
       json.put("function", "update_comment");
       json.put("object", "item");
@@ -47,7 +47,10 @@ public class ItemHandler {
 
       JSONObject response = APIConnector.call(json).getJSONObject("data");
 
-      return response.has("code") && response.getInt("code") == 200;
+      if (response.has("code") && response.getInt("code") == 200) {
+        item.setDescription(comment);
+        return true;
+      }
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -59,7 +62,18 @@ public class ItemHandler {
     TransactionHandler transactionHandler = new TransactionHandler();
 
     if (transactionHandler.insert(memberNo, copyId, type)) {
-      // item.getCopy(copyId).addTransaction(type);
+      item.getCopy(copyId).addTransaction(type);
+      return true;
+    }
+
+    return false;
+  }
+
+  public boolean updateCopyPrice(int copyId, double price) {
+    CopyHandler copyHandler = new CopyHandler();
+
+    if (copyHandler.updateCopyPrice(copyId, price)) {
+      item.getCopy(copyId).setPrice(price);
       return true;
     }
 
@@ -68,7 +82,14 @@ public class ItemHandler {
 
   public boolean cancelSell(int copyId) {
     TransactionHandler transactionHandler = new TransactionHandler();
-    return transactionHandler.delete(copyId, "SELL");
+
+    if (transactionHandler.delete(copyId, "SELL")) {
+      item.getCopy(copyId).removeTransaction("SELL");
+      item.getCopy(copyId).removeTransaction("SELL_PARENT");
+      return true;
+    }
+
+    return false;
   }
 
   public boolean updateStorage(int id, String[] storage) {
@@ -111,22 +132,12 @@ public class ItemHandler {
    * @param item The item's information
    * @return The item
    */
-  public Item addItem(JSONObject item) {
-    int id = 0;
-
-    try {
-      if (item.has("id")) {
-        id = item.getInt("id");
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+  public boolean saveItem(JSONObject item) {
+    if (this.item.getId() > 0) {
+      return _updateItem(item);
     }
 
-    if (id > 0) {
-      return updateItem(item);
-    }
-
-    return insertItem(item);
+    return _insertItem(item);
   }
 
   public Item selectItem(int id) {
@@ -152,17 +163,17 @@ public class ItemHandler {
   }
 
   private Item _selectItem(JSONObject data) {
-    JSONObject json = new JSONObject();
+    JSONObject req = new JSONObject();
 
     try {
-      json.put("object", "item");
-      json.put("function", "select");
-      json.put("data", data);
+      req.put("object", "item");
+      req.put("function", "select");
+      req.put("data", data);
 
-      JSONObject response = APIConnector.call(json);
+      JSONObject response = APIConnector.call(req);
       JSONObject itemData = response.getJSONObject("data");
 
-      if (itemData.has("isBook") && itemData.getBoolean("isBook")) {
+      if (itemData.has("is_book") && itemData.getBoolean("is_book")) {
         item = new Book(itemData);
       } else {
         item = new Item(itemData);
@@ -176,39 +187,56 @@ public class ItemHandler {
     return null;
   }
 
-  public Item insertItem(JSONObject item) {
-    JSONObject json = new JSONObject();
+  private boolean _insertItem(JSONObject item) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
 
     try {
-      json.put("object", "item");
-      json.put("function", "insert");
-      json.put("data", item);
+      data.put("item", item);
 
-      JSONObject res = APIConnector.call(json);
-      JSONObject data = res.getJSONObject("data");
-      item.put("id", data.getInt("id"));
+      req.put("object", "item");
+      req.put("function", "insert");
+      req.put("data", data);
+
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+
+      if (data.has("id")) {
+        this.item.setId(data.getInt("id"));
+        return true;
+      }
     } catch (JSONException e) {
       e.printStackTrace();
     }
 
-    return new Item(item);
+    return false;
   }
 
-  public Item updateItem(JSONObject item) {
-    JSONObject json = new JSONObject();
+  public void setItem(Item item) {
+    this.item = item;
+  }
+
+  private boolean _updateItem(JSONObject item) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
 
     try {
-      json.put("object", "item");
-      json.put("function", "update");
-      json.put("data", item);
+      data.put("id", this.item.getId());
+      data.put("item", item);
 
-      JSONObject res = APIConnector.call(json);
-      JSONObject data = res.getJSONObject("data");
+      req.put("object", "item");
+      req.put("function", "update");
+      req.put("data", data);
+
+      JSONObject res = APIConnector.call(req);
+      data = res.getJSONObject("data");
+
+      return data.has("code") && data.getInt("code") == 200;
     } catch (JSONException e) {
       e.printStackTrace();
     }
 
-    return new Item(item);
+    return false;
   }
 
   /**
@@ -404,6 +432,17 @@ public class ItemHandler {
     } catch (JSONException e) {
       e.printStackTrace();
     }
+    return false;
+  }
+
+  public boolean deleteCopy(int copyId) {
+    CopyHandler copyHandler = new CopyHandler();
+
+    if (copyHandler.deleteCopy(copyId)) {
+      item.removeCopy(copyId);
+      return true;
+    }
+
     return false;
   }
 
