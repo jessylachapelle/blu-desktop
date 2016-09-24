@@ -114,6 +114,7 @@ public class Account {
   public String getDeactivationString() {
     return DateParser.toLongDate(getDeactivation());
   }
+
   /**
    * Modifie la date de la dernière activité au compte
    *
