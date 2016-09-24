@@ -10,16 +10,34 @@
     "view": {}
   },
   "search": {
+    "title": "Search in the system",
     "button": {
       "search": "Search",
       "add": "Add"
     },
     "label": {
-      "result": "Results"
+      "result": "Results",
+      "noResults": "No results found",
+      "deactivated": "Search in deactivated accounts",
+      "member": "Member",
+      "item": "Item"
     },
     "table": {
-      "label": {
-        "firstName": "First Name"
+      "item": {
+        "label": {
+          "title": "Title",
+          "edition": "Edition",
+          "editor": "Editor",
+          "year": "Year",
+          "author": "Authors"
+        }
+      },
+      "member": {
+        "label": {
+          "no": "No",
+          "firstName": "First Name",
+          "lastName": "Last Name"
+        }
       }
     }
   },

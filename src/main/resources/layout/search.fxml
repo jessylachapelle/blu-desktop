@@ -10,15 +10,15 @@
 
   <VBox spacing="10" styleClass="main">
     <!-- Search Dialog -->
-    <Label styleClass="h1" fx:id="lblTitle" text="Recherche dans le système"/>
+    <Label styleClass="h1, i18n" fx:id="lblTitle" text="search.title"/>
     <TextField fx:id="txtSearch"/>
 
     <HBox spacing="10">
-      <RadioButton fx:id="rbMembers" text="Un member" toggleGroup="$type" userData="member"/>
-      <RadioButton fx:id="rbItems" text="Un ouvrage" toggleGroup="$type" userData="item"/>
+      <RadioButton fx:id="rbMembers" styleClass="i18n" text="search.label.member" toggleGroup="$type" userData="member"/>
+      <RadioButton fx:id="rbItems" styleClass="i18n" text="search.label.item" toggleGroup="$type" userData="item"/>
     </HBox>
 
-    <CheckBox fx:id="cbDeactivated" text="Chercher dans les comptes désactivés" userData="desactive"/>
+    <CheckBox fx:id="cbDeactivated" styleClass="i18n" text="search.label.deactivated" userData="deactivated"/>
 
     <AnchorPane>
       <Button styleClass="form-button, i18n" fx:id="btnSearch" text="search.button.search" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
@@ -28,23 +28,23 @@
     <Label styleClass="h2, i18n" text="search.label.result" />
     <Button styleClass="form-button, i18n" fx:id="btnAdd" text="search.button.add"/>
 
-    <Label styleClass="h3" fx:id="lblMessage" text="Aucun résultat trouvé"/>
+    <Label styleClass="h3, i18n" fx:id="lblMessage" text="search.label.noResults"/>
 
     <TableView fx:id="tblMemberResults">
       <columns>
-        <TableColumn prefWidth="205.0" text="No" fx:id="colNo"/>
-        <TableColumn styleClass="i18n" prefWidth="205.0" text="search.table.label.firstName" fx:id="colFirstName"/>
-        <TableColumn prefWidth="205.0" text="Nom" fx:id="colLastName"/>
+        <TableColumn styleClass="i18n" prefWidth="205.0" text="search.table.member.label.no" fx:id="colNo"/>
+        <TableColumn styleClass="i18n" prefWidth="205.0" text="search.table.member.label.firstName" fx:id="colFirstName"/>
+        <TableColumn styleClass="i18n" prefWidth="205.0" text="search.table.member.label.lastName" fx:id="colLastName"/>
       </columns>
     </TableView>
 
     <TableView fx:id="tblItemResults">
       <columns>
-        <TableColumn prefWidth="270.0" text="Titre" fx:id="colTitle"/>
-        <TableColumn prefWidth="60.0" text="Édition" fx:id="colEdition"/>
-        <TableColumn prefWidth="120.0" text="Éditeur" fx:id="colEditor"/>
-        <TableColumn prefWidth="60.0" text="Année" fx:id="colPublication"/>
-        <TableColumn prefWidth="90.0" text="Auteur.e.s" fx:id="colAuthors"/>
+        <TableColumn styleClass="i18n" prefWidth="270.0" text="search.table.item.label.title" fx:id="colTitle"/>
+        <TableColumn styleClass="i18n" prefWidth="60.0" text="search.table.item.label.edition" fx:id="colEdition"/>
+        <TableColumn styleClass="i18n" prefWidth="120.0" text="search.table.item.label.editor" fx:id="colEditor"/>
+        <TableColumn styleClass="i18n" prefWidth="60.0" text="search.table.item.label.year" fx:id="colPublication"/>
+        <TableColumn styleClass="i18n" prefWidth="90.0" text="search.table.item.label.author" fx:id="colAuthors"/>
       </columns>
     </TableView>
   </VBox>

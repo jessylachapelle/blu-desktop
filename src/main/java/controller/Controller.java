@@ -101,8 +101,11 @@ public class Controller implements javafx.fxml.Initializable {
         TableView table = (TableView) node;
         for (int i = 0; i < table.getColumns().size(); i++) {
           TableColumn column = ((TableColumn) table.getColumns().get(i));
-          String key = column.getText();
-          column.setText(i18n.getString(key));
+
+          if (column.getStyleClass().contains("i18n")) {
+            String key = column.getText();
+            column.setText(i18n.getString(key));
+          }
         }
       } else if (node instanceof Pane) {
         initText((Pane) node);

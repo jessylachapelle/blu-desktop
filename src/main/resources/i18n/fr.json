@@ -2,7 +2,7 @@
   "title": "Banque de Livres Usagés",
   "menu": {
     "search": "Recherche",
-    "item": "Article",
+    "item": "Ouvrage",
     "member": "Membre",
     "admin": "Admin"
   },
@@ -10,16 +10,34 @@
     "view": {}
   },
   "search": {
+    "title": "Recherche dans le système",
     "button": {
       "search": "Recherche",
       "add": "Ajouter"
     },
     "label": {
-      "result": "Résultats"
+      "result": "Résultats",
+      "noResults": "Aucun résultat trouvé",
+      "deactivated": "Chercher dans les comptes désactivés",
+      "member": "Membre",
+      "item": "Ouvrage"
     },
     "table": {
-      "label": {
-        "firstName": "Prénom"
+      "member": {
+        "label": {
+          "no": "No",
+          "firstName": "Prénom",
+          "lastName": "Nom"
+        }
+      },
+      "item": {
+        "label": {
+          "title": "Titre",
+          "edition": "Édition",
+          "editor": "Éditeur",
+          "year": "Année",
+          "author": "Auteur.e.s"
+        }
       }
     }
   },
