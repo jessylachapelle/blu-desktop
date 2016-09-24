@@ -19,7 +19,7 @@ import javafx.stage.Screen;
 
 import handler.ItemHandler;
 import handler.MemberHandler;
-import utilitiy.Dialog;
+import utility.Dialog;
 
 /**
  * Cette classe controller prend en charge le panneau de gauche.
@@ -54,6 +54,7 @@ public class WindowController extends Controller {
     _setText();
     _eventHandlers();
     loadMainPanel("layout/search.fxml");
+    initText(mainPanel);
   }
 
   private void _eventHandlers() {

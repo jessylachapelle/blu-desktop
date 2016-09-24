@@ -104,10 +104,10 @@ public class BookTabController extends Controller {
         if (itemHandler.saveItem(_toJSON())) {
           ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem());
         } else {
-          utilitiy.Dialog.information("Une erreur est survenue");
+          utility.Dialog.information("Une erreur est survenue");
         }
       } else {
-        utilitiy.Dialog.information("Veuillez remplir tous les champs obligatoires avant de sauvegarder");
+        utility.Dialog.information("Veuillez remplir tous les champs obligatoires avant de sauvegarder");
       }
     });
 

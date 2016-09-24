@@ -2,7 +2,7 @@ package api;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import utilitiy.Dialog;
+import utility.Dialog;
 
 import java.io.BufferedReader;
 import java.io.IOException;

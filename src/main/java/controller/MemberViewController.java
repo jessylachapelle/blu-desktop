@@ -18,7 +18,7 @@ import model.item.Copy;
 import model.member.Comment;
 import model.member.Member;
 import model.member.StudentParent;
-import utilitiy.Dialog;
+import utility.Dialog;
 
 /**
  *

@@ -1,10 +1,11 @@
-package utilitiy;
+package utility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Locale;
 import java.util.Scanner;
 
 /**
@@ -13,11 +14,10 @@ import java.util.Scanner;
  * @version 1.0
  */
 public class I18N {
-  private static final String DEFAULT_LANG = "fr";
   private JSONObject i18n;
 
   public I18N() {
-    _init(DEFAULT_LANG);
+    _init(Locale.getDefault().toString().split("_")[0]);
   }
 
   public I18N(String lang) {
@@ -46,12 +46,17 @@ public class I18N {
   }
 
   private void _init(String lang) {
+    String jsonString = "";
     String path = "i18n/" + lang + ".json";
     if (this.getClass().getClassLoader().getResource(path) != null) {
       File file = new File(this.getClass().getClassLoader().getResource(path).getFile());
 
       try (Scanner scanner = new Scanner(file)) {
-        i18n = new JSONObject(scanner.nextLine());
+        while (scanner.hasNext()) {
+          jsonString += scanner.nextLine();
+        }
+
+        i18n = new JSONObject(jsonString);
         scanner.close();
       } catch (FileNotFoundException | JSONException e) {
         e.printStackTrace();

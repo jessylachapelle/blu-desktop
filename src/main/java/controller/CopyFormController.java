@@ -30,7 +30,7 @@ import model.item.Item;
 import handler.CopyHandler;
 import model.member.Member;
 
-import utilitiy.Dialog;
+import utility.Dialog;
 
 /**
  * Controller de l'interface d'ajout

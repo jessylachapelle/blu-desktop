@@ -7,10 +7,10 @@ package controller;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.TableRow;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import utilitiy.I18N;
+import utility.I18N;
 
 import java.io.IOException;
 import java.net.URL;
@@ -89,6 +89,25 @@ public class Controller implements javafx.fxml.Initializable {
 
   protected boolean isRightClick(MouseEvent event) {
     return event.isSecondaryButtonDown();
+  }
+
+  protected void initText(Pane pane) {
+    for(Node node : pane.getChildren()) {
+      if (node instanceof  Labeled && node.getStyleClass().contains("i18n")) {
+        Labeled labeled = ((Labeled) node);
+        String key = labeled.getText();
+        labeled.setText(i18n.getString(key));
+      } else if(node instanceof TableView) {
+        TableView table = (TableView) node;
+        for (int i = 0; i < table.getColumns().size(); i++) {
+          TableColumn column = ((TableColumn) table.getColumns().get(i));
+          String key = column.getText();
+          column.setText(i18n.getString(key));
+        }
+      } else if (node instanceof Pane) {
+        initText((Pane) node);
+      }
+    }
   }
 
   @Override

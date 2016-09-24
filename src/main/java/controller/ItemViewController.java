@@ -13,7 +13,7 @@ import model.item.Book;
 import model.item.Copy;
 import model.item.Item;
 import model.item.Storage;
-import utilitiy.Dialog;
+import utility.Dialog;
 
 import java.net.URL;
 import java.util.ArrayList;

@@ -6,7 +6,7 @@ import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 
-import utilitiy.I18N;
+import utility.I18N;
 
 /**
  * Classe principal du logiciel pour démarrer les interfaces
@@ -34,7 +34,7 @@ public class BLU extends Application {
     //primaryStage.setMaximized(true);
 
     try {
-      FXMLLoader loader = new FXMLLoader(BLU.class.getResource("layout/window.fxml"));
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("layout/window.fxml"));
       Pane window = loader.load();
 
       Scene scene = new Scene(window);

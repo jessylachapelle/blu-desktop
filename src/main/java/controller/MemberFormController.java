@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 import handler.MemberHandler;
 import model.member.Member;
-import utilitiy.Dialog;
+import utility.Dialog;
 
 /**
  * La classe qui fait le pont entre la vue(ajoutMembre) et le modèle

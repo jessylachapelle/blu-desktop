@@ -13,7 +13,7 @@ import model.item.Item;
 import model.item.Subject;
 import org.json.JSONException;
 import org.json.JSONObject;
-import utilitiy.Dialog;
+import utility.Dialog;
 
 import java.net.URL;
 import java.util.ResourceBundle;
