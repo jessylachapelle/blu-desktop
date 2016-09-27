@@ -18,7 +18,7 @@
       <RadioButton fx:id="rbItems" text="Un ouvrage" toggleGroup="$type" userData="item"/>
     </HBox>
 
-    <CheckBox fx:id="cbDeactivated" text="Chercher dans les comptes désactivés" userData="desactive"/>
+    <CheckBox fx:id="cbArchive" text="Inclure les résultats archivés" userData="archive"/>
 
     <AnchorPane>
       <Button styleClass="form-button, i18n" fx:id="btnSearch" text="search.button.search" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
