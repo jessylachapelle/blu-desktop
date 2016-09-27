@@ -8,11 +8,13 @@ package controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
@@ -41,6 +43,9 @@ public class WindowController extends Controller {
 
   @FXML private Button btnBack;
 
+  @FXML private MenuItem exit;
+  @FXML private MenuItem about;
+
   @Override
   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
     double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
@@ -54,7 +59,6 @@ public class WindowController extends Controller {
     _setText();
     _eventHandlers();
     loadMainPanel("layout/search.fxml");
-    initText(mainPanel);
   }
 
   private void _eventHandlers() {
@@ -80,6 +84,9 @@ public class WindowController extends Controller {
 //        btnBack.setVisible(viewStack.size() > 1);
 //      }
     });
+
+    exit.setOnAction(event -> Platform.exit());
+    about.setOnAction(event -> Dialog.information("About", "https://github.com/katima-g33k/blu-desktop"));
   }
 
   /**

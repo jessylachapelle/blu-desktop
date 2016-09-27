@@ -9,13 +9,16 @@
   <VBox fx:id="menu">
     <MenuBar>
       <Menu text="Fichier">
-        <MenuItem text="Fermer"/>
+        <MenuItem text="Déconnecter"/>
+        <MenuItem fx:id="exit" text="Quitter"/>
       </Menu>
       <Menu text="Édition">
-        <MenuItem text="Effacer"/>
+        <MenuItem text="Paramètres"/>
       </Menu>
       <Menu text="Aide">
-        <MenuItem text="À propos"/>
+        <MenuItem fx:id="about" text="À propos"/>
+        <MenuItem text="Documentation"/>
+        <MenuItem text="License"/>
       </Menu>
     </MenuBar>
 
