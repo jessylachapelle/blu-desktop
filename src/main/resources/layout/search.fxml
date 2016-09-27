@@ -18,7 +18,7 @@
       <RadioButton fx:id="rbItems" styleClass="i18n" text="search.label.item" toggleGroup="$type" userData="item"/>
     </HBox>
 
-    <CheckBox fx:id="cbDeactivated" styleClass="i18n" text="search.label.deactivated" userData="deactivated"/>
+    <CheckBox fx:id="cbArchive" styleClass="i18n" text="search.label.archive" userData="archive"/>
 
     <AnchorPane>
       <Button styleClass="form-button, i18n" fx:id="btnSearch" text="search.button.search" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>

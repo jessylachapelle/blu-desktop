@@ -18,7 +18,7 @@
     "label": {
       "result": "Results",
       "noResults": "No results found",
-      "deactivated": "Search in deactivated accounts",
+      "archive": "Search archived results",
       "member": "Member",
       "item": "Item"
     },
