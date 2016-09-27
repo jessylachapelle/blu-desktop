@@ -41,7 +41,7 @@ import utility.Dialog;
  * @version 1.0
  */
 @SuppressWarnings("WeakerAccess")
-public class CopyFormController extends Controller {
+public class CopyFormController extends PanelController {
   private Controller controller;
 
   private CopyHandler copyHandler;
@@ -267,4 +267,7 @@ public class CopyFormController extends Controller {
     ressources.setVisible(!ressources.isVisible());
     setPrice.setVisible(!setPrice.isVisible());
   }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {}
 }

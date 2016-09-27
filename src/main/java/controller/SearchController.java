@@ -20,7 +20,7 @@ import model.member.Member;
  * @version 0.1
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class SearchController extends Controller {
+public class SearchController extends PanelController {
 
   private SearchHandler searchHandler;
 
