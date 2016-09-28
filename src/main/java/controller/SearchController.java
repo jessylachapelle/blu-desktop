@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.Pane;
 import model.item.Item;
 import model.item.Book;
 import handler.SearchHandler;
@@ -24,7 +23,7 @@ import model.member.Member;
 public class SearchController extends PanelController {
 
   private SearchHandler searchHandler;
-  private Pane resultPane;
+  private PanelController parentController;
 
   @FXML private Label lblTitle;
   @FXML private ToggleGroup type;
@@ -149,8 +148,8 @@ public class SearchController extends PanelController {
     tblItemResults.setVisible(!tblItemResults.getItems().isEmpty());
   }
 
-  public void setResultPane(Pane pane) {
-    resultPane = pane;
+  public void setParentController(PanelController controller) {
+    parentController = controller;
   }
 
   public TableView<Member> getTblMemberResults() {
@@ -201,8 +200,8 @@ public class SearchController extends PanelController {
 
   @Override
   protected void handleScan(String code, boolean isItem) {
-    if (resultPane != null) {
-      super.handleScan(resultPane, code, isItem);
+    if (parentController != null) {
+      parentController.handleScan(code, isItem);
     } else {
       super.handleScan(code, isItem);
     }

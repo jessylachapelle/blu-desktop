@@ -211,7 +211,7 @@ public class CopyFormController extends PanelController {
   private SearchController _displaySearchPanel() {
     controller = _loadPanel("layout/search.fxml");
     _searchEventHandlers();
-    ((SearchController )controller).setResultPane(resources);
+    ((SearchController )controller).setParentController(this);
     return (SearchController) controller;
   }
 
