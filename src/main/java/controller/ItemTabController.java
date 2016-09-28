@@ -128,5 +128,7 @@ public class ItemTabController extends PanelController {
   }
 
   @Override
-  protected void handleScan(String code, boolean isItem) {}
+  protected void handleScan(String code, boolean isItem) {
+    System.out.println("ItemTab");
+  }
 }

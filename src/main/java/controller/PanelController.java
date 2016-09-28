@@ -5,6 +5,7 @@ import handler.MemberHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.Pane;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -70,22 +71,26 @@ public class PanelController extends Controller {
   }
 
   protected void handleScan(String code, boolean isItem) {
+    handleScan(getMainPanel(), code, isItem);
+  }
+
+  protected void handleScan(Pane target, String code, boolean isItem) {
     if (isItem) {
       ItemHandler itemHandler = new ItemHandler();
 
       if (itemHandler.exists(code)) {
-        ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(code);
+        ((ItemViewController) loadPanel(target, "layout/itemView.fxml")).loadItem(code);
       } else {
-        ((ItemFormController) loadMainPanel("layout/itemForm.fxml")).loadItem(code);
+        ((ItemFormController) loadPanel(target, "layout/itemForm.fxml")).loadItem(code);
       }
     } else {
       MemberHandler memberHandler = new MemberHandler();
       int memberNo = Integer.parseInt(code);
 
       if(memberHandler.exist(memberNo)) {
-        ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(memberNo);
+        ((MemberViewController) loadPanel(target, "layout/memberView.fxml")).loadMember(memberNo);
       } else {
-        ((MemberFormController) loadMainPanel("layout/memberForm.fxml")).loadMember(memberNo);
+        ((MemberFormController) loadPanel(target, "layout/memberForm.fxml")).loadMember(memberNo);
       }
     }
   }

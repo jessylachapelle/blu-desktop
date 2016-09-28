@@ -211,6 +211,7 @@ public class CopyFormController extends PanelController {
   private SearchController _displaySearchPanel() {
     controller = _loadPanel("layout/search.fxml");
     _searchEventHandlers();
+    ((SearchController )controller).setResultPane(resources);
     return (SearchController) controller;
   }
 
@@ -271,6 +272,7 @@ public class CopyFormController extends PanelController {
 
   @Override
   protected void handleScan(String code, boolean isItem) {
+    System.out.println("CopyFormController");
     if (isItem && currentCopy == null) {
       ItemHandler itemHandler = new ItemHandler();
 
