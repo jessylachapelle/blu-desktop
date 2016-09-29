@@ -42,7 +42,6 @@ public class APIConnector {
       connection.setDoOutput(true);
 
       String jsonData = "req=" + req.toString();
-      System.out.println(jsonData);
       PrintWriter vars = new PrintWriter(connection.getOutputStream());
       vars.println(jsonData);
       vars.close();

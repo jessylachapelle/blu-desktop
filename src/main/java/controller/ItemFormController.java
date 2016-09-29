@@ -84,7 +84,5 @@ public class ItemFormController extends PanelController {
   }
 
   @Override
-  protected void handleScan(String code, boolean isItem) {
-    System.out.println("ItemForm");
-  }
+  protected void handleScan(String code, boolean isItem) {}
 }

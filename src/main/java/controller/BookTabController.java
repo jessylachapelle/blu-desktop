@@ -144,7 +144,5 @@ public class BookTabController extends PanelController {
   }
 
   @Override
-  protected void handleScan(String code, boolean isItem) {
-    System.out.println("BookTab");
-  }
+  protected void handleScan(String code, boolean isItem) {}
 }
