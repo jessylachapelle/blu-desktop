@@ -20,9 +20,10 @@ import model.member.Member;
  * @version 0.1
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class SearchController extends Controller {
+public class SearchController extends PanelController {
 
   private SearchHandler searchHandler;
+  private PanelController parentController;
 
   @FXML private Label lblTitle;
   @FXML private ToggleGroup type;
@@ -147,6 +148,10 @@ public class SearchController extends Controller {
     tblItemResults.setVisible(!tblItemResults.getItems().isEmpty());
   }
 
+  public void setParentController(PanelController controller) {
+    parentController = controller;
+  }
+
   public TableView<Member> getTblMemberResults() {
     return tblMemberResults;
   }
@@ -191,5 +196,14 @@ public class SearchController extends Controller {
     rbItems.setVisible(visible);
     rbMembers.setVisible(visible);
     cbArchive.setVisible(visible);
+  }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {
+    if (parentController != null) {
+      parentController.handleScan(code, isItem);
+    } else {
+      super.handleScan(code, isItem);
+    }
   }
 }

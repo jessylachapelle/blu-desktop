@@ -23,7 +23,7 @@ import utility.Dialog;
  * @author Marc
  */
 @SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
-public class MemberFormController extends Controller {
+public class MemberFormController extends PanelController {
   private final String DEFAULT_STATE = "QC";
 
   @FXML private Label lblAdd;
@@ -237,4 +237,7 @@ public class MemberFormController extends Controller {
       }
     });
   }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {}
 }

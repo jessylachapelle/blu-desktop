@@ -21,7 +21,7 @@ import java.util.ResourceBundle;
  * @version 1.0
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class BookTabController extends Controller {
+public class BookTabController extends PanelController {
   private ItemHandler itemHandler;
 
   @FXML private TextField txtTitle;
@@ -142,4 +142,7 @@ public class BookTabController extends Controller {
     cbSubject.setItems(options);
     cbSubject.getSelectionModel().select(subject);
   }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {}
 }
