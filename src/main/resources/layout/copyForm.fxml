@@ -28,7 +28,7 @@
       </AnchorPane>
     </VBox>
 
-    <Pane fx:id="ressources">
+    <Pane fx:id="resources">
       <fx:include source="search.fxml"/>
     </Pane>
   </VBox>
