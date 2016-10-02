@@ -34,8 +34,8 @@ public class PanelController extends Controller {
     });
 
     window.setOnKeyPressed(key -> {
-      final String FIRST_CHAR = Settings.scanFirstChar();
-      final String LAST_CHAR = Settings.scanLastChar();
+      String FIRST_CHAR = Settings.scanFirstChar();
+      String LAST_CHAR = Settings.scanLastChar();
       final int MEMBER_CODE_LENGTH = 13;
       final int ITEM_CODE_LENGTH = 16;
 
@@ -75,6 +75,7 @@ public class PanelController extends Controller {
     handleScan(getMainPanel(), code, isItem);
   }
 
+  @SuppressWarnings("WeakerAccess")
   protected void handleScan(Pane target, String code, boolean isItem) {
     if (isItem) {
       ItemHandler itemHandler = new ItemHandler();
