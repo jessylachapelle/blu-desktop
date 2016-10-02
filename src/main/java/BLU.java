@@ -7,6 +7,7 @@ import javafx.scene.layout.*;
 import javafx.stage.*;
 
 import utility.I18N;
+import utility.Settings;
 
 /**
  * Classe principal du logiciel pour démarrer les interfaces
@@ -15,7 +16,8 @@ import utility.I18N;
  * @version 0.1
  */
 public class BLU extends Application {
-  I18N i18n;
+  private static I18N i18n;
+  private static Settings settings;
 
   public static void main(String[] args) {
     launch(args);
@@ -24,6 +26,7 @@ public class BLU extends Application {
   @Override
   public void start(Stage primaryStage) {
     i18n = new I18N();
+    settings = new Settings();
 
     double width = Screen.getPrimary().getVisualBounds().getWidth();
     double height = Screen.getPrimary().getVisualBounds().getHeight();

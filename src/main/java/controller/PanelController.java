@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
+import utility.Settings;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -33,8 +34,8 @@ public class PanelController extends Controller {
     });
 
     window.setOnKeyPressed(key -> {
-      final String FIRST_CHAR = "à";
-      final String LAST_CHAR = "À";
+      final String FIRST_CHAR = Settings.scanFirstChar();
+      final String LAST_CHAR = Settings.scanLastChar();
       final int MEMBER_CODE_LENGTH = 13;
       final int ITEM_CODE_LENGTH = 16;
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ComboBox?>
+
+<?import javafx.scene.control.Button?>
+<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SettingsController">
+  <VBox spacing="10">
+    <Label styleClass="h1" text="Paramètres"/>
+
+    <Label styleClass="h2" text="Langue"/>
+    <ComboBox fx:id="cbLang"/>
+
+    <Label styleClass="h2" text="Calibrer le lecteur à code à barres"/>
+    <Button styleClass="form-button" fx:id="btnCalibrate" text="Calibrer"/>
+
+    <AnchorPane>
+      <Button styleClass="form-button" fx:id="btnCancel" text="Annuler" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
+      <Button styleClass="form-button" fx:id="btnSave" text="Enregistrer" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
+    </AnchorPane>
+  </VBox>
+</Pane>
