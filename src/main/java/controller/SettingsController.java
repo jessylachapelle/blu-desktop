@@ -2,6 +2,7 @@ package controller;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import utility.Dialog;
@@ -45,15 +46,15 @@ public class SettingsController extends PanelController {
       }
     });
 
-    btnCancel.setOnAction(event -> {
-      // TODO: Close Settings window
-    });
+    btnCancel.setOnAction(event -> ((Node)(event.getSource())).getScene().getWindow().hide() );
 
     btnSave.setOnAction(event -> {
       if (!Settings.lang().equals(cbLang.getValue())) {
         Settings.updateLang(cbLang.getValue());
+        Dialog.information("Pour que le changement de langue soit complet, veuillez redémarrer l'application");
       }
-      // TODO: Close settings window
+
+      ((Node)(event.getSource())).getScene().getWindow().hide();
     });
   }
 

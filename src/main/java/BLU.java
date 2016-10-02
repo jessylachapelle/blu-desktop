@@ -27,8 +27,8 @@ public class BLU extends Application {
 
   @Override
   public void start(Stage stage) {
-    i18n = new I18N();
     settings = new Settings();
+    i18n = new I18N();
 
     double width = Screen.getPrimary().getVisualBounds().getWidth();
     double height = Screen.getPrimary().getVisualBounds().getHeight();

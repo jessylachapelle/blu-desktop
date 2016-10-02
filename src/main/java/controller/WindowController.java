@@ -10,12 +10,16 @@ import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.scene.control.MenuItem;
 
+import javafx.stage.Stage;
 import utility.Dialog;
 
 /**
@@ -39,6 +43,7 @@ public class WindowController extends Controller {
   @FXML private Button btnBack;
 
   @FXML private MenuItem exit;
+  @FXML private MenuItem settings;
   @FXML private MenuItem about;
 
   @Override
@@ -81,6 +86,23 @@ public class WindowController extends Controller {
 
     exit.setOnAction(event -> Platform.exit());
     about.setOnAction(event -> Dialog.information("About", "https://github.com/katima-g33k/blu-desktop"));
+    settings.setOnAction(event -> {
+      try {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layout/settings.fxml"));
+        Parent parent = fxmlLoader.load();
+        Stage stage = new Stage();
+        Scene scene = new Scene(parent);
+
+        scene.getStylesheets().addAll("css/window.css");
+        stage.setTitle("Paramètres");
+        stage.setWidth(500);
+        stage.setHeight(350);
+        stage.setScene(scene);
+        stage.show();
+      } catch(Exception e) {
+        e.printStackTrace();
+      }
+    });
   }
 
   private void _setText() {

@@ -13,7 +13,7 @@
         <MenuItem fx:id="exit" text="Quitter"/>
       </Menu>
       <Menu text="Édition">
-        <MenuItem text="Paramètres"/>
+        <MenuItem fx:id="settings" text="Paramètres"/>
       </Menu>
       <Menu text="Aide">
         <MenuItem fx:id="about" text="À propos"/>

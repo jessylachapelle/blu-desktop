@@ -22,6 +22,7 @@ public class Settings {
   private static final String FILE = "settings.json";
   private static JSONObject settings;
 
+  @SuppressWarnings("ConstantConditions")
   public Settings() {
     if (getClass().getClassLoader().getResource(FILE) != null) {
       File file = new File(getClass().getClassLoader().getResource(FILE).getFile());
@@ -37,6 +38,7 @@ public class Settings {
         scanner.close();
       } catch (FileNotFoundException | JSONException e) {
         e.printStackTrace();
+        settings = new JSONObject();
       }
     }
   }
@@ -104,6 +106,7 @@ public class Settings {
     return settings.has("api_url") ? settings.getString("api_url") : "";
   }
 
+  @SuppressWarnings("ConstantConditions")
   static private boolean updateSettings() {
     try {
       File file = new File(Settings.class.getClassLoader().getResource(FILE).getFile());

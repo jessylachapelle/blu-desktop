@@ -6,7 +6,7 @@
 
 <?import javafx.scene.control.Button?>
 <Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SettingsController">
-  <VBox spacing="10">
+  <VBox spacing="10" styleClass="main">
     <Label styleClass="h1" text="Paramètres"/>
 
     <Label styleClass="h2" text="Langue"/>
@@ -16,8 +16,10 @@
     <Button styleClass="form-button" fx:id="btnCalibrate" text="Calibrer"/>
 
     <AnchorPane>
-      <Button styleClass="form-button" fx:id="btnCancel" text="Annuler" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
-      <Button styleClass="form-button" fx:id="btnSave" text="Enregistrer" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
+      <HBox spacing="10" AnchorPane.rightAnchor="10" AnchorPane.bottomAnchor="10">
+        <Button styleClass="form-button" fx:id="btnCancel" text="Annuler"/>
+        <Button styleClass="form-button" fx:id="btnSave" text="Enregistrer"/>
+      </HBox>
     </AnchorPane>
   </VBox>
 </Pane>
