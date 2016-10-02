@@ -83,6 +83,7 @@ public class Controller implements javafx.fxml.Initializable {
 //      btnBack.setVisible(viewStack.size() > 1);
 //
       parent.getChildren().add(loader.load());
+      initText(parent);
       return loader.getController();
     } catch (IOException e) {
       e.printStackTrace();
