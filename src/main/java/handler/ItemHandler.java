@@ -335,6 +335,30 @@ public class ItemHandler {
     }
   }
 
+  public boolean exists(String ean13) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("ean13", ean13);
+
+      req.put("object", "item");
+      req.put("function", "exists");
+      req.put("data", data);
+
+      JSONObject res = APIConnector.call(req);
+
+      if (res.has("data") && res.get("data") instanceof JSONObject) {
+        data = res.getJSONObject("data");
+        return data.has("code") && data.getInt("code") == 200;
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
   public boolean addItemReservation(int memberNo) {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();

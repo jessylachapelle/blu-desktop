@@ -11,7 +11,7 @@ import javafx.scene.web.WebView;
  *
  * @author Jessy
  */
-public class AdminController extends Controller {
+public class AdminController extends PanelController {
   @SuppressWarnings("FieldCanBeLocal")
   private final String URL = "http://localhost/blu-web/admin/admin.php";
 

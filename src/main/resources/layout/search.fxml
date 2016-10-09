@@ -18,22 +18,22 @@
       <RadioButton fx:id="rbItems" text="Un ouvrage" toggleGroup="$type" userData="item"/>
     </HBox>
 
-    <CheckBox fx:id="cbDeactivated" text="Chercher dans les comptes désactivés" userData="desactive"/>
+    <CheckBox fx:id="cbArchive" text="Inclure les résultats archivés" userData="archive"/>
 
     <AnchorPane>
-      <Button styleClass="form-button" fx:id="btnSearch" text="Recherche" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
+      <Button styleClass="form-button, i18n" fx:id="btnSearch" text="search.button.search" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
     </AnchorPane>
 
     <!-- Results -->
-    <Label styleClass="h2" text="Résultats" />
-    <Button styleClass="form-button" fx:id="btnAdd" text="Ajouter"/>
+    <Label styleClass="h2, i18n" text="search.label.result" />
+    <Button styleClass="form-button, i18n" fx:id="btnAdd" text="search.button.add"/>
 
     <Label styleClass="h3" fx:id="lblMessage" text="Aucun résultat trouvé"/>
 
     <TableView fx:id="tblMemberResults">
       <columns>
         <TableColumn prefWidth="205.0" text="No" fx:id="colNo"/>
-        <TableColumn prefWidth="205.0" text="Prénom" fx:id="colFirstName"/>
+        <TableColumn styleClass="i18n" prefWidth="205.0" text="search.table.label.firstName" fx:id="colFirstName"/>
         <TableColumn prefWidth="205.0" text="Nom" fx:id="colLastName"/>
       </columns>
     </TableView>

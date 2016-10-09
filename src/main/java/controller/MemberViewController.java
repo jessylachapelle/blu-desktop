@@ -18,7 +18,7 @@ import model.item.Copy;
 import model.member.Comment;
 import model.member.Member;
 import model.member.StudentParent;
-import utilitiy.Dialog;
+import utility.Dialog;
 
 /**
  *
@@ -27,7 +27,7 @@ import utilitiy.Dialog;
  * @version 1.0
  */
 @SuppressWarnings({"WeakerAccess", "unchecked"})
-public class MemberViewController extends Controller {
+public class MemberViewController extends PanelController {
   @FXML private Button btnUpdate;
   @FXML private Button btnDelete;
 

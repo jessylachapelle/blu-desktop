@@ -1,4 +1,4 @@
-package utilitiy;
+package utility;
 
 import controller.Controller;
 import javafx.scene.layout.Pane;

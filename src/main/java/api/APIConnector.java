@@ -2,7 +2,8 @@ package api;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import utilitiy.Dialog;
+import utility.Dialog;
+import utility.Settings;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,8 +23,8 @@ import java.net.URL;
  * @version 1.0
  */
 public class APIConnector {
-  private static final String API_KEY = "8ecf71749e3a5a5f02d585943e81849f";
-  private static final String API_URL = "http://localhost/blu-api/index.php";
+  private static final String API_KEY = Settings.apiKey();
+  private static final String API_URL = Settings.apiUrl();
 
   /**
    * Calls the API and sends it JSON.
@@ -42,6 +43,7 @@ public class APIConnector {
       connection.setDoOutput(true);
 
       String jsonData = "req=" + req.toString();
+      System.out.println(jsonData);
       PrintWriter vars = new PrintWriter(connection.getOutputStream());
       vars.println(jsonData);
       vars.close();

@@ -20,9 +20,10 @@ import model.member.Member;
  * @version 0.1
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class SearchController extends Controller {
+public class SearchController extends PanelController {
 
   private SearchHandler searchHandler;
+  private PanelController parentController;
 
   @FXML private Label lblTitle;
   @FXML private ToggleGroup type;
@@ -30,7 +31,7 @@ public class SearchController extends Controller {
   @FXML private Button btnSearch;
   @FXML private RadioButton rbMembers;
   @FXML private RadioButton rbItems;
-  @FXML private CheckBox cbDeactivated;
+  @FXML private CheckBox cbArchive;
   @FXML private Button btnAdd;
   @FXML private Label lblMessage;
 
@@ -84,19 +85,18 @@ public class SearchController extends Controller {
 
         if (data.matches("member")) {
           searchHandler.setMemberSearch();
-          cbDeactivated.setDisable(false);
+          cbArchive.setSelected(false);
           resetSearch(true);
         } else {
           searchHandler.setItemSearch();
-          cbDeactivated.setSelected(false);
-          cbDeactivated.setDisable(true);
+          cbArchive.setSelected(false);
           resetSearch(true);
         }
       }
     });
 
-    cbDeactivated.setOnAction(event -> {
-      searchHandler.setSearchArchives(cbDeactivated.isSelected());
+    cbArchive.setOnAction(event -> {
+      searchHandler.setSearchArchives(cbArchive.isSelected());
 
       if (!txtSearch.getText().isEmpty()) {
         _search();
@@ -138,14 +138,18 @@ public class SearchController extends Controller {
 
   private void _searchMembers() {
     tblMemberResults.setItems(FXCollections.observableArrayList(searchHandler.searchMembers()));
-    lblMessage.setVisible(tblMemberResults.getItems().isEmpty());
     tblMemberResults.setVisible(!tblMemberResults.getItems().isEmpty());
+    lblMessage.setText(tblMemberResults.getItems().size() + " résultats");
   }
 
   private void _searchItems() {
     tblItemResults.setItems(FXCollections.observableArrayList(searchHandler.searchItems()));
-    lblMessage.setVisible(tblItemResults.getItems().isEmpty());
+    lblMessage.setText(tblItemResults.getItems().size() + " résultats");
     tblItemResults.setVisible(!tblItemResults.getItems().isEmpty());
+  }
+
+  public void setParentController(PanelController controller) {
+    parentController = controller;
   }
 
   public TableView<Member> getTblMemberResults() {
@@ -191,6 +195,15 @@ public class SearchController extends Controller {
   private void toggleFilters(boolean visible) {
     rbItems.setVisible(visible);
     rbMembers.setVisible(visible);
-    cbDeactivated.setVisible(visible);
+    cbArchive.setVisible(visible);
+  }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {
+    if (parentController != null) {
+      parentController.handleScan(code, isItem);
+    } else {
+      super.handleScan(code, isItem);
+    }
   }
 }

@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import handler.ItemHandler;
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,7 +31,7 @@ import model.item.Item;
 import handler.CopyHandler;
 import model.member.Member;
 
-import utilitiy.Dialog;
+import utility.Dialog;
 
 /**
  * Controller de l'interface d'ajout
@@ -41,7 +42,7 @@ import utilitiy.Dialog;
  * @version 1.0
  */
 @SuppressWarnings("WeakerAccess")
-public class CopyFormController extends Controller {
+public class CopyFormController extends PanelController {
   private Controller controller;
 
   private CopyHandler copyHandler;
@@ -49,7 +50,7 @@ public class CopyFormController extends Controller {
   private ArrayList<Copy> copies;
   private Copy currentCopy;
 
-  @FXML private Pane ressources;
+  @FXML private Pane resources;
   @FXML private VBox setPrice;
   @FXML private Label memberName;
   @FXML private Label itemTitle;
@@ -76,7 +77,7 @@ public class CopyFormController extends Controller {
    */
   private void _dataBinding() {
     setPrice.managedProperty().bind(setPrice.visibleProperty());
-    ressources.managedProperty().bind(ressources.visibleProperty());
+    resources.managedProperty().bind(resources.visibleProperty());
 
     colItem.setCellValueFactory(new PropertyValueFactory<>("name"));
     colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
@@ -141,7 +142,7 @@ public class CopyFormController extends Controller {
     SearchController searchController = (SearchController) controller;
     // Double click sur un item de la liste d'articles
     searchController.getTblItemResults().setOnMousePressed((MouseEvent event) -> {
-      if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+      if (isDoubleClick(event)) {
         TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
         Item item = (Item) row.getItem();
 
@@ -210,16 +211,17 @@ public class CopyFormController extends Controller {
   private SearchController _displaySearchPanel() {
     controller = _loadPanel("layout/search.fxml");
     _searchEventHandlers();
+    ((SearchController )controller).setParentController(this);
     return (SearchController) controller;
   }
 
   private Controller _loadPanel(String resource) {
     FXMLLoader loader = new FXMLLoader();
     loader.setLocation(WindowController.class.getClassLoader().getResource(resource));
-    ressources.getChildren().clear();
+    resources.getChildren().clear();
 
     try {
-      ressources.getChildren().add(loader.load());
+      resources.getChildren().add(loader.load());
       return loader.getController();
     } catch (IOException e) {
       e.printStackTrace();
@@ -246,25 +248,44 @@ public class CopyFormController extends Controller {
     tblCopies.setItems(copiesList);
 
     tblCopies.setPrefHeight(50 * (copies.size() + 1));
-    ressources.setLayoutY(150 + 50 * copies.size());
+    resources.setLayoutY(150 + 50 * copies.size());
     setPrice.setLayoutY(150 + 50 * copies.size());
   }
 
   /**
    * Toggle entre la view de recherche et d'ajout de prix
-   * @param resetPrix S'il faut effacer le champs de prix
-   * @param resetRecherche S'il faut effacer les données de recherche
+   * @param restPrice S'il faut effacer le champs de prix
+   * @param resetSearch S'il faut effacer les données de recherche
    */
-  private void _toggleView(boolean resetPrix, boolean resetRecherche) {
-    if (resetPrix) {
+  private void _toggleView(boolean restPrice, boolean resetSearch) {
+    if (restPrice) {
      txtPrice.setText("");
     }
 
-    if (resetRecherche && controller instanceof SearchController) {
+    if (resetSearch && controller instanceof SearchController) {
       ((SearchController) controller).resetSearch(true);
     }
 
-    ressources.setVisible(!ressources.isVisible());
+    resources.setVisible(!resources.isVisible());
     setPrice.setVisible(!setPrice.isVisible());
+  }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {
+    if (isItem && currentCopy == null) {
+      ItemHandler itemHandler = new ItemHandler();
+
+      if (itemHandler.exists(code)) {
+        currentCopy = new Copy();
+        currentCopy.setItem(itemHandler.selectItem(code));
+        itemTitle.setText(itemHandler.getItem().getName());
+
+        _toggleView(true, false);
+      } else {
+        _displayItemForm().loadItem(code);
+      }
+    } else {
+      Dialog.information("Erreur de code", "Le code saisie n'est pas pris en charge");
+    }
   }
 }

@@ -13,7 +13,7 @@ import model.item.Item;
 import model.item.Subject;
 import org.json.JSONException;
 import org.json.JSONObject;
-import utilitiy.Dialog;
+import utility.Dialog;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
  * @version 1.0
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class ItemTabController extends Controller {
+public class ItemTabController extends PanelController {
   private ItemHandler itemHandler = new ItemHandler();
 
   @FXML private TextField txtName;
@@ -126,4 +126,7 @@ public class ItemTabController extends Controller {
     cbSubjects.setItems(options);
     cbSubjects.getSelectionModel().select(subject);
   }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {}
 }

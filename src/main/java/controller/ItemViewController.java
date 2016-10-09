@@ -13,7 +13,7 @@ import model.item.Book;
 import model.item.Copy;
 import model.item.Item;
 import model.item.Storage;
-import utilitiy.Dialog;
+import utility.Dialog;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
  * @version 0.1
  */
 @SuppressWarnings({"unused", "WeakerAccess", "unchecked"})
-public class ItemViewController extends Controller {
+public class ItemViewController extends PanelController {
   private ItemHandler itemHandler;
 
   @FXML private Label lblTitle;

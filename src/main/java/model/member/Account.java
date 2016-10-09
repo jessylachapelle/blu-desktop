@@ -8,7 +8,7 @@ import model.item.Copy;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import utilitiy.DateParser;
+import utility.DateParser;
 
 /**
  * Le compte d'un member, contient tous les exemplaires mis en vente par le

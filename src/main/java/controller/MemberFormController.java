@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 import handler.MemberHandler;
 import model.member.Member;
-import utilitiy.Dialog;
+import utility.Dialog;
 
 /**
  * La classe qui fait le pont entre la vue(ajoutMembre) et le modèle
@@ -23,7 +23,7 @@ import utilitiy.Dialog;
  * @author Marc
  */
 @SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
-public class MemberFormController extends Controller {
+public class MemberFormController extends PanelController {
   private final String DEFAULT_STATE = "QC";
 
   @FXML private Label lblAdd;
@@ -237,4 +237,7 @@ public class MemberFormController extends Controller {
       }
     });
   }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {}
 }
