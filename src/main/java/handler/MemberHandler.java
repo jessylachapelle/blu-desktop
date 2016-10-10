@@ -171,6 +171,10 @@ public class MemberHandler {
       JSONObject res = APIConnector.call(req);
       data = res.getJSONObject("data");
 
+      if (data.optInt("code") == 500) {
+        return null;
+      }
+
       member.fromJSON(memberData);
 
       if (data.has("city")) {

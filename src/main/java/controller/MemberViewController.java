@@ -310,6 +310,7 @@ public class MemberViewController extends PanelController {
 
       if (Dialog.confirmation(message) && memberHandler.deleteMember()) {
         Dialog.information("Suppression réussie");
+        loadMainPanel("layout/search.fxml");
       } else {
         Dialog.information("Erreur lors de la suppression");
       }
