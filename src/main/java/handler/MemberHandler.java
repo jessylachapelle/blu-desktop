@@ -38,6 +38,10 @@ public class MemberHandler {
     member = _selectMember(no);
   }
 
+  public void setMember(String email) {
+    member = _selectMember(email);
+  }
+
   public void setMember(Member member) {
     this.member = member;
   }
@@ -52,12 +56,33 @@ public class MemberHandler {
   }
 
   private Member _selectMember(int no) {
-    JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
     try {
       data.put("no", no);
+      return _selectMember(data);
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return new Member();
+    }
+  }
 
+  private Member _selectMember(String email) {
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("email", email);
+      return _selectMember(data);
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return new Member();
+    }
+  }
+
+  private Member _selectMember(JSONObject data) {
+    JSONObject req = new JSONObject();
+
+    try {
       req.put("function", "select");
       req.put("object", "member");
       req.put("data", data);
@@ -170,6 +195,10 @@ public class MemberHandler {
 
       JSONObject res = APIConnector.call(req);
       data = res.getJSONObject("data");
+
+      if (data.optInt("code") == 500) {
+        return null;
+      }
 
       member.fromJSON(memberData);
 
@@ -443,18 +472,43 @@ public class MemberHandler {
   }
 
   public boolean exist(int no) {
-    JSONObject json = new JSONObject();
     JSONObject data = new JSONObject();
 
     try {
       data.put("no", no);
+      return exist(data);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  public boolean exist(String email) {
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("email", email);
+      return exist(data);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  private boolean exist(JSONObject data) {
+    JSONObject json = new JSONObject();
+
+    try {
       json.put("function", "exist");
       json.put("object", "member");
       json.put("data", data);
 
-      JSONObject response = APIConnector.call(json).getJSONObject("data");
+      JSONObject res = APIConnector.call(json);
+      data = res.getJSONObject("data");
 
-      return response.has("code") && response.getInt("code") == 200;
+      return data.has("code") && data.getInt("code") == 200;
     } catch (JSONException e) {
       e.printStackTrace();
     }

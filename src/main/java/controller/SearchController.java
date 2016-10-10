@@ -124,6 +124,11 @@ public class SearchController extends PanelController {
         }
       }
     });
+
+    btnAdd.setOnAction(event -> {
+      String panel = "layout/" + (rbMembers.isSelected() ? "member" : "item") + "Form.fxml";
+      loadMainPanel(panel);
+    });
   }
 
   private void _search() {

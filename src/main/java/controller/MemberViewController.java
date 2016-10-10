@@ -108,6 +108,11 @@ public class MemberViewController extends PanelController {
     _displayMember();
   }
 
+  public void loadMember(String email) {
+    memberHandler.setMember(email);
+    _displayMember();
+  }
+
   private void _eventHandlers() {
     tblAvailable.setOnMouseClicked(event -> {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
@@ -310,6 +315,7 @@ public class MemberViewController extends PanelController {
 
       if (Dialog.confirmation(message) && memberHandler.deleteMember()) {
         Dialog.information("Suppression réussie");
+        loadMainPanel("layout/search.fxml");
       } else {
         Dialog.information("Erreur lors de la suppression");
       }

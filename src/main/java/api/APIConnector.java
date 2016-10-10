@@ -52,6 +52,7 @@ public class APIConnector {
       String response = bufferedReader.readLine();
       bufferedReader.close();
 
+      System.out.println(response + '\n');
       return new JSONObject(response);
     } catch (MalformedURLException e) {
       return error(422, "INVALID_DATA");
