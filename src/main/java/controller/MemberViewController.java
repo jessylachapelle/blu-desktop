@@ -108,6 +108,11 @@ public class MemberViewController extends PanelController {
     _displayMember();
   }
 
+  public void loadMember(String email) {
+    memberHandler.setMember(email);
+    _displayMember();
+  }
+
   private void _eventHandlers() {
     tblAvailable.setOnMouseClicked(event -> {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());

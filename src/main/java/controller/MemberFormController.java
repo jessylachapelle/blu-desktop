@@ -130,7 +130,33 @@ public class MemberFormController extends PanelController {
       }
     }
 
-    return !txtNo.getText().isEmpty() || cbGenerateMemberNo.isSelected();
+    if (!txtEmail.getText().matches(".+@.+")) {
+      return false;
+    }
+
+    if (txtNo.getText().isEmpty() && !cbGenerateMemberNo.isSelected()) {
+      return false;
+    }
+
+    if (!txtNo.getText().isEmpty() && memberHandler.exist(Integer.parseInt(txtNo.getText()))) {
+      String message = "Le numéro étudiant inscrit est déjà associé à un membre. Voulez-vous aller à sa fiche ?";
+      if (Dialog.confirmation(message)) {
+        ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(Integer.parseInt(txtNo.getText()));
+      }
+
+      return false;
+    }
+
+    if (memberHandler.exist(txtEmail.getText())) {
+      String message = "L'addresse courriel inscrit est déjà associé à un membre. Voulez-vous aller à sa fiche ?";
+      if (Dialog.confirmation(message)) {
+        ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(txtEmail.getText());
+      }
+
+      return false;
+    }
+
+    return true;
   }
 
 
