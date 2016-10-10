@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 import handler.MemberHandler;
 import model.member.Member;
-import utilitiy.Dialog;
+import utility.Dialog;
 
 /**
  * La classe qui fait le pont entre la vue(ajoutMembre) et le modèle
@@ -23,7 +23,7 @@ import utilitiy.Dialog;
  * @author Marc
  */
 @SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
-public class MemberFormController extends Controller {
+public class MemberFormController extends PanelController {
   private final String DEFAULT_STATE = "QC";
 
   @FXML private Label lblAdd;
@@ -130,7 +130,33 @@ public class MemberFormController extends Controller {
       }
     }
 
-    return !txtNo.getText().isEmpty() || cbGenerateMemberNo.isSelected();
+    if (!txtEmail.getText().matches(".+@.+")) {
+      return false;
+    }
+
+    if (txtNo.getText().isEmpty() && !cbGenerateMemberNo.isSelected()) {
+      return false;
+    }
+
+    if (!txtNo.getText().isEmpty() && memberHandler.exist(Integer.parseInt(txtNo.getText()))) {
+      String message = "Le numéro étudiant inscrit est déjà associé à un membre. Voulez-vous aller à sa fiche ?";
+      if (Dialog.confirmation(message)) {
+        ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(Integer.parseInt(txtNo.getText()));
+      }
+
+      return false;
+    }
+
+    if (memberHandler.exist(txtEmail.getText())) {
+      String message = "L'addresse courriel inscrit est déjà associé à un membre. Voulez-vous aller à sa fiche ?";
+      if (Dialog.confirmation(message)) {
+        ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(txtEmail.getText());
+      }
+
+      return false;
+    }
+
+    return true;
   }
 
 
@@ -150,15 +176,16 @@ public class MemberFormController extends Controller {
       if (cbGenerateMemberNo.isSelected()) {
         form.put("no", _getRandomMemberNo());
       } else if (insertion || Integer.parseInt(txtNo.getText()) != getMember().getNo()) {
-        form.put("no", txtNo.getText());
+        String no = txtNo.getText().length() == 7 ? "20" + txtNo.getText() : txtNo.getText();
+        form.put("no", no);
       }
 
       if (!txtLastName.getText().equals(getMember().getLastName())) {
-        form.put("last_name", txtLastName.getText());
+        form.put("last_name", capitalize(txtLastName.getText()));
       }
 
       if (!txtFirstName.getText().equals(getMember().getFirstName())) {
-        form.put("first_name", txtFirstName.getText());
+        form.put("first_name", capitalize(txtFirstName.getText()));
       }
 
       if (!txtAddress.getText().equals(getMember().getAddress())) {
@@ -166,15 +193,17 @@ public class MemberFormController extends Controller {
       }
 
       if (!txtZip.getText().equals(getMember().getZip())) {
-        form.put("zip", txtZip.getText());
+        form.put("zip", txtZip.getText().replaceAll(" ", "").toUpperCase());
       }
 
-      if (!txtCity.getText().equals(getMember().getCity())) {
-        form.put("city", txtCity.getText());
-      }
+      if (!txtCity.getText().equals(getMember().getCity()) || !cbState.getValue().equals(getMember().getStateCode())) {
+        JSONObject city = new JSONObject();
+        JSONObject state = new JSONObject();
 
-      if (!cbState.getValue().equals(getMember().getStateCode())) {
-        form.put("state", cbState.getValue());
+        state.put("code", cbState.getValue());
+        city.put("name", capitalize(txtCity.getText()));
+        city.put("state", state);
+        form.put("city", city);
       }
 
       if (!txtEmail.getText().equals(getMember().getEmail())) {
@@ -182,7 +211,14 @@ public class MemberFormController extends Controller {
       }
 
       if (!txtComment.getText().isEmpty()) {
-        form.put("comment", txtComment.getText());
+        JSONObject account = new JSONObject();
+        JSONArray commentArray = new JSONArray();
+        JSONObject comment = new JSONObject();
+
+        comment.put("comment", txtComment.getText());
+        commentArray.put(comment);
+        account.put("comment", commentArray);
+        form.put("account", account);
       }
 
       for (int i = 0; i < txtPhones.length; i++) {
@@ -195,7 +231,7 @@ public class MemberFormController extends Controller {
             phone.put("id", getMember().getPhone(i).getId());
           }
 
-          phone.put("number", txtPhones[i][0].getText().replaceAll("-", ""));
+          phone.put("number", txtPhones[i][0].getText().replaceAll("[^\\d]", ""));
           phone.put("note", txtPhones[i][1].getText());
 
           phones.put(phone);
@@ -231,10 +267,31 @@ public class MemberFormController extends Controller {
 
     btnSave.setOnAction(e -> {
       if (_canSave()) {
-        ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(saveMember());
+        Member member = saveMember();
+
+        if (member != null) {
+          ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(member);
+        } else {
+          Dialog.information("Une erreur est survenue");
+        }
       } else {
         Dialog.information("Assurez-vous d'avoir bien rempli tous les champs obligatoires avant d'enregistrer");
       }
     });
+
+    cbGenerateMemberNo.setOnAction(e -> txtNo.setDisable(cbGenerateMemberNo.isSelected()));
+
+    txtNo.setOnKeyReleased(e -> cbGenerateMemberNo.setDisable(!txtNo.getText().isEmpty()));
   }
+
+  private String capitalize(String string) {
+    if (string == null || string.isEmpty()) {
+      return "";
+    }
+
+    return string.substring(0, 1).toUpperCase() + string.substring(1);
+  }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {}
 }

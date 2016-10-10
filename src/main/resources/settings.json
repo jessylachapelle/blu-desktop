@@ -1,0 +1,10 @@
+{
+  "supported_lang": ["fr", "en"],
+  "default_lang": "fr",
+  "lang": "fr",
+  "scan_first_char": "à",
+  "scan_last_char": "À",
+  "item_code_length": [16],
+  "api_key": "8ecf71749e3a5a5f02d585943e81849f",
+  "api_url": "http://localhost/blu-api/index.php"
+}

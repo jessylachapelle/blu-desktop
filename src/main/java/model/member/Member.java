@@ -304,12 +304,12 @@ public class Member {
 
       if (member.has("city")) {
         JSONObject city = member.getJSONObject("city");
-        JSONObject state = city.getJSONObject("state");
+        JSONObject state = city.optJSONObject("state");
 
-        this.city = city.getString("name");
-        cityId = city.getInt("id");
-        this.state = state.getString("name");
-        stateCode = state.getString("code");
+        this.city = city.optString("name");
+        cityId = city.optInt("id");
+        this.state = state != null ? state.optString("name") : "";
+        stateCode = state != null ? state.optString("code") : "";
       }
 
       if (member.has("account")) {

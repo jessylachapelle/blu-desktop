@@ -1,0 +1,27 @@
+{
+  "title": "Used Book Sell",
+  "menu": {
+    "search": "Search",
+    "item": "Item",
+    "member": "Member",
+    "admin": "Admin"
+  },
+  "member": {
+    "view": {}
+  },
+  "search": {
+    "button": {
+      "search": "Search",
+      "add": "Add"
+    },
+    "label": {
+      "result": "Results"
+    },
+    "table": {
+      "label": {
+        "firstName": "First Name"
+      }
+    }
+  },
+  "error": "Error"
+}

@@ -7,7 +7,7 @@ package model.member;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import utilitiy.DateParser;
+import utility.DateParser;
 
 import java.util.Date;
 

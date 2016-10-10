@@ -3,7 +3,7 @@ package model.item;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import utilitiy.DateParser;
+import utility.DateParser;
 
 import java.util.ArrayList;
 import java.util.Date;
