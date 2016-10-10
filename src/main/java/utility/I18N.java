@@ -5,7 +5,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Locale;
 import java.util.Scanner;
 
 /**
@@ -17,7 +16,7 @@ public class I18N {
   private JSONObject i18n;
 
   public I18N() {
-    _init(Locale.getDefault().toString().split("_")[0]);
+    _init(Settings.lang());
   }
 
   public I18N(String lang) {
@@ -45,6 +44,7 @@ public class I18N {
     return key;
   }
 
+  @SuppressWarnings("ConstantConditions")
   private void _init(String lang) {
     String jsonString = "";
     String path = "i18n/" + lang + ".json";

@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
  * @version 0.1
  */
 @SuppressWarnings({"unused", "WeakerAccess", "unchecked"})
-public class ItemViewController extends Controller {
+public class ItemViewController extends PanelController {
   private ItemHandler itemHandler;
 
   @FXML private Label lblTitle;

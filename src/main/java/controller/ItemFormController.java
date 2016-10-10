@@ -18,7 +18,7 @@ import model.item.Item;
  * @version 1.0
  */
 @SuppressWarnings("WeakerAccess")
-public class ItemFormController extends Controller {
+public class ItemFormController extends PanelController {
   @FXML private TabPane tabpane;
 
   private BookTabController bookTab;
@@ -62,11 +62,7 @@ public class ItemFormController extends Controller {
   }
 
   public boolean save() {
-    if (_isBookTab()) {
-      return bookTab.save();
-    }
-
-    return itemTab.save();
+    return _isBookTab() ? bookTab.save() : itemTab.save();
   }
 
   private boolean _isBookTab() {
@@ -86,4 +82,7 @@ public class ItemFormController extends Controller {
 
     return null;
   }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {}
 }

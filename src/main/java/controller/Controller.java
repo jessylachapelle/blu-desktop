@@ -5,16 +5,17 @@
  */
 package controller;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import utility.I18N;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
+import javafx.scene.Node;
+
+import utility.*;
 
 /**
  *
@@ -22,6 +23,7 @@ import java.util.ResourceBundle;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Controller implements javafx.fxml.Initializable {
+  protected static Pane window;
   private static Pane mainPanel;
   protected I18N i18n;
 
@@ -55,6 +57,12 @@ public class Controller implements javafx.fxml.Initializable {
     }
   }
 
+  protected void setWindow(Pane pane) {
+    if (window == null) {
+      window = pane;
+    }
+  }
+
   protected Pane getMainPanel() {
     return mainPanel;
   }
@@ -75,6 +83,7 @@ public class Controller implements javafx.fxml.Initializable {
 //      btnBack.setVisible(viewStack.size() > 1);
 //
       parent.getChildren().add(loader.load());
+      initText(parent);
       return loader.getController();
     } catch (IOException e) {
       e.printStackTrace();
@@ -112,6 +121,8 @@ public class Controller implements javafx.fxml.Initializable {
       }
     }
   }
+
+
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {}
