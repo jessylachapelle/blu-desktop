@@ -491,4 +491,25 @@ public class ItemHandler {
 
     return false;
   }
+
+  public boolean delete() {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    try {
+      data.put("id", item.getId());
+
+      req.put("object", "item");
+      req.put("function", "delete");
+      req.put("data", data);
+
+      JSONObject res = APIConnector.call(req);
+      data = res.optJSONObject("data");
+
+      return data != null && data.has("code") && data.getInt("code") == 200;
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
 }

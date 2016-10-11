@@ -30,6 +30,7 @@ public class ItemTabController extends PanelController {
   @FXML private TextField txtName;
   @FXML private ComboBox<Category> cbCategories;
   @FXML private ComboBox<Subject> cbSubjects;
+  @FXML private TextField txtEan13;
   @FXML private TextArea txtDescription;
 
   @FXML private Button btnCancel;
@@ -72,6 +73,7 @@ public class ItemTabController extends PanelController {
       form.put("name", txtName.getText());
       form.put("comment", txtDescription.getText());
       form.put("subject", cbSubjects.getValue().getId());
+      form.put("ean13", txtEan13.getText());
       form.put("is_book", false);
     } catch (JSONException e) {
       e.printStackTrace();

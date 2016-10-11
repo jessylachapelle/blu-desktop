@@ -58,8 +58,10 @@
     </HBox>
 
     <AnchorPane>
-      <Button styleClass="form-button" fx:id="btnCancel" text="Annuler" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
-      <Button styleClass="form-button" fx:id="btnSave" text="Enregistrer" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0"/>
+      <HBox spacing="10" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0">
+        <Button styleClass="form-button" fx:id="btnCancel" text="Annuler"/>
+        <Button styleClass="form-button" fx:id="btnSave" text="Enregistrer"/>
+      </HBox>
     </AnchorPane>
   </VBox>
 </Pane>
