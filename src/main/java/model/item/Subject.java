@@ -8,7 +8,7 @@ import org.json.JSONObject;
  * @author Jessy Lachapele
  * @since 13/07/2016
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Subject {
   private int id;
   private String name;
@@ -73,16 +73,12 @@ public class Subject {
    */
   public void fromJSON(JSONObject json) {
     try {
-      if (json.has("id") && json.get("id") instanceof Integer) {
-        id = json.getInt("id");
-      }
+      id = json.optInt("id");
+      name = json.optString("name");
 
-      if (json.has("name")) {
-        name = json.getString("name");
-      }
-
-      if (json.has("category") && json.get("category") instanceof JSONObject) {
-        category.fromJSON(json.getJSONObject("category"));
+      JSONObject category = json.optJSONObject("category");
+      if (category != null) {
+        this.category.fromJSON(category);
       }
     } catch (JSONException e) {
       e.printStackTrace();

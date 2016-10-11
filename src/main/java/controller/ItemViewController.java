@@ -334,6 +334,17 @@ public class ItemViewController extends PanelController {
 
     btnUpdate.setOnAction(event -> ((ItemFormController) loadMainPanel("layout/itemForm.fxml")).loadItem(itemHandler.getItem()));
 
+    btnDelete.setOnAction(event -> {
+      String message = "ëtes-vous certain de vouloir supprimer cet article ?";
+      if (Dialog.confirmation(message)) {
+        if (itemHandler.delete()) {
+          loadMainPanel("layout/search.fxml");
+        } else {
+          Dialog.information("Une erreur est survenue");
+        }
+      }
+    });
+
     for (TableView table : getCopyTables()) {
       table.setOnMousePressed(event -> {
         if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {

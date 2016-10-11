@@ -9,6 +9,7 @@ import java.util.ArrayList;
 /**
  * @author jessy on 05/08/16.
  */
+@SuppressWarnings("WeakerAccess")
 public class Category {
   private int id;
   private String name;
@@ -51,21 +52,13 @@ public class Category {
 
   public void fromJSON(JSONObject category) {
     try {
-      if (category.has("id") && category.get("id") instanceof Integer) {
-        id = category.getInt("id");
-      }
+      id = category.optInt("id");
+      name = category.optString("name");
 
-      if (category.has("name") && category.get("name") instanceof String) {
-        name = category.getString("name");
-      }
-
-      if (category.has("subject") && category.get("subject") instanceof JSONArray) {
-        JSONArray subjects = category.getJSONArray("subject");
-
+      JSONArray subjects = category.optJSONArray("subject");
+      if (subjects != null) {
         for (int i = 0; i < subjects.length(); i++) {
-          if (subjects.get(i) instanceof JSONObject) {
-            this.subjects.add(new Subject(subjects.getJSONObject(i)));
-          }
+          this.subjects.add(new Subject(subjects.getJSONObject(i)));
         }
       }
     } catch (JSONException e) {
