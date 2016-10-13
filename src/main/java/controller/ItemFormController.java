@@ -53,7 +53,7 @@ public class ItemFormController extends PanelController {
 
   public void loadItem(Item item) {
     if (item instanceof  Book) {
-      bookTab.loadItem(item);
+      bookTab.loadItem((Book) item);
       tabpane.getSelectionModel().select(0);
     } else {
       itemTab.loadItem(item);

@@ -15,14 +15,9 @@
       <TextField fx:id="txtEdition"/>
     </HBox>
 
-    <VBox fx:id="authors" spacing="10">
+    <VBox spacing="10">
       <Label styleClass="h3" text="Auteur"/>
-      <HBox spacing="10">
-        <Label styleClass="form-label" text="Prénom :"/>
-        <TextField fx:id="txtAuthorFirstName"/>
-        <Label text="Nom* :"/>
-        <TextField fx:id="txtAuthorLastName"/>
-      </HBox>
+      <VBox fx:id="authors" spacing="10" />
       <AnchorPane>
         <HBox spacing="10" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0">
           <Button styleClass="form-button" fx:id="btnAddAuthor" text="+"/>

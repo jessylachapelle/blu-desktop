@@ -242,29 +242,19 @@ public class Book extends Item {
     super.fromJSON(json);
 
     try {
-      if (json.has("editor")) {
-        editor = json.getString("editor");
-      }
+      editor = json.optString("editor", "");
+      publication = json.optString("publication", "");
+      edition = json.optInt("edition", 1);
+      JSONArray authors = json.optJSONArray("author");
+      JSONObject status = json.optJSONObject("status");
 
-      if (json.has("publication")) {
-        publication = json.getString("publication");
-      }
-
-      if (json.has("author")) {
-        JSONArray authors = json.getJSONArray("author");
-
+      if (authors != null) {
         for(int i = 0; i < authors.length(); i++) {
           this.author.add(new Author(authors.getJSONObject(i)));
         }
       }
 
-      if (json.has("edition")) {
-        edition = json.getInt("edition");
-      }
-
-      if (json.has("status")) {
-        JSONObject status = json.getJSONObject("status");
-
+      if (status != null) {
         if (status.has("VALID")) {
           setAdded(status.getString("VALID"));
         }

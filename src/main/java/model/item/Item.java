@@ -340,45 +340,33 @@ public class Item {
 
   public void fromJSON(JSONObject json) {
     try {
-      if (json.has("id")) {
-        id = json.getInt("id");
+      id = json.optInt("id", 0);
+      name = json.optString("name", "");
+      ean13 = json.optString("ean13", "");
+      description = json.optString("comment", "");
+
+      JSONObject subject = json.optJSONObject("subject");
+      JSONArray storage = json.optJSONArray("storage");
+      JSONArray copies = json.optJSONArray("copies");
+      JSONArray reservations = json.optJSONArray("reservation");
+
+      if (subject != null) {
+        this.subject.fromJSON(json.getJSONObject("subject"));
       }
 
-      if (json.has("name")) {
-        name = json.getString("name");
-      }
-
-      if (json.has("subject") && json.get("subject") instanceof JSONObject) {
-        subject.fromJSON(json.getJSONObject("subject"));
-      }
-
-      if (json.has("ean13")) {
-        ean13 = json.getString("ean13");
-      }
-
-      if (json.has("comment")) {
-        description = json.getString("comment");
-      }
-
-      if (json.has("storage")) {
-        JSONArray storage = json.getJSONArray("storage");
-
+      if (storage != null) {
         for (int i = 0; i < storage.length(); i++) {
           this.storage.add(new Storage(storage.getJSONObject(i)));
         }
       }
 
-      if (json.has("copies")) {
-        JSONArray copies = json.getJSONArray("copies");
-
+      if (copies != null) {
         for (int i = 0; i < copies.length(); i++) {
           _addCopy(new Copy(copies.getJSONObject(i)));
         }
       }
 
-      if (json.has("reservation")) {
-        JSONArray reservations = json.getJSONArray("reservation");
-
+      if (reservations != null) {
         for (int i = 0; i < reservations.length(); i++) {
           addReservation(new Reservation(reservations.getJSONObject(i)));
         }
