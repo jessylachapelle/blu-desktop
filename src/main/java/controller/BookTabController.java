@@ -8,10 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import model.item.Book;
-import model.item.Category;
-import model.item.Item;
-import model.item.Subject;
+import model.item.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,13 +53,13 @@ public class BookTabController extends PanelController {
   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
     itemHandler = new ItemHandler();
     authorControllers = new ArrayList<>();
-    addAuthor();
+    _addAuthor();
     updateAuthorButtons();
     _eventHandlers();
     _initCategoryList();
   }
 
-  private void addAuthor() {
+  private void _addAuthor() {
     FXMLLoader loader = new FXMLLoader();
     loader.setLocation(getClass().getClassLoader().getResource("layout/author.fxml"));
 
@@ -74,7 +71,7 @@ public class BookTabController extends PanelController {
     }
   }
 
-  private void removeAuthor(int index) {
+  private void _removeAuthor(int index) {
     if (index >= 0 && index < authorControllers.size()) {
       authorControllers.remove(index);
       authors.getChildren().remove(index);
@@ -82,7 +79,7 @@ public class BookTabController extends PanelController {
   }
 
   private void removeLastAuthor() {
-    removeAuthor(authorControllers.size() - 1);
+    _removeAuthor(authorControllers.size() - 1);
   }
 
   public Button getBtnSave() {
@@ -110,7 +107,17 @@ public class BookTabController extends PanelController {
     txtEditor.setText(book.getEditor());
     txtPublication.setText(book.getPublication());
 
-    // TODO: Set authors
+    cbHasEan13.setSelected(txtEan13.getText().isEmpty());
+
+    for (Author author : book.getAuthors()) {
+      AuthorController controller = authorControllers.get(authorControllers.size() - 1);
+      controller.setAuthorFirstName(author.getFirstName());
+      controller.setAuthorLastName(author.getLastName());
+
+      if (authorControllers.size() != book.getAuthors().size()) {
+        _addAuthor();
+      }
+    }
 
     _selectCategory();
   }
@@ -169,7 +176,7 @@ public class BookTabController extends PanelController {
 
     btnAddAuthor.setOnAction(event -> {
       if (authorControllers.size() < MAX_AUTHOR) {
-        addAuthor();
+        _addAuthor();
         updateAuthorButtons();
       }
     });

@@ -15,7 +15,7 @@ import org.json.JSONObject;
  * @version 1.0
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class AuthorController extends PanelController {
+public class AuthorController implements javafx.fxml.Initializable {
 
   @FXML private TextField txtAuthorFirstName;
   @FXML private TextField txtAuthorLastName;

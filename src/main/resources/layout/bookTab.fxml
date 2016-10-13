@@ -20,8 +20,8 @@
       <VBox fx:id="authors" spacing="10" />
       <AnchorPane>
         <HBox spacing="10" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0">
-          <Button styleClass="form-button" fx:id="btnAddAuthor" text="+"/>
           <Button styleClass="form-button" fx:id="btnRemoveAuthor" text=" -"/>
+          <Button styleClass="form-button" fx:id="btnAddAuthor" text="+"/>
         </HBox>
       </AnchorPane>
     </VBox>
