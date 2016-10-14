@@ -141,9 +141,18 @@ public class BookTabController extends PanelController {
   }
 
   private boolean _canSave() {
+    boolean validAuthors = true;
+
+    for (AuthorController author : authorControllers) {
+      if (author.getAuthorLastName().isEmpty()) {
+        validAuthors = false;
+      }
+    }
+
     return !txtTitle.getText().isEmpty() &&
            !txtEditor.getText().isEmpty() &&
            !txtPublication.getText().isEmpty() &&
+           validAuthors &&
            (!txtEan13.getText().isEmpty() || cbHasEan13.isSelected());
   }
 
