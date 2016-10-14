@@ -1,20 +1,19 @@
 package controller;
 
 import handler.ItemHandler;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import model.item.Category;
+import javafx.scene.layout.Pane;
 import model.item.Item;
-import model.item.Subject;
 import org.json.JSONException;
 import org.json.JSONObject;
 import utility.Dialog;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -25,11 +24,11 @@ import java.util.ResourceBundle;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ItemTabController extends PanelController {
-  private ItemHandler itemHandler = new ItemHandler();
+  private ItemHandler itemHandler;
+  private SubjectController subjectController;
 
+  @FXML private Pane subject;
   @FXML private TextField txtName;
-  @FXML private ComboBox<Category> cbCategories;
-  @FXML private ComboBox<Subject> cbSubjects;
   @FXML private TextField txtEan13;
   @FXML private TextArea txtDescription;
 
@@ -40,7 +39,20 @@ public class ItemTabController extends PanelController {
   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
     itemHandler = new ItemHandler();
     _eventHandlers();
-    _initCategoryList();
+    _initSubjectPane();
+  }
+
+  private void _initSubjectPane() {
+    FXMLLoader loader = new FXMLLoader();
+    loader.setLocation(getClass().getClassLoader().getResource("layout/subject.fxml"));
+
+    try {
+      subject.getChildren().add(loader.load());
+      subjectController = loader.getController();
+      subjectController.init(itemHandler);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   public Button getBtnSave() {
@@ -55,7 +67,7 @@ public class ItemTabController extends PanelController {
     itemHandler.setItem(item);
     txtName.setText(item.getName());
     txtDescription.setText(item.getDescription());
-    _selectCategory();
+    subjectController.selectCategory();
   }
 
   public boolean save() {
@@ -72,7 +84,7 @@ public class ItemTabController extends PanelController {
     try {
       form.put("name", txtName.getText());
       form.put("comment", txtDescription.getText());
-      form.put("subject", cbSubjects.getValue().getId());
+      form.put("subject", subjectController.getSubjectId());
       form.put("ean13", txtEan13.getText());
       form.put("is_book", false);
     } catch (JSONException e) {
@@ -96,37 +108,6 @@ public class ItemTabController extends PanelController {
         Dialog.information("Veuillez remplir tous les champs obligatoires avant de sauvegarder");
       }
     });
-
-    cbCategories.setOnAction(event -> _setSubjectList(cbCategories.getValue()));
-  }
-
-  private void _initCategoryList() {
-    ObservableList<Category> options = FXCollections.observableArrayList(itemHandler.getCategories());
-
-    cbCategories.setItems(options);
-    cbCategories.getSelectionModel().select(0);
-    _setSubjectList(cbCategories.getValue());
-  }
-
-  private void _selectCategory() {
-    for (Category category : cbCategories.getItems()) {
-      if (category.getName().equals(getItem().getSubject().getCategory().getName())) {
-        cbCategories.getSelectionModel().select(category);
-        _setSubjectList(category, getItem().getSubject());
-        return;
-      }
-    }
-  }
-
-  private void _setSubjectList(Category category) {
-    _setSubjectList(category, category.getSubjects().get(0));
-  }
-
-  private void _setSubjectList(Category category, Subject subject) {
-    ObservableList<Subject> options = FXCollections.observableArrayList(category.getSubjects());
-
-    cbSubjects.setItems(options);
-    cbSubjects.getSelectionModel().select(subject);
   }
 
   @Override

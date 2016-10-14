@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import controller.SubjectController?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="controller.BookTabController">
   <VBox spacing="10" styleClass="main">
     <HBox spacing="10">
@@ -42,15 +43,7 @@
       <CheckBox fx:id="cbHasEan13" text="Pas de code"/>
     </HBox>
 
-    <HBox spacing="10">
-      <Label styleClass="form-label" text="Catégorie :"/>
-      <ComboBox fx:id="cbCategories"/>
-    </HBox>
-
-    <HBox spacing="10">
-      <Label styleClass="form-label" text="Matière* :"/>
-      <ComboBox fx:id="cbSubject"/>
-    </HBox>
+    <Pane fx:id="subject" />
 
     <AnchorPane>
       <HBox spacing="10" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0">
