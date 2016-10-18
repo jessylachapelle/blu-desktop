@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import model.member.StudentParent;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import utility.DateParser;
 
@@ -19,7 +18,7 @@ import utility.DateParser;
  * @since 13/07/2016
  * @version 1.1
  */
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Copy {
   private int id;
   private Member member,
@@ -318,38 +317,29 @@ public class Copy {
   }
 
   public void fromJSON(JSONObject json) {
-    try {
-      if (json.has("id")) {
-        id = json.getInt("id");
+    id = json.optInt("id", id);
+    price = json.optDouble("price", price);
+
+    JSONObject member = json.optJSONObject("member");
+    if (member != null) {
+      this.member.fromJSON(member);
+    }
+
+
+    JSONObject item = json.optJSONObject("item");
+    if (item != null) {
+      if (item.optBoolean("is_book", false)) {
+        this.item = new Book(item);
+      } else {
+        this.item = new Item(item);
       }
+    }
 
-      if (json.has("price")) {
-        price = json.getDouble("price");
+    JSONArray transactions = json.optJSONArray("transaction");
+    if (transactions != null) {
+      for(int i = 0; i < transactions.length(); i++) {
+        transaction.add(new Transaction(transactions.getJSONObject(i)));
       }
-
-      if (json.has("member")) {
-        member.fromJSON(json.getJSONObject("member"));
-      }
-
-      if (json.has("item")) {
-        JSONObject itemData = json.getJSONObject("item");
-
-        if (itemData.has("is_book") && itemData.getBoolean("is_book")) {
-          item = new Book(itemData);
-        } else {
-          item = new Item(itemData);
-        }
-      }
-
-      if (json.has("transaction")) {
-        JSONArray transactions = json.getJSONArray("transaction");
-
-        for(int i = 0; i < transactions.length(); i++) {
-          transaction.add(new Transaction(transactions.getJSONObject(i)));
-        }
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
   }
 
@@ -357,20 +347,16 @@ public class Copy {
     JSONObject copy = new JSONObject();
     JSONArray transaction = new JSONArray();
 
-    try {
-      copy.put("id", id);
-      copy.put("price", price);
-      copy.put("member", member.toJSON());
-      copy.put("item", item.toJSON());
+    copy.put("id", id);
+    copy.put("price", price);
+    copy.put("member", member.toJSON());
+    copy.put("item", item.toJSON());
 
-      for (Transaction t : this.transaction) {
-        transaction.put(t.toJSON());
-      }
-
-      copy.put("transaction", transaction);
-    } catch (JSONException e) {
-      e.printStackTrace();
+    for (Transaction t : this.transaction) {
+      transaction.put(t.toJSON());
     }
+
+    copy.put("transaction", transaction);
 
     return copy;
   }

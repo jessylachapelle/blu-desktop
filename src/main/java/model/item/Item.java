@@ -1,7 +1,6 @@
 package model.item;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -339,40 +338,35 @@ public class Item {
   }
 
   public void fromJSON(JSONObject json) {
-    try {
-      id = json.optInt("id", 0);
-      name = json.optString("name", "");
-      ean13 = json.optString("ean13", "");
-      description = json.optString("comment", "");
+    id = json.optInt("id", id);
+    name = json.optString("name", name);
+    ean13 = json.optString("ean13", ean13);
+    description = json.optString("comment", description);
 
-      JSONObject subject = json.optJSONObject("subject");
-      JSONArray storage = json.optJSONArray("storage");
-      JSONArray copies = json.optJSONArray("copies");
-      JSONArray reservations = json.optJSONArray("reservation");
+    JSONObject subject = json.optJSONObject("subject");
+    if (subject != null) {
+      this.subject.fromJSON(json.getJSONObject("subject"));
+    }
 
-      if (subject != null) {
-        this.subject.fromJSON(json.getJSONObject("subject"));
+    JSONArray storage = json.optJSONArray("storage");
+    if (storage != null) {
+      for (int i = 0; i < storage.length(); i++) {
+        this.storage.add(new Storage(storage.getJSONObject(i)));
       }
+    }
 
-      if (storage != null) {
-        for (int i = 0; i < storage.length(); i++) {
-          this.storage.add(new Storage(storage.getJSONObject(i)));
-        }
+    JSONArray copies = json.optJSONArray("copies");
+    if (copies != null) {
+      for (int i = 0; i < copies.length(); i++) {
+        _addCopy(new Copy(copies.getJSONObject(i)));
       }
+    }
 
-      if (copies != null) {
-        for (int i = 0; i < copies.length(); i++) {
-          _addCopy(new Copy(copies.getJSONObject(i)));
-        }
+    JSONArray reservations = json.optJSONArray("reservation");
+    if (reservations != null) {
+      for (int i = 0; i < reservations.length(); i++) {
+        addReservation(new Reservation(reservations.getJSONObject(i)));
       }
-
-      if (reservations != null) {
-        for (int i = 0; i < reservations.length(); i++) {
-          addReservation(new Reservation(reservations.getJSONObject(i)));
-        }
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
   }
 
@@ -382,30 +376,26 @@ public class Item {
     JSONArray copies = new JSONArray();
     JSONArray reservations = new JSONArray();
 
-    try {
-      for (Storage storageUnit : this.storage) {
-        storage.put(storageUnit.toJSON());
-      }
-
-      for (Copy copy : this.copies) {
-        copies.put(copy.toJSON());
-      }
-
-      for (Reservation reservation : this.reservations) {
-        reservations.put(reservation.toJSON());
-      }
-
-      item.put("id", id);
-      item.put("name", name);
-      item.put("subject", subject.toJSON());
-      item.put("ean13", ean13);
-      item.put("description", description);
-      item.put("storage", storage);
-      item.put("copies", copies);
-      item.put("reservations", reservations);
-    } catch (JSONException e) {
-      e.printStackTrace();
+    for (Storage storageUnit : this.storage) {
+      storage.put(storageUnit.toJSON());
     }
+
+    for (Copy copy : this.copies) {
+      copies.put(copy.toJSON());
+    }
+
+    for (Reservation reservation : this.reservations) {
+      reservations.put(reservation.toJSON());
+    }
+
+    item.put("id", id);
+    item.put("name", name);
+    item.put("subject", subject.toJSON());
+    item.put("ean13", ean13);
+    item.put("description", description);
+    item.put("storage", storage);
+    item.put("copies", copies);
+    item.put("reservations", reservations);
 
     return item;
   }

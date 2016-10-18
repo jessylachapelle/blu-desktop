@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
+import model.item.Author;
 import org.json.JSONObject;
 
 /**
@@ -20,8 +21,30 @@ public class AuthorController implements javafx.fxml.Initializable {
   @FXML private TextField txtAuthorFirstName;
   @FXML private TextField txtAuthorLastName;
 
+  private Author author;
+
   @Override
-  public void initialize(URL location, ResourceBundle resources) {}
+  public void initialize(URL location, ResourceBundle resources) {
+    author = new Author();
+  }
+
+  /**
+   * Set the author binded to the controller
+   * @param author The author passed to the controller
+   */
+  public void setAuthor(Author author) {
+    this.author = author;
+    txtAuthorFirstName.setText(author.getFirstName());
+    txtAuthorLastName.setText(author.getLastName());
+  }
+
+  /**
+   * Get the Id of the binded author, 0 if no id
+   * @return The id of the author
+   */
+  public int getId() {
+    return author.getId();
+  }
 
   /**
    * Set the value of the textfield
@@ -67,16 +90,25 @@ public class AuthorController implements javafx.fxml.Initializable {
 
   /**
    * Convert fields to JSON
-   * { "first_name": "", "last_name": "" }
+   * { "id": 0, "first_name": "", "last_name": "" }
    * @return JSONObject
    */
   public JSONObject toJSON() {
-    JSONObject author = new JSONObject();
+    if (!getAuthorFirstName().equals(this.author.getFirstName()) ||
+        !getAuthorLastName().equals(this.author.getLastName())) {
+      JSONObject author = new JSONObject();
 
-    author.put("first_name", getAuthorFirstName());
-    author.put("last_name", getAuthorLastName());
+      if (this.author.getId() != 0) {
+        author.put("id", this.author.getId());
+      }
 
-    return author;
+      author.put("first_name", getAuthorFirstName());
+      author.put("last_name", getAuthorLastName());
+
+      return author;
+    }
+
+    return null;
   }
 
   /**
@@ -84,6 +116,7 @@ public class AuthorController implements javafx.fxml.Initializable {
    * @param author The JSONObject with the author data
    */
   public void fromJSON(JSONObject author) {
+    this.author.fromJSON(author);
     setAuthorFirstName(author.optString("first_name", ""));
     setAuthorLastName(author.optString("last_name", ""));
   }

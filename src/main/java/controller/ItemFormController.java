@@ -40,7 +40,7 @@ public class ItemFormController extends PanelController {
 
   public Item getItem() {
     if (_isBookTab()) {
-      return bookTab.getItem();
+      return bookTab.getBook();
     }
 
     return itemTab.getItem();

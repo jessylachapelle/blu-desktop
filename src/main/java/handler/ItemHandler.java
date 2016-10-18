@@ -191,25 +191,34 @@ public class ItemHandler {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("item", item);
+    data.put("item", item);
 
-      req.put("object", "item");
-      req.put("function", "insert");
-      req.put("data", data);
+    req.put("object", "item");
+    req.put("function", "insert");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data") != null ? res.getJSONObject("data") : new JSONObject();
 
-      if (data.has("id")) {
-        this.item.setId(data.getInt("id"));
-        return true;
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+    item.remove("author");
+    if (item.optBoolean("is_book", false)) {
+      this.item = new Book(item);
+    } else {
+      this.item = new Item(item);
     }
 
-    return false;
+    if (data.optInt("id", 0) > 0) {
+      this.item.setId(data.getInt("id"));
+    }
+
+    JSONArray authorList = data.optJSONArray("author");
+    if (authorList != null) {
+      for (int i = 0; i < authorList.length(); i++) {
+        ((Book) this.item).addAuthor(new Author(authorList.getJSONObject(i)));
+      }
+    }
+
+    return data.optInt("code", 0) == 200;
   }
 
   public void setItem(Item item) {
@@ -220,23 +229,41 @@ public class ItemHandler {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("id", this.item.getId());
-      data.put("item", item);
+    data.put("id", this.item.getId());
+    data.put("item", item);
 
-      req.put("object", "item");
-      req.put("function", "update");
-      req.put("data", data);
+    req.put("object", "item");
+    req.put("function", "update");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
 
-      return data.has("code") && data.getInt("code") == 200;
-    } catch (JSONException e) {
-      e.printStackTrace();
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data") != null ? res.getJSONObject("data") : new JSONObject();
+
+    JSONArray authorList = item.optJSONArray("author");
+    item.remove("author");
+    this.item.fromJSON(item);
+
+    if (authorList != null) {
+      for (int i = 0; i < authorList.length(); i++) {
+        JSONObject author = authorList.getJSONObject(i);
+
+        if (author.has("id") && !author.has("first_name") && !author.has("last_name")) {
+          ((Book) this.item).deleteAuthor(author.getInt("id"));
+        } else if (author.has("id")) {
+          ((Book) this.item).updateAuthor(new Author(author));
+        }
+      }
     }
 
-    return false;
+    authorList = data.optJSONArray("author");
+    if (authorList != null) {
+      for (int i = 0; i < authorList.length(); i++) {
+        ((Book) this.item).setAuthorId(new Author(authorList.getJSONObject(i)));
+      }
+    }
+
+    return data.optInt("code", 0) == 200;
   }
 
   /**

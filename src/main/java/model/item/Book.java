@@ -1,7 +1,6 @@
 package model.item;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import utility.DateParser;
 
@@ -114,6 +113,15 @@ public class Book extends Item {
     return authorString;
   }
 
+  public void setAuthorId(Author author) {
+    for (Author a : this.author) {
+      if (a.getFirstName().equals(author.getFirstName()) && a.getLastName().equals(author.getLastName())) {
+        a.setId(author.getId());
+        return;
+      }
+    }
+  }
+
   /**
    * Supprime un author lié à un ouvrage
    *
@@ -121,6 +129,24 @@ public class Book extends Item {
    */
   public void removeAuthor(int index) {
     author.remove(index);
+  }
+
+  public void deleteAuthor(int id) {
+    for (Author a : author) {
+      if (a.getId() == id) {
+        author.remove(a);
+        return;
+      }
+    }
+  }
+
+  public void updateAuthor(Author author) {
+    for (Author a : this.author) {
+      if (a.getId() == author.getId()) {
+        a = author;
+        return;
+      }
+    }
   }
 
   /**
@@ -241,34 +267,22 @@ public class Book extends Item {
   public void fromJSON(JSONObject json) {
     super.fromJSON(json);
 
-    try {
-      editor = json.optString("editor", "");
-      publication = json.optString("publication", "");
-      edition = json.optInt("edition", 1);
-      JSONArray authors = json.optJSONArray("author");
-      JSONObject status = json.optJSONObject("status");
+    editor = json.optString("editor", editor);
+    publication = json.optString("publication", publication);
+    edition = json.optInt("edition", edition);
 
-      if (authors != null) {
-        for(int i = 0; i < authors.length(); i++) {
-          this.author.add(new Author(authors.getJSONObject(i)));
-        }
+    JSONArray authors = json.optJSONArray("author");
+    if (authors != null) {
+      for(int i = 0; i < authors.length(); i++) {
+        this.author.add(new Author(authors.getJSONObject(i)));
       }
+    }
 
-      if (status != null) {
-        if (status.has("VALID")) {
-          setAdded(status.getString("VALID"));
-        }
-
-        if (status.has("OUTDATED")) {
-          setOutdated(status.getString("OUTDATED"));
-        }
-
-        if (status.has("REMOVED")) {
-          setRemoved(status.getString("REMOVED"));
-        }
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+    JSONObject status = json.optJSONObject("status");
+    if (status != null) {
+      setAdded(status.optString("VALID", ""));
+      setOutdated(status.optString("OUTDATED", ""));
+      setRemoved(status.optString("REMOVED", ""));
     }
   }
 
@@ -277,30 +291,26 @@ public class Book extends Item {
     JSONObject status = new JSONObject();
     JSONArray authors = new JSONArray();
 
-    try {
-      for (Author author : this.author) {
-        authors.put(author.toJSON());
-      }
-
-      status.put("ADDED", DateParser.dateToString(added));
-
-      if (getStatus().equals("OUTDATED")) {
-        status.put("OUTDATED", DateParser.dateToString(outdated));
-      }
-
-      if (getStatus().equals("REMOVED")) {
-        status.put("OUTDATED", DateParser.dateToString(outdated));
-        status.put("REMOVED", DateParser.dateToString(outdated));
-      }
-
-      book.put("editor", editor);
-      book.put("edition", edition);
-      book.put("publication", publication);
-      book.put("author", authors);
-      book.put("status", status);
-    } catch (JSONException e) {
-      e.printStackTrace();
+    for (Author author : this.author) {
+      authors.put(author.toJSON());
     }
+
+    status.put("ADDED", DateParser.dateToString(added));
+
+    if (getStatus().equals("OUTDATED")) {
+      status.put("OUTDATED", DateParser.dateToString(outdated));
+    }
+
+    if (getStatus().equals("REMOVED")) {
+      status.put("OUTDATED", DateParser.dateToString(outdated));
+      status.put("REMOVED", DateParser.dateToString(outdated));
+    }
+
+    book.put("editor", editor);
+    book.put("edition", edition);
+    book.put("publication", publication);
+    book.put("author", authors);
+    book.put("status", status);
 
     return book;
   }

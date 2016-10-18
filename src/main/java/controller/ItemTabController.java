@@ -9,7 +9,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import model.item.Item;
-import org.json.JSONException;
 import org.json.JSONObject;
 import utility.Dialog;
 
@@ -81,21 +80,35 @@ public class ItemTabController extends PanelController {
   private JSONObject _toJSON() {
     JSONObject form = new JSONObject();
 
-    try {
+    if (!txtName.getText().equals(getItem().getName())) {
       form.put("name", txtName.getText());
-      form.put("comment", txtDescription.getText());
-      form.put("subject", subjectController.getSubjectId());
-      form.put("ean13", txtEan13.getText());
-      form.put("is_book", false);
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
+
+    if (!txtDescription.getText().equals(getItem().getDescription())) {
+      form.put("comment", txtDescription.getText());
+    }
+
+    if (!txtEan13.getText().equals(getItem().getEan13())) {
+      form.put("ean13", txtEan13.getText());
+    }
+
+    if (getItem().getSubject().getId() != subjectController.getSubjectId()) {
+      form.put("subject", subjectController.getSubjectId());
+    }
+
+    form.put("is_book", false);
 
     return form;
   }
 
   private void _eventHandlers() {
-    btnCancel.setOnAction(event -> ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem()));
+    btnCancel.setOnAction(event -> {
+      if (getItem().getId() != 0) {
+        ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem());
+      } else {
+        loadMainPanel("layout/search.fxml");
+      }
+    });
 
     btnSave.setOnAction(event -> {
       if (_canSave()) {
