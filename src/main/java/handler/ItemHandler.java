@@ -33,6 +33,10 @@ public class ItemHandler {
     }
   }
 
+  public void initBook() {
+    item = new Book();
+  }
+
   public boolean updateComment(int id, String comment) {
     JSONObject json = new JSONObject();
     JSONObject data = new JSONObject();

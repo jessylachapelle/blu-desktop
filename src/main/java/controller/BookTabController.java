@@ -51,6 +51,7 @@ public class BookTabController extends PanelController {
   @Override
   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
     itemHandler = new ItemHandler();
+    itemHandler.initBook();
     authorControllers = new ArrayList<>();
     deletedAuthors = new ArrayList<>();
     _addAuthor();
