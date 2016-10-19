@@ -1,7 +1,6 @@
 package model.item;
 
 import model.member.StudentParent;
-import org.json.JSONException;
 import org.json.JSONObject;
 import utility.DateParser;
 
@@ -78,44 +77,37 @@ public class Reservation {
   }
 
   public void fromJSON(JSONObject reservation) {
-    try {
-      if (reservation.has("member")) {
-        member.fromJSON(reservation.getJSONObject("member"));
-      }
+    if (reservation.has("date")) {
+      date = DateParser.dateFromString(reservation.getString("date"));
+    }
 
-      if (reservation.has("date")) {
-        date = DateParser.dateFromString(reservation.getString("date"));
-      }
+    JSONObject member = reservation.optJSONObject("member");
+    if (member != null) {
+      this.member.fromJSON(member);
+    }
 
-      if (reservation.has("copy")) {
-        copy.fromJSON(reservation.getJSONObject("copy"));
-      }
+    JSONObject copy = reservation.optJSONObject("copy");
+    if (copy != null) {
+      this.copy.fromJSON(copy);
+    }
 
-      if (reservation.has("item")) {
-        JSONObject item = reservation.getJSONObject("item");
-
-        if (item.has("is_book") && item.getBoolean("is_book")) {
-          this.item = new Book(item);
-        } else {
-          this.item = new Item(item);
-        }
+    JSONObject item = reservation.optJSONObject("item");
+    if (item != null) {
+      if (item.optBoolean("is_book", false)) {
+        this.item = new Book(item);
+      } else {
+        this.item = new Item(item);
       }
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
   }
 
   public JSONObject toJSON() {
     JSONObject reservation = new JSONObject();
 
-    try {
-      reservation.put("member", member.toJSON());
-      reservation.put("date", DateParser.dateToString(date));
-      reservation.put("item", item.toJSON());
-      reservation.put("copy", copy.toJSON());
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+    reservation.put("member", member.toJSON());
+    reservation.put("date", DateParser.dateToString(date));
+    reservation.put("item", item.toJSON());
+    reservation.put("copy", copy.toJSON());
 
     return reservation;
   }

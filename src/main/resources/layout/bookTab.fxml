@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import controller.SubjectController?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="controller.BookTabController">
   <VBox spacing="10" styleClass="main">
     <HBox spacing="10">
@@ -15,18 +16,13 @@
       <TextField fx:id="txtEdition"/>
     </HBox>
 
-    <VBox fx:id="authors" spacing="10">
+    <VBox spacing="10">
       <Label styleClass="h3" text="Auteur"/>
-      <HBox spacing="10">
-        <Label styleClass="form-label" text="Prénom :"/>
-        <TextField fx:id="txtAuthorFirstName"/>
-        <Label text="Nom* :"/>
-        <TextField fx:id="txtAuthorLastName"/>
-      </HBox>
+      <VBox fx:id="authors" spacing="10" />
       <AnchorPane>
         <HBox spacing="10" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0">
-          <Button styleClass="form-button" fx:id="btnAddAuthor" text="+"/>
           <Button styleClass="form-button" fx:id="btnRemoveAuthor" text=" -"/>
+          <Button styleClass="form-button" fx:id="btnAddAuthor" text="+"/>
         </HBox>
       </AnchorPane>
     </VBox>
@@ -47,15 +43,7 @@
       <CheckBox fx:id="cbHasEan13" text="Pas de code"/>
     </HBox>
 
-    <HBox spacing="10">
-      <Label styleClass="form-label" text="Catégorie :"/>
-      <ComboBox fx:id="cbCategories"/>
-    </HBox>
-
-    <HBox spacing="10">
-      <Label styleClass="form-label" text="Matière* :"/>
-      <ComboBox fx:id="cbSubject"/>
-    </HBox>
+    <Pane fx:id="subject" />
 
     <AnchorPane>
       <HBox spacing="10" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0">

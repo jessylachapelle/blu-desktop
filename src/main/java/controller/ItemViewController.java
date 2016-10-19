@@ -241,18 +241,18 @@ public class ItemViewController extends PanelController {
         cancel.setOnAction(e -> {
           // TODO: Handle reservations
 //          if (copy.getId() == 0) {
-//            itemHandler.deleteReservation(copy.getParent().getNo(), getItem().getId());
-//            getItem().getReserved().remove(copy);
+//            itemHandler.deleteReservation(copy.getParent().getNo(), getBook().getId());
+//            getBook().getReserved().remove(copy);
 //          } else {
 //            itemHandler.deleteReservation(copy.getId());
-//            getItem().getReserved().remove(copy);
+//            getBook().getReserved().remove(copy);
 //
 //            for (int noTransaction = 0; noTransaction < copy.getAllTransactions().size(); noTransaction++) {
 //              if (copy.getAllTransactions().get(noTransaction).getType().equals("RESERVE")) {
 //                copy.getAllTransactions().remove(noTransaction);
 //              }
 //            }
-//            getItem().getCopies().add(copy);
+//            getBook().getCopies().add(copy);
 //          }
 //
 //          _displayCopies();

@@ -9,23 +9,34 @@ import org.json.JSONObject;
  * @author Jessy Lachapelle
  * @since 12/07/2016
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Author {
-  String firstName;
-  String lastName;
+  private int id;
+  private String firstName;
+  private String lastName;
 
   public Author() {
+    id = 0;
     firstName = "";
     lastName = "";
   }
 
-  public Author(String firstName, String lastName) {
+  public Author(int id, String firstName, String lastName) {
+    this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
   }
 
   public Author(JSONObject author) {
     fromJSON(author);
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   public String getFirstName() {
@@ -48,6 +59,7 @@ public class Author {
     JSONObject author = new JSONObject();
 
     try {
+      author.put("id", id);
       author.put("first_name", firstName);
       author.put("last_name", lastName);
     } catch (JSONException e) {
@@ -58,17 +70,9 @@ public class Author {
   }
 
   public void fromJSON(JSONObject author) {
-    try {
-      if (author.has("first_name")) {
-        setFirstName(author.getString("first_name"));
-      }
-
-      if (author.has("last_name")) {
-        setLastName(author.getString("last_name"));
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+    id = author.optInt("id", id);
+    firstName = author.optString("first_name", firstName);
+    lastName = author.optString("last_name", lastName);
   }
 
   @Override
