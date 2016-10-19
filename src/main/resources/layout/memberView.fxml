@@ -4,6 +4,7 @@
 <?import javafx.scene.layout.*?>
 
 
+<?import javafx.scene.web.WebView?>
 <Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controller.MemberViewController">
   <ScrollPane prefHeight="900">
@@ -108,12 +109,7 @@
 
       <VBox styleClass="section" spacing="10">
         <Label styleClass="h2" text="Statistiques"/>
-        <TableView fx:id="tblStats">
-          <columns>
-            <TableColumn prefWidth="285.0" text="C1"/>
-            <TableColumn prefWidth="285.0" text="C2"/>
-          </columns>
-        </TableView>
+        <WebView fx:id="statistics" />
       </VBox>
 
       <!-- Member's copies -->

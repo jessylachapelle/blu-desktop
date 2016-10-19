@@ -13,6 +13,8 @@ import javafx.scene.Node;
 import handler.MemberHandler;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import model.item.Book;
 import model.item.Copy;
 import model.member.Comment;
@@ -56,6 +58,8 @@ public class MemberViewController extends PanelController {
   @FXML private Button btnAddReservation;
   @FXML private TableView tblReservation;
 
+  @FXML private WebView statistics;
+
   @FXML private TableView<Copy> tblAvailable;
   @FXML private TableColumn<Copy, String> colAvailableTitle;
   @FXML private TableColumn<Copy, String> colAvailableEditor;
@@ -86,6 +90,8 @@ public class MemberViewController extends PanelController {
   public void initialize(URL location, ResourceBundle resources) {
     memberHandler = new MemberHandler();
     initI18n();
+    WebEngine engine = statistics.getEngine();
+    engine.load(URL);
     _eventHandlers();
     _dataBinding();
   }
