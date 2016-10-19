@@ -35,23 +35,25 @@ public class APIConnector {
   public static JSONObject call(JSONObject req) {
     try {
       URL url = new URL(API_URL);
-      addAPIKey(req);
 
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("POST");
+      connection.setRequestProperty("X-Authorization", API_KEY);
       connection.setDoInput(true);
       connection.setDoOutput(true);
 
       String jsonData = "req=" + req.toString();
-      System.out.println(jsonData);
       PrintWriter vars = new PrintWriter(connection.getOutputStream());
-      vars.println(jsonData);
+
+      vars.print(jsonData);
       vars.close();
 
       BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
       String response = bufferedReader.readLine();
       bufferedReader.close();
+      connection.disconnect();
 
+      System.out.println(jsonData);
       System.out.println(response + '\n');
       return new JSONObject(response);
     } catch (MalformedURLException e) {
@@ -61,14 +63,6 @@ public class APIConnector {
       return error(404, "NOT_FOUND");
     } catch (IOException | JSONException e) {
       return error(500, "INTERNAL_SERVER_ERROR");
-    }
-  }
-
-  private static void addAPIKey(JSONObject req) {
-    try {
-      req.put("apikey", API_KEY);
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
   }
 

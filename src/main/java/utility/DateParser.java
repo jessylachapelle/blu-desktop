@@ -10,6 +10,10 @@ import java.util.Date;
 @SuppressWarnings("deprecation")
 public class DateParser {
   public static Date dateFromString(String dateString) {
+    if (dateString.isEmpty()) {
+     return null;
+    }
+
     Date date = new Date();
 
     String year = dateString.substring(0, 4);

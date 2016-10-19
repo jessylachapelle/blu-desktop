@@ -1,6 +1,5 @@
 package model.item;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -72,28 +71,21 @@ public class Subject {
    * @param json JSON formatted data
    */
   public void fromJSON(JSONObject json) {
-    try {
-      id = json.optInt("id");
-      name = json.optString("name");
+    id = json.optInt("id", id);
+    name = json.optString("name", name);
 
-      JSONObject category = json.optJSONObject("category");
-      if (category != null) {
-        this.category.fromJSON(category);
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+    JSONObject category = json.optJSONObject("category");
+    if (category != null) {
+      this.category.fromJSON(category);
     }
   }
 
   public JSONObject toJSON() {
     JSONObject subject = new JSONObject();
-    try {
-      subject.put("id", id);
-      subject.put("name", name);
-      subject.put("category", category);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+
+    subject.put("id", id);
+    subject.put("name", name);
+    subject.put("category", category);
 
     return subject;
   }

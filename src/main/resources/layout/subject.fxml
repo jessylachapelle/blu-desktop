@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="controller.SubjectController">
+  <VBox spacing="10">
+    <HBox spacing="10">
+      <Label styleClass="form-label" text="Catégorie :"/>
+      <ComboBox fx:id="cbCategories"/>
+    </HBox>
+
+    <HBox spacing="10">
+      <Label styleClass="form-label" text="Matière* :"/>
+      <ComboBox fx:id="cbSubject"/>
+    </HBox>
+  </VBox>
+</Pane>

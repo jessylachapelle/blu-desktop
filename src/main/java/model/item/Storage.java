@@ -1,7 +1,6 @@
 package model.item;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
  * @author Jessy Lachapelle
  * @since 13/07/2016
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Storage {
   private String code;
   private ArrayList<Item> content;
@@ -104,21 +103,14 @@ public class Storage {
     content.clear();
   }
 
-  public void fromJSON(JSONObject json) {
-    try {
-      if (json.has("code")) {
-        code = json.getString("code");
-      }
+  public void fromJSON(JSONObject storage) {
+    code = storage.optString("code", code);
 
-      if (json.has("content")) {
-        JSONArray contents = json.getJSONArray("content");
-
-        for(int i = 0; i < contents.length(); i++) {
-          content.add(new Item(contents.getJSONObject(i)));
-        }
+    JSONArray content = storage.optJSONArray("content");
+    if (content != null) {
+      for(int i = 0; i < content.length(); i++) {
+        this.content.add(new Item(content.getJSONObject(i)));
       }
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
   }
 
@@ -126,17 +118,13 @@ public class Storage {
     JSONObject storage = new JSONObject();
     JSONArray content = new JSONArray();
 
-    try {
-      storage.put("code", code);
+    storage.put("code", code);
 
-      for (Item item : this.content) {
-        content.put(item.toJSON());
-      }
-
-      storage.put("content", content);
-    } catch (JSONException e) {
-      e.printStackTrace();
+    for (Item item : this.content) {
+      content.put(item.toJSON());
     }
+
+    storage.put("content", content);
 
     return storage;
   }

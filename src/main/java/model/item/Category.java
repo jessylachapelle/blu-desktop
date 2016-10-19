@@ -1,7 +1,6 @@
 package model.item;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -51,44 +50,36 @@ public class Category {
   }
 
   public void fromJSON(JSONObject category) {
-    try {
-      id = category.optInt("id");
-      name = category.optString("name");
+    id = category.optInt("id", id);
+    name = category.optString("name", name);
 
-      JSONArray subjects = category.optJSONArray("subject");
-      if (subjects != null) {
-        for (int i = 0; i < subjects.length(); i++) {
-          this.subjects.add(new Subject(subjects.getJSONObject(i)));
-        }
+    JSONArray subjects = category.optJSONArray("subject");
+    if (subjects != null) {
+      for (int i = 0; i < subjects.length(); i++) {
+        this.subjects.add(new Subject(subjects.getJSONObject(i)));
       }
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
   }
 
   public JSONObject toJSON() {
     JSONObject category = new JSONObject();
 
-    try {
-      if (id > 0) {
-        category.put("id", id);
+    if (id > 0) {
+      category.put("id", id);
+    }
+
+    if (!name.isEmpty()) {
+      category.put("name", name);
+    }
+
+    if (subjects.size() > 0) {
+      JSONArray subjects = new JSONArray();
+
+      for (Subject subject : this.subjects) {
+        subjects.put(subject.toJSON());
       }
 
-      if (!name.isEmpty()) {
-        category.put("name", name);
-      }
-
-      if (subjects.size() > 0) {
-        JSONArray subjects = new JSONArray();
-
-        for (Subject subject : this.subjects) {
-          subjects.put(subject.toJSON());
-        }
-
-        category.put("subject", subjects);
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+      category.put("subject", subjects);
     }
 
     return category;

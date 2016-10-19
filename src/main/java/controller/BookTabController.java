@@ -1,17 +1,18 @@
 package controller;
 
 import handler.ItemHandler;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import model.item.Book;
-import model.item.Category;
-import model.item.Item;
-import model.item.Subject;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import model.item.*;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -23,7 +24,6 @@ import java.util.ResourceBundle;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class BookTabController extends PanelController {
-  private ItemHandler itemHandler;
 
   @FXML private TextField txtTitle;
   @FXML private TextField txtEdition;
@@ -31,32 +31,81 @@ public class BookTabController extends PanelController {
   @FXML private TextField txtPublication;
   @FXML private TextField txtEan13;
   @FXML private CheckBox cbHasEan13;
-  @FXML private TextArea txtComment;
-  @FXML private ComboBox<Subject> cbSubject;
-  @FXML private ComboBox<Category> cbCategories;
+  @FXML private Pane subject;
 
+  @FXML private VBox authors;
   @FXML private Button btnRemoveAuthor;
   @FXML private Button btnAddAuthor;
-  @FXML private TextField txtAuthorFirstName;
-  @FXML private TextField txtAuthorLastName;
 
   @FXML private Button btnCancel;
   @FXML private Button btnSave;
 
+  private ItemHandler itemHandler;
+  private ArrayList<AuthorController> authorControllers;
+  private ArrayList<Integer> deletedAuthors;
+  private SubjectController subjectController;
+
+  final private int MIN_AUTHOR = 1;
+  final private int MAX_AUTHOR = 5;
 
   @Override
   public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
     itemHandler = new ItemHandler();
+    itemHandler.initBook();
+    authorControllers = new ArrayList<>();
+    deletedAuthors = new ArrayList<>();
+    _addAuthor();
+    updateAuthorButtons();
     _eventHandlers();
-    _initCategoryList();
+    _initSubjectPane();
+  }
+
+  private void _initSubjectPane() {
+    FXMLLoader loader = new FXMLLoader();
+    loader.setLocation(getClass().getClassLoader().getResource("layout/subject.fxml"));
+
+    try {
+      subject.getChildren().add(loader.load());
+      subjectController = loader.getController();
+      subjectController.init(itemHandler);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void _addAuthor() {
+    FXMLLoader loader = new FXMLLoader();
+    loader.setLocation(getClass().getClassLoader().getResource("layout/author.fxml"));
+
+    try {
+      authors.getChildren().add(loader.load());
+      authorControllers.add(loader.getController());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void _removeAuthor(int index) {
+    if (index >= 0 && index < authorControllers.size()) {
+      int id = authorControllers.remove(index).getId();
+      authors.getChildren().remove(index);
+
+      if (id > 0) {
+        deletedAuthors.add(id);
+      }
+    }
+  }
+
+  private void removeLastAuthor() {
+    _removeAuthor(authorControllers.size() - 1);
   }
 
   public Button getBtnSave() {
     return btnSave;
   }
 
-  public Item getItem() {
-    return itemHandler.getItem();
+  public Book getBook() {
+    return (Book)itemHandler.getItem();
   }
 
   public void loadItem(String ean13) {
@@ -64,13 +113,32 @@ public class BookTabController extends PanelController {
     item.setEan13(ean13);
     itemHandler.setItem(item);
     txtEan13.setText(ean13);
+    cbHasEan13.setDisable(true);
   }
 
-  public void loadItem(Item item) {
-    // TODO: Set all fields
-    itemHandler.setItem(item);
-    txtTitle.setText(item.getName());
-    _selectCategory();
+  public void loadItem(Book book) {
+    itemHandler.setItem(book);
+
+    txtTitle.setText(book.getName());
+    txtEan13.setText(book.getEan13());
+    txtEdition.setText(Integer.toString(book.getEdition()));
+    txtEditor.setText(book.getEditor());
+    txtPublication.setText(book.getPublication());
+
+    cbHasEan13.setDisable(!txtEan13.getText().isEmpty());
+    cbHasEan13.setSelected(txtEan13.getText().isEmpty());
+    txtEan13.setDisable(txtEan13.getText().isEmpty());
+
+    for (Author author : book.getAuthors()) {
+      AuthorController controller = authorControllers.get(authorControllers.size() - 1);
+      controller.setAuthor(author);
+
+      if (authorControllers.size() != book.getAuthors().size()) {
+        _addAuthor();
+      }
+    }
+
+    subjectController.selectCategory();
   }
 
   public boolean save() {
@@ -78,17 +146,64 @@ public class BookTabController extends PanelController {
   }
 
   private boolean _canSave() {
-    // TODO: Check mandatory fields
-    return !txtTitle.getText().isEmpty();
+    boolean validAuthors = true;
+
+    for (AuthorController author : authorControllers) {
+      if (author.getAuthorLastName().isEmpty()) {
+        validAuthors = false;
+      }
+    }
+
+    return !txtTitle.getText().isEmpty() &&
+           !txtEditor.getText().isEmpty() &&
+           !txtPublication.getText().isEmpty() &&
+           validAuthors &&
+           (!txtEan13.getText().isEmpty() || cbHasEan13.isSelected());
   }
 
   private JSONObject _toJSON() {
-    // TODO: Complete field extraction
     JSONObject form = new JSONObject();
+    JSONArray authorArray = new JSONArray();
 
     try {
-      form.put("name", txtTitle.getText());
-      form.put("subject", cbSubject.getValue().getId());
+      for (AuthorController authorController : authorControllers) {
+        JSONObject author = authorController.toJSON();
+        if (author != null) {
+          authorArray.put(author);
+        }
+      }
+
+      for (int id : deletedAuthors) {
+        JSONObject author = new JSONObject();
+        author.put("id", id);
+        authorArray.put(author);
+      }
+
+      if (!txtTitle.getText().equals(getBook().getName())) {
+        form.put("name", txtTitle.getText());
+      }
+
+      if (!txtEdition.getText().equals(Integer.toString(getBook().getEdition()))) {
+        form.put("edition", txtEdition.getText());
+      }
+
+      if (!txtPublication.getText().equals(getBook().getPublication())) {
+        form.put("publication", txtPublication.getText());
+      }
+
+      if (!txtEditor.getText().equals(getBook().getEditor())) {
+        form.put("editor", txtEditor.getText());
+      }
+
+      if (!txtEan13.getText().equals(getBook().getEan13())) {
+        form.put("ean13", txtEan13.getText());
+      }
+
+      if (getBook().getSubject().getId() != subjectController.getSubjectId()) {
+        form.put("subject", subjectController.getSubjectId());
+      }
+
+      form.put("author", authorArray);
       form.put("is_book", true);
     } catch (JSONException e) {
       e.printStackTrace();
@@ -98,7 +213,13 @@ public class BookTabController extends PanelController {
   }
 
   private void _eventHandlers() {
-    btnCancel.setOnAction(event -> ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem()));
+    btnCancel.setOnAction(event -> {
+      if (itemHandler.getItem().getId() != 0) {
+        ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem());
+      } else {
+        loadMainPanel("layout/search.fxml");
+      }
+    });
 
     btnSave.setOnAction(event -> {
       if (_canSave()) {
@@ -112,36 +233,27 @@ public class BookTabController extends PanelController {
       }
     });
 
-    cbCategories.setOnAction(event -> _setSubjectList(cbCategories.getValue()));
-  }
-
-  private void _initCategoryList() {
-    ObservableList<Category> options = FXCollections.observableArrayList(itemHandler.getCategories());
-
-    cbCategories.setItems(options);
-    cbCategories.getSelectionModel().select(0);
-    _setSubjectList(cbCategories.getValue());
-  }
-
-  private void _selectCategory() {
-    for (Category category : cbCategories.getItems()) {
-      if (category.getName().equals(getItem().getSubject().getCategory().getName())) {
-        cbCategories.getSelectionModel().select(category);
-        _setSubjectList(category, getItem().getSubject());
-        return;
+    btnAddAuthor.setOnAction(event -> {
+      if (authorControllers.size() < MAX_AUTHOR) {
+        _addAuthor();
+        updateAuthorButtons();
       }
-    }
+    });
+
+    btnRemoveAuthor.setOnAction(event -> {
+      if (authorControllers.size() > MIN_AUTHOR) {
+        removeLastAuthor();
+        updateAuthorButtons();
+      }
+    });
+
+    cbHasEan13.setOnAction(e -> txtEan13.setDisable(cbHasEan13.isSelected()));
+    txtEan13.setOnKeyReleased(e -> cbHasEan13.setDisable(!txtEan13.getText().isEmpty()));
   }
 
-  private void _setSubjectList(Category category) {
-    _setSubjectList(category, category.getSubjects().get(0));
-  }
-
-  private void _setSubjectList(Category category, Subject subject) {
-    ObservableList<Subject> options = FXCollections.observableArrayList(category.getSubjects());
-
-    cbSubject.setItems(options);
-    cbSubject.getSelectionModel().select(subject);
+  private void updateAuthorButtons() {
+    btnAddAuthor.setVisible(authorControllers.size() < MAX_AUTHOR);
+    btnRemoveAuthor.setVisible(authorControllers.size() > MIN_AUTHOR);
   }
 
   @Override
