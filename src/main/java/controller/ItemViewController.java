@@ -9,10 +9,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import model.item.Book;
 import model.item.Copy;
 import model.item.Item;
 import model.item.Storage;
+import org.json.JSONObject;
 import utility.Dialog;
 
 import java.net.URL;
@@ -30,6 +33,7 @@ import java.util.ResourceBundle;
 @SuppressWarnings({"unused", "WeakerAccess", "unchecked"})
 public class ItemViewController extends PanelController {
   private ItemHandler itemHandler;
+  private WebEngine webEngine;
 
   @FXML private Label lblTitle;
   @FXML private Label lblDescription;
@@ -47,7 +51,7 @@ public class ItemViewController extends PanelController {
   @FXML private Label lblStorage;
   @FXML private Button btnReserve;
 
-  @FXML private TableView<?> tblItemStatistics;
+  @FXML private WebView statistics;
 
   @FXML private Button btnDisplayReservations;
   @FXML private TableView<Copy> tblReservations;
@@ -88,6 +92,9 @@ public class ItemViewController extends PanelController {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     itemHandler = new ItemHandler();
+    webEngine = statistics.getEngine();
+    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
+    webEngine.load(url.toExternalForm());
     _eventHandlers();
     _dataBinding();
   }
@@ -419,6 +426,7 @@ public class ItemViewController extends PanelController {
     }
 
     _displayCopies();
+    _displayStats();
   }
 
   private void _updatePrice(Copy copy) {
@@ -468,5 +476,11 @@ public class ItemViewController extends PanelController {
     tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
     tblSold.setVisible(!tblSold.getItems().isEmpty());
     tblPaid.setVisible(!tblPaid.getItems().isEmpty());
+  }
+
+  private void _displayStats() {
+    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
+    JSONObject stats = getItem().getStats();
+    webEngine.load(url.toExternalForm() + "?data=" + stats.toString());
   }
 }
