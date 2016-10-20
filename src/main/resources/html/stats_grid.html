@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
     <style>
+      html {
+        background-color: #cad6c1;
+      }
+
       table {
+        margin: auto;
         border-collapse: collapse;
       }
 
       td {
         text-align: center;
         padding: 15px;
-        border: 1px black solid;
+        border: 1px #000 solid;
       }
 
       .title {
@@ -23,24 +29,33 @@
         <td colspan="3" class="title">Mise en Vente</td>
       </tr>
       <tr>
-        <td colspan="3">0 livres<br/>(0 $)</td>
+        <td id="total" colspan="3"></td>
       </tr>
       <tr>
         <td colspan="2" class="title">Vendu</td>
         <td class="title">À vendre</td>
       </tr>
       <tr>
-        <td colspan="2">0 livres<br/>(0 $)</td>
-        <td rowspan="3">0 livres<br/>(0 $)</td>
+        <td id="sold" colspan="2"></td>
+        <td id="stock" rowspan="3"></td>
       </tr>
       <tr>
         <td class="title">À Rembourser</td>
         <td class="title">Remboursé</td>
       </tr>
       <tr>
-        <td>0 livres<br/>(0 $)</td>
-        <td>0 livres<br/>(0 $)</td>
+        <td id="unpaid"></td>
+        <td id="paid"></td>
       </tr>
     </table>
+    <script>
+      if (location.search.length) {
+        const stats = JSON.parse(location.search.replace('?data=', '').replace(/%22/g, '"'));
+        Object.keys(stats).forEach(function (state) {
+          const data = stats[state].quantity + ' livres<br/>(' + stats[state].amount + ' $)';
+          document.getElementById(state).innerHTML = data;
+        });
+      }
+    </script>
   </body>
 </html>

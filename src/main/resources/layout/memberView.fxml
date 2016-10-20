@@ -109,7 +109,7 @@
 
       <VBox styleClass="section" spacing="10">
         <Label styleClass="h2" text="Statistiques"/>
-        <WebView fx:id="statistics" />
+        <WebView fx:id="statistics" prefHeight="375" />
       </VBox>
 
       <!-- Member's copies -->

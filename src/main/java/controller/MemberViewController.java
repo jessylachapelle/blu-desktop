@@ -1,6 +1,7 @@
 package controller;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
@@ -20,6 +21,8 @@ import model.item.Copy;
 import model.member.Comment;
 import model.member.Member;
 import model.member.StudentParent;
+import org.json.JSONObject;
+import sun.font.Script;
 import utility.Dialog;
 
 /**
@@ -85,13 +88,15 @@ public class MemberViewController extends PanelController {
   @FXML private TableColumn<Copy, String> colPaidPrice;
 
   private MemberHandler memberHandler;
+  private WebEngine webEngine;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     memberHandler = new MemberHandler();
     initI18n();
-    WebEngine engine = statistics.getEngine();
-    engine.load(URL);
+    webEngine = statistics.getEngine();
+    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
+    webEngine.load(url.toExternalForm());
     _eventHandlers();
     _dataBinding();
   }
@@ -431,6 +436,12 @@ public class MemberViewController extends PanelController {
     tblPaid.setVisible(!tblPaid.getItems().isEmpty());
   }
 
+  private void _displayStats() {
+    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
+    JSONObject stats = getMember().getAccount().getStats();
+    webEngine.load(url.toExternalForm() + "?data=" + stats.toString());
+  }
+
   private void _displayMember() {
     reservation.setVisible(getMember() instanceof StudentParent);
 
@@ -450,5 +461,6 @@ public class MemberViewController extends PanelController {
     _displayAccount();
     _displayComment();
     _displayCopies();
+    _displayStats();
   }
 }
