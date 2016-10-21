@@ -381,4 +381,36 @@ public class Account {
 
     return account;
   }
+
+  public JSONObject getStats() {
+    JSONObject data;
+    JSONObject stats = new JSONObject();
+
+    data = new JSONObject();
+    data.put("amount", amountPaid());
+    data.put("quantity", quantityPaid());
+    stats.put("paid", data);
+
+    data = new JSONObject();
+    data.put("amount", amountAvailable());
+    data.put("quantity", quantityAvailable());
+    stats.put("stock", data);
+
+    data = new JSONObject();
+    data.put("amount", amountSold());
+    data.put("quantity", quantitySold());
+    stats.put("unpaid", data);
+
+    data = new JSONObject();
+    data.put("amount", amountSold() + amountPaid());
+    data.put("quantity", quantitySold() + quantityPaid());
+    stats.put("sold", data);
+
+    data = new JSONObject();
+    data.put("amount", amountPaid() + amountAvailable() + amountSold());
+    data.put("quantity", copies.size());
+    stats.put("total", data);
+
+    return stats;
+  }
 }

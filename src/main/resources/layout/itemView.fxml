@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.web.WebView?>
 <Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
       fx:controller="controller.ItemViewController">
   <ScrollPane prefHeight="1200">
@@ -82,15 +83,24 @@
         <Button styleClass="form-button" fx:id="btnReserve" text="Faire une réservation"/>
       </VBox>
 
-      <VBox spacing="10" styleClass="section">
-        <Label styleClass="h2" text="Statistiques"/>
-        <TableView fx:id="tblItemStatistics">
-          <columns>
-            <TableColumn prefWidth="263.0" text="C1"/>
-            <TableColumn prefWidth="305.0" text="C2"/>
-          </columns>
-        </TableView>
-      </VBox>
+      <Label styleClass="h2" text="Statistiques"/>
+      <HBox styleClass="section" spacing="10">
+        <VBox spacing="10">
+          <HBox spacing="10">
+            <Label>Prix maximum :</Label>
+            <Label fx:id="lblMaximum" />
+          </HBox>
+          <HBox spacing="10">
+            <Label>Prix moyen :</Label>
+            <Label fx:id="lblAverage" />
+          </HBox>
+          <HBox spacing="10">
+            <Label>Prix minimum :</Label>
+            <Label fx:id="lblMinimum" />
+          </HBox>
+        </VBox>
+        <WebView fx:id="statistics" prefHeight="375" />
+      </HBox>
 
       <Button fx:id="btnDisplayReservations" text="Réservation  v"/>
       <TableView fx:id="tblReservations">

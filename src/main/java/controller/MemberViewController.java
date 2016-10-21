@@ -13,11 +13,14 @@ import javafx.scene.Node;
 import handler.MemberHandler;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import model.item.Book;
 import model.item.Copy;
 import model.member.Comment;
 import model.member.Member;
 import model.member.StudentParent;
+import org.json.JSONObject;
 import utility.Dialog;
 
 /**
@@ -26,7 +29,7 @@ import utility.Dialog;
  * @since 2016/07/24
  * @version 1.0
  */
-@SuppressWarnings({"WeakerAccess", "unchecked"})
+@SuppressWarnings({"WeakerAccess", "unchecked", "ConstantConditions"})
 public class MemberViewController extends PanelController {
   @FXML private Button btnUpdate;
   @FXML private Button btnDelete;
@@ -56,6 +59,8 @@ public class MemberViewController extends PanelController {
   @FXML private Button btnAddReservation;
   @FXML private TableView tblReservation;
 
+  @FXML private WebView statistics;
+
   @FXML private TableView<Copy> tblAvailable;
   @FXML private TableColumn<Copy, String> colAvailableTitle;
   @FXML private TableColumn<Copy, String> colAvailableEditor;
@@ -81,11 +86,15 @@ public class MemberViewController extends PanelController {
   @FXML private TableColumn<Copy, String> colPaidPrice;
 
   private MemberHandler memberHandler;
+  private WebEngine webEngine;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     memberHandler = new MemberHandler();
     initI18n();
+    webEngine = statistics.getEngine();
+    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
+    webEngine.load(url.toExternalForm());
     _eventHandlers();
     _dataBinding();
   }
@@ -423,6 +432,14 @@ public class MemberViewController extends PanelController {
     tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
     tblSold.setVisible(!tblSold.getItems().isEmpty());
     tblPaid.setVisible(!tblPaid.getItems().isEmpty());
+
+    _displayStats();
+  }
+
+  private void _displayStats() {
+    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
+    JSONObject stats = getMember().getAccount().getStats();
+    webEngine.load(url.toExternalForm() + "?data=" + stats.toString());
   }
 
   private void _displayMember() {

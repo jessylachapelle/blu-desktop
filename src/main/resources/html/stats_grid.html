@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      html {
+        background-color: #cad6c1;
+      }
+
+      table {
+        border-collapse: collapse;
+        margin: auto;
+      }
+
+      td {
+        text-align: center;
+        padding: 15px;
+        border: 1px #000 solid;
+      }
+
+      .title {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td colspan="3" class="title">Mise en Vente</td>
+      </tr>
+      <tr>
+        <td id="total" colspan="3"></td>
+      </tr>
+      <tr>
+        <td colspan="2" class="title">Vendu</td>
+        <td class="title">À vendre</td>
+      </tr>
+      <tr>
+        <td id="sold" colspan="2"></td>
+        <td id="stock" rowspan="3"></td>
+      </tr>
+      <tr>
+        <td class="title">À Rembourser</td>
+        <td class="title">Remboursé</td>
+      </tr>
+      <tr>
+        <td id="unpaid"></td>
+        <td id="paid"></td>
+      </tr>
+    </table>
+    <script>
+      if (location.search.length) {
+        const inventory = JSON.parse(location.search.replace('?data=', '').replace(/%22/g, '"'));
+
+        Object.keys(inventory).forEach(function (state) {
+          const data = inventory[state].quantity + ' livres<br/>(' + inventory[state].amount + ' $)';
+          document.getElementById(state).innerHTML = data;
+        });
+      }
+    </script>
+  </body>
+</html>
