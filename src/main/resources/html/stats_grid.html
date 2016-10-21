@@ -8,8 +8,8 @@
       }
 
       table {
-        margin: auto;
         border-collapse: collapse;
+        margin: auto;
       }
 
       td {
@@ -50,9 +50,10 @@
     </table>
     <script>
       if (location.search.length) {
-        const stats = JSON.parse(location.search.replace('?data=', '').replace(/%22/g, '"'));
-        Object.keys(stats).forEach(function (state) {
-          const data = stats[state].quantity + ' livres<br/>(' + stats[state].amount + ' $)';
+        const inventory = JSON.parse(location.search.replace('?data=', '').replace(/%22/g, '"'));
+
+        Object.keys(inventory).forEach(function (state) {
+          const data = inventory[state].quantity + ' livres<br/>(' + inventory[state].amount + ' $)';
           document.getElementById(state).innerHTML = data;
         });
       }

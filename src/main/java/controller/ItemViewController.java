@@ -30,7 +30,7 @@ import java.util.ResourceBundle;
  * @since 29/11/2015
  * @version 0.1
  */
-@SuppressWarnings({"unused", "WeakerAccess", "unchecked"})
+@SuppressWarnings({"unused", "WeakerAccess", "unchecked", "ConstantConditions"})
 public class ItemViewController extends PanelController {
   private ItemHandler itemHandler;
   private WebEngine webEngine;
@@ -88,6 +88,10 @@ public class ItemViewController extends PanelController {
 
   @FXML private Button statusUp;
   @FXML private Button statusDown;
+
+   @FXML private Label lblMaximum;
+   @FXML private Label lblAverage;
+   @FXML private Label lblMinimum;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -426,7 +430,6 @@ public class ItemViewController extends PanelController {
     }
 
     _displayCopies();
-    _displayStats();
   }
 
   private void _updatePrice(Copy copy) {
@@ -476,11 +479,20 @@ public class ItemViewController extends PanelController {
     tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
     tblSold.setVisible(!tblSold.getItems().isEmpty());
     tblPaid.setVisible(!tblPaid.getItems().isEmpty());
+
+    _displayStats();
   }
 
   private void _displayStats() {
-    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
-    JSONObject stats = getItem().getStats();
-    webEngine.load(url.toExternalForm() + "?data=" + stats.toString());
+     URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
+     JSONObject stats = getItem().inventory();
+     webEngine.load(url.toExternalForm() + "?data=" + stats.toString());
+
+     String maximum = getItem().maximumPriceTotal() + "$ (" + getItem().maximumPriceStock() + "$ en stock)";
+     String average = getItem().averagePriceTotal() + "$ (" + getItem().averagePriceStock() + "$ en stock)";
+     String minimum = getItem().minimumPriceTotal() + "$ (" + getItem().minimumPriceStock() + "$ en stock)";
+     lblMaximum.setText(maximum);
+     lblAverage.setText(average);
+     lblMinimum.setText(minimum);
   }
 }

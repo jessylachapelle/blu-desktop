@@ -1,7 +1,6 @@
 package controller;
 
 import java.net.URL;
-import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
@@ -22,7 +21,6 @@ import model.member.Comment;
 import model.member.Member;
 import model.member.StudentParent;
 import org.json.JSONObject;
-import sun.font.Script;
 import utility.Dialog;
 
 /**
@@ -31,7 +29,7 @@ import utility.Dialog;
  * @since 2016/07/24
  * @version 1.0
  */
-@SuppressWarnings({"WeakerAccess", "unchecked"})
+@SuppressWarnings({"WeakerAccess", "unchecked", "ConstantConditions"})
 public class MemberViewController extends PanelController {
   @FXML private Button btnUpdate;
   @FXML private Button btnDelete;
@@ -434,6 +432,8 @@ public class MemberViewController extends PanelController {
     tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
     tblSold.setVisible(!tblSold.getItems().isEmpty());
     tblPaid.setVisible(!tblPaid.getItems().isEmpty());
+
+    _displayStats();
   }
 
   private void _displayStats() {
@@ -461,6 +461,5 @@ public class MemberViewController extends PanelController {
     _displayAccount();
     _displayComment();
     _displayCopies();
-    _displayStats();
   }
 }

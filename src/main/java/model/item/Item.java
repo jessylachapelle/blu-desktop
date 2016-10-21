@@ -194,7 +194,7 @@ public class Item {
    *
    * @return copies La liste des exemplaires en vente
    */
-  public ArrayList<Copy> getCopies() {
+   private ArrayList<Copy> getCopies() {
     return copies;
   }
 
@@ -239,7 +239,7 @@ public class Item {
     return copies.stream().filter(Copy::isReserved).collect(Collectors.toCollection(ArrayList::new));
   }
 
-  public double amountAvailable() {
+  private double amountAvailable() {
     double amount = 0;
 
     for (Copy copy : copies) {
@@ -251,11 +251,11 @@ public class Item {
     return amount;
   }
 
-  public int quantityAvailable() {
+  private int quantityAvailable() {
     return getAvailable().size();
   }
 
-  public double amountSold() {
+  private double amountSold() {
     double amount = 0;
 
     for (Copy copy : copies) {
@@ -267,11 +267,11 @@ public class Item {
     return amount;
   }
 
-  public int quantitySold() {
+  private int quantitySold() {
     return getSold().size();
   }
 
-  public double amountPaid() {
+  private double amountPaid() {
     double amount = 0;
 
     for (Copy copy : copies) {
@@ -283,7 +283,7 @@ public class Item {
     return amount;
   }
 
-  public int quantityPaid() {
+  private int quantityPaid() {
     return getPaid().size();
   }
 
@@ -400,7 +400,7 @@ public class Item {
     return item;
   }
 
-  public JSONObject getStats() {
+  public JSONObject inventory() {
     JSONObject data;
     JSONObject stats = new JSONObject();
 
@@ -430,5 +430,75 @@ public class Item {
     stats.put("total", data);
 
     return stats;
+  }
+
+  public int maximumPriceTotal() {
+    int maximum = 0;
+
+    for (Copy copy : copies) {
+      if (copy.getPrice() > maximum) {
+        maximum = (int) copy.getPrice();
+      }
+    }
+
+    return maximum;
+  }
+
+  public int maximumPriceStock() {
+    int maximum = 0;
+
+    for (Copy copy : getAvailable()) {
+      if (copy.getPrice() > maximum) {
+        maximum = (int) copy.getPrice();
+      }
+    }
+
+    return maximum;
+  }
+
+  public int averagePriceTotal() {
+    int total = 0;
+
+    for (Copy copy : copies) {
+      total += (int) copy.getPrice();
+    }
+
+    return total / copies.size();
+  }
+
+  public int averagePriceStock() {
+    int total = 0;
+
+    for (Copy copy : getAvailable()) {
+      total += (int) copy.getPrice();
+    }
+
+    return total / getAvailable().size();
+  }
+
+  public int minimumPriceTotal() {
+    ArrayList<Copy> copies = getCopies();
+    int minimum = copies.size() > 0 ? (int) copies.get(0).getPrice() : 0;
+
+    for (int i = 1; i < copies.size(); i++) {
+      if (copies.get(i).getPrice() < minimum) {
+        minimum = (int) copies.get(i).getPrice();
+      }
+    }
+
+    return minimum;
+  }
+
+  public int minimumPriceStock() {
+    ArrayList<Copy> copies = getAvailable();
+    int minimum = copies.size() > 0 ? (int) copies.get(0).getPrice() : 0;
+
+    for (int i = 1; i < copies.size(); i++) {
+      if (copies.get(i).getPrice() < minimum) {
+        minimum = (int) copies.get(i).getPrice();
+      }
+    }
+
+    return minimum;
   }
 }

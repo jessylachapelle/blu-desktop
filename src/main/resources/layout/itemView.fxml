@@ -83,10 +83,24 @@
         <Button styleClass="form-button" fx:id="btnReserve" text="Faire une réservation"/>
       </VBox>
 
-      <VBox styleClass="section" spacing="10">
-        <Label styleClass="h2" text="Statistiques"/>
+      <Label styleClass="h2" text="Statistiques"/>
+      <HBox styleClass="section" spacing="10">
+        <VBox spacing="10">
+          <HBox spacing="10">
+            <Label>Prix maximum :</Label>
+            <Label fx:id="lblMaximum"></Label>
+          </HBox>
+          <HBox spacing="10">
+            <Label>Prix moyen :</Label>
+            <Label fx:id="lblAverage" />
+          </HBox>
+          <HBox spacing="10">
+            <Label>Prix minimum :</Label>
+            <Label fx:id="lblMinimum" />
+          </HBox>
+        </VBox>
         <WebView fx:id="statistics" prefHeight="375" />
-      </VBox>
+      </HBox>
 
       <Button fx:id="btnDisplayReservations" text="Réservation  v"/>
       <TableView fx:id="tblReservations">
