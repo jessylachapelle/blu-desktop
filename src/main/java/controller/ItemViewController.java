@@ -3,7 +3,10 @@ package controller;
 import handler.ItemHandler;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -11,13 +14,17 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import model.item.Book;
 import model.item.Copy;
 import model.item.Item;
 import model.item.Storage;
+import model.member.Member;
 import org.json.JSONObject;
 import utility.Dialog;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -196,28 +203,26 @@ public class ItemViewController extends PanelController {
     });
 
     btnReserve.setOnAction(event -> {
-      // TODO: Handle reservations
-//      String input = "";
-//      int memberNo = 0;
-//      boolean isMember = false;
-//
-//      while (!isMember) {
-//        try {
-//          input = Dialog.input("Réserver cet item", "Entrez le numéro de l'étudiant qui fait la réservation");
-//          memberNo = Integer.parseInt(input);
-//
-//          MemberHandler memberHandler = new MemberHandler();
-//          isMember = memberHandler.exist(memberNo);
-//        } catch (NumberFormatException e) {
-//          if (input.equals("")) {
-//            return;
-//          }
-//        }
-//      }
-//
-//      if (itemHandler.addItemReservation(memberNo)) {
-//        _displayCopies();
-//      }
+      JSONObject window = _openSearchWindow();
+
+      if (window != null) {
+        SearchController searchController = (SearchController) window.get("controller");
+        Stage stage = (Stage) window.get("stage");
+
+        searchController.getTblMemberResults().setOnMouseClicked(e -> {
+          TableRow row = _getTableRow(((Node) e.getTarget()).getParent());
+          Member member = (Member) row.getItem();
+          stage.hide();
+
+          if (itemHandler.addItemReservation(member.getNo())) {
+            _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue");
+          }
+
+          e.consume();
+        });
+      }
     });
 
     btnDisplayReservations.setOnAction(event -> tblReservations.setVisible(!tblReservations.isVisible()));
@@ -282,10 +287,11 @@ public class ItemViewController extends PanelController {
 
         MenuItem sell = new MenuItem("Vendre");
         MenuItem sellParent = new MenuItem("Vendre à 50%");
+        MenuItem reserve = new MenuItem("Réserver");
         MenuItem update = new MenuItem("Modifier le prix");
         MenuItem delete = new MenuItem("Supprimer");
 
-        contextMenu.getItems().addAll(sell, sellParent, update, delete);
+        contextMenu.getItems().addAll(sell, sellParent, reserve, update, delete);
         row.setContextMenu(contextMenu);
 
         sell.setOnAction(e -> {
@@ -301,6 +307,29 @@ public class ItemViewController extends PanelController {
             _displayCopies();
           } else {
             Dialog.information("Une erreur est survenue");
+          }
+        });
+
+        reserve.setOnAction(e -> {
+          JSONObject window = _openSearchWindow();
+
+          if (window != null) {
+            SearchController searchController = (SearchController) window.get("controller");
+            Stage stage = (Stage) window.get("stage");
+
+            searchController.getTblMemberResults().setOnMouseClicked(ev -> {
+              TableRow tableRow = _getTableRow(((Node) ev.getTarget()).getParent());
+              Member member = (Member) tableRow.getItem();
+              stage.hide();
+
+              if (itemHandler.addTransaction(member.getNo(), copy.getId(), "RESERVE")) {
+                _displayCopies();
+              } else {
+                Dialog.information("Une erreur est survenue");
+              }
+
+              e.consume();
+            });
           }
         });
 
@@ -494,5 +523,31 @@ public class ItemViewController extends PanelController {
      lblMaximum.setText(maximum);
      lblAverage.setText(average);
      lblMinimum.setText(minimum);
+  }
+
+  private JSONObject _openSearchWindow() {
+    try {
+      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layout/search.fxml"));
+      Parent parent = fxmlLoader.load();
+      Stage stage = new Stage();
+      Scene scene = new Scene(parent);
+
+      scene.getStylesheets().addAll("css/window.css");
+      stage.initModality(Modality.APPLICATION_MODAL);
+      stage.setTitle("Sélectionner le parent");
+      stage.setWidth(600);
+      stage.setHeight(650);
+      stage.setScene(scene);
+      stage.show();
+
+      JSONObject window = new JSONObject();
+      window.put("stage", stage);
+      window.put("controller", (SearchController) fxmlLoader.getController());
+      return window;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return null;
   }
 }

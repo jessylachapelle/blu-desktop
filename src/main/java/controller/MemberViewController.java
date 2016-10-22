@@ -1,10 +1,14 @@
 package controller;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -15,6 +19,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import model.item.Book;
 import model.item.Copy;
 import model.member.Comment;
@@ -156,26 +162,25 @@ public class MemberViewController extends PanelController {
         });
 
         reserve.setOnAction(e -> {
-          String input = "";
-          int memberNo = 0;
-          boolean isMember = false;
+          JSONObject window = _openSearchWindow();
 
-          while (!isMember) {
-            try {
-              input = Dialog.input("Réserver cet item", "Entrez le numéro de l'étudiant qui fait la réservation");
-              memberNo = Integer.parseInt(input);
-              isMember = memberHandler.exist(memberNo);
-            } catch (NumberFormatException ex) {
-              if (input.equals("")) {
-                return;
+          if (window != null) {
+            SearchController searchController = (SearchController) window.get("controller");
+            Stage stage = (Stage) window.get("stage");
+
+            searchController.getTblMemberResults().setOnMouseClicked(ev -> {
+              TableRow tableRow = _getTableRow(((Node) ev.getTarget()).getParent());
+              Member member = (Member) tableRow.getItem();
+              stage.hide();
+
+              if (memberHandler.addTransaction(copy.getId(), "RESERVE", member.getNo())) {
+                _displayCopies();
+              } else {
+                Dialog.information("Une erreur est survenue");
               }
-            }
-          }
 
-          if (memberHandler.addTransaction(copy.getId(), "RESERVE", memberNo)) {
-            _displayCopies();
-          } else {
-            Dialog.information("Une erreur est survenue lors de la mise à jour de l'exemplaire");
+              e.consume();
+            });
           }
         });
 
@@ -461,5 +466,30 @@ public class MemberViewController extends PanelController {
     _displayAccount();
     _displayComment();
     _displayCopies();
+  }
+  private JSONObject _openSearchWindow() {
+    try {
+      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layout/search.fxml"));
+      Parent parent = fxmlLoader.load();
+      Stage stage = new Stage();
+      Scene scene = new Scene(parent);
+
+      scene.getStylesheets().addAll("css/window.css");
+      stage.initModality(Modality.APPLICATION_MODAL);
+      stage.setTitle("Sélectionner le parent");
+      stage.setWidth(600);
+      stage.setHeight(650);
+      stage.setScene(scene);
+      stage.show();
+
+      JSONObject window = new JSONObject();
+      window.put("stage", stage);
+      window.put("controller", (SearchController) fxmlLoader.getController());
+      return window;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return null;
   }
 }

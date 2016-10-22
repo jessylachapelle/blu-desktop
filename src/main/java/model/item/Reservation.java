@@ -13,6 +13,7 @@ import java.util.Date;
  */
 @SuppressWarnings("unused")
 public class Reservation {
+  private int id;
   private StudentParent member;
   private Date date;
   private Item item;
@@ -22,9 +23,29 @@ public class Reservation {
     _init();
   }
 
-  public Reservation(int memberNo) {
+  public Reservation(int id, int memberNo) {
     _init();
+    this.id = id;
     member.setNo(memberNo);
+  }
+
+  public Reservation(StudentParent member, Date date) {
+    this.member = member;
+    this.date = date;
+  }
+
+  public Reservation(JSONObject reservation) {
+    _init();
+    fromJSON(reservation);
+  }
+
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   public Item getItem() {
@@ -41,16 +62,6 @@ public class Reservation {
 
   public void setCopy(Copy copy) {
     this.copy = copy;
-  }
-
-  public Reservation(StudentParent member, Date date) {
-    this.member = member;
-    this.date = date;
-  }
-
-  public Reservation(JSONObject reservation) {
-    _init();
-    fromJSON(reservation);
   }
 
   private void _init() {

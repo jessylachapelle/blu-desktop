@@ -393,7 +393,6 @@ public class ItemHandler {
   public boolean addItemReservation(int memberNo) {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
-    int id = 0;
 
     try {
       data.put("member", memberNo);
@@ -405,9 +404,10 @@ public class ItemHandler {
 
       JSONObject res = APIConnector.call(req);
       data = res.getJSONObject("data");
+      int id = data.optInt("id", 0);
 
-      if (data.has("code") && data.getInt("code") == 200) {
-        item.addReservation(new Reservation(memberNo));
+      if (data.optInt("code", 0)  == 200) {
+        item.addReservation(new Reservation(id, memberNo));
         return true;
       }
     } catch (JSONException e) {
