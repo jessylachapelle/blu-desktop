@@ -16,10 +16,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.item.Book;
-import model.item.Copy;
-import model.item.Item;
-import model.item.Storage;
+import model.item.*;
 import model.member.Member;
 import org.json.JSONObject;
 import utility.Dialog;
@@ -61,12 +58,12 @@ public class ItemViewController extends PanelController {
   @FXML private WebView statistics;
 
   @FXML private Button btnDisplayReservations;
-  @FXML private TableView<Copy> tblReservations;
-  @FXML private TableColumn<Copy, String> colReservationMember;
-  @FXML private TableColumn<Copy, String> colReservationSeller;
-  @FXML private TableColumn<Copy, String> colReservationAdded;
-  @FXML private TableColumn<Copy, String> colReservationDate;
-  @FXML private TableColumn<Copy, String> colReservationPrice;
+  @FXML private TableView<Reservation> tblReservations;
+  @FXML private TableColumn<Reservation, String> colReservationParent;
+  @FXML private TableColumn<Reservation, String> colReservationSeller;
+  @FXML private TableColumn<Reservation, String> colReservationAdded;
+  @FXML private TableColumn<Reservation, String> colReservationDate;
+  @FXML private TableColumn<Reservation, String> colReservationPrice;
 
   @FXML private Button btnDisplayAvailable;
   @FXML private TableView<Copy> tblAvailable;
@@ -131,7 +128,7 @@ public class ItemViewController extends PanelController {
   }
 
   public TableView[] getCopyTables() {
-    return new TableView[]{ tblReservations, tblAvailable, tblSold, tblPaid };
+    return new TableView[]{ tblAvailable, tblSold, tblPaid };
   }
 
   public Button getBtnUpdate() {
@@ -229,16 +226,16 @@ public class ItemViewController extends PanelController {
 
     tblReservations.setOnMouseClicked(event -> {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
-      Copy copy = (Copy) row.getItem();
+      Reservation reservation = (Reservation) row.getItem();
 
-      if (event.getButton() == MouseButton.SECONDARY) {
+      if (reservation != null && isRightClick(event)) {
         final ContextMenu contextMenu = new ContextMenu();
 
         MenuItem sell = new MenuItem("Vendre");
         MenuItem update = new MenuItem("Modifier le prix");
         MenuItem cancel = new MenuItem("Annuler réservation");
 
-        if (copy.getId() == 0) {
+        if (reservation.getCopy().getId() == 0) {
           contextMenu.getItems().addAll(cancel);
         } else {
           contextMenu.getItems().addAll(sell, update, cancel);
@@ -247,12 +244,12 @@ public class ItemViewController extends PanelController {
         row.setContextMenu(contextMenu);
 
         sell.setOnAction(e -> {
-          if (itemHandler.addTransaction(copy.getMember().getNo(), copy.getId(), "SELL_PARENT")) {
+          if (itemHandler.addTransaction(reservation.getCopy().getMember().getNo(), reservation.getCopy().getId(), "SELL_PARENT")) {
             _displayCopies();
           }
         });
 
-        update.setOnAction(e -> _updatePrice(copy));
+        update.setOnAction(e -> _updatePrice(reservation.getCopy()));
 
         cancel.setOnAction(e -> {
           // TODO: Handle reservations
@@ -405,11 +402,11 @@ public class ItemViewController extends PanelController {
     tblSold.managedProperty().bind(tblSold.visibleProperty());
     tblPaid.managedProperty().bind(tblPaid.visibleProperty());
 
-    colReservationMember.setCellValueFactory(new PropertyValueFactory<>("reservee"));
-    colReservationSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
+    colReservationParent.setCellValueFactory(new PropertyValueFactory<>("parentName"));
+    colReservationSeller.setCellValueFactory(new PropertyValueFactory<>("memberName"));
     colReservationAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
     colReservationDate.setCellValueFactory(new PropertyValueFactory<>("dateReserved"));
-    colReservationPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
+    colReservationPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
 
     colAvailableSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
     colAvailableAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));

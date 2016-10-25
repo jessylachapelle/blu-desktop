@@ -193,6 +193,16 @@ public class Copy {
     return transaction.get(index);
   }
 
+  public Transaction getTransaction(String type) {
+    for (Transaction t : transaction) {
+      if (t.getType().equals(type)) {
+        return t;
+      }
+    }
+
+    return null;
+  }
+
   /**
    * Récupère toutes les transactions liées à l'exemplaire
    *

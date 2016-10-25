@@ -105,10 +105,10 @@
       <Button fx:id="btnDisplayReservations" text="Réservation  v"/>
       <TableView fx:id="tblReservations">
         <columns>
-          <TableColumn fx:id="colReservationMember" prefWidth="196.0" text="Membre"/>
+          <TableColumn fx:id="colReservationParent" prefWidth="196.0" text="Membre"/>
+          <TableColumn fx:id="colReservationDate" prefWidth="147.0" text="Date de réservation"/>
           <TableColumn fx:id="colReservationSeller" prefWidth="164.0" text="Vendeur"/>
           <TableColumn fx:id="colReservationAdded" prefWidth="147.0" text="Date d'ajout"/>
-          <TableColumn fx:id="colReservationDate" prefWidth="147.0" text="Date de réservation"/>
           <TableColumn fx:id="colReservationPrice" prefWidth="61.0" text="Prix"/>
         </columns>
       </TableView>

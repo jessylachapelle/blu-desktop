@@ -11,10 +11,10 @@ import java.util.Date;
  * @since 23/07/16
  * @version 0.1
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Reservation {
   private int id;
-  private StudentParent member;
+  private StudentParent parent;
   private Date date;
   private Item item;
   private Copy copy;
@@ -26,11 +26,11 @@ public class Reservation {
   public Reservation(int id, int memberNo) {
     _init();
     this.id = id;
-    member.setNo(memberNo);
+    parent.setNo(memberNo);
   }
 
-  public Reservation(StudentParent member, Date date) {
-    this.member = member;
+  public Reservation(StudentParent parent, Date date) {
+    this.parent = parent;
     this.date = date;
   }
 
@@ -65,19 +65,20 @@ public class Reservation {
   }
 
   private void _init() {
-    member = new StudentParent();
+    parent = new StudentParent();
     date = new Date();
     item = new Book();
     copy = new Copy();
   }
 
-  public StudentParent getMember() {
-    return member;
+  public StudentParent getParent() {
+    return parent;
   }
 
-  public void setMember(StudentParent member) {
-    this.member = member;
+  public void setParent(StudentParent parent) {
+    this.parent = parent;
   }
+
 
   public Date getDate() {
     return date;
@@ -92,9 +93,9 @@ public class Reservation {
       date = DateParser.dateFromString(reservation.getString("date"));
     }
 
-    JSONObject member = reservation.optJSONObject("member");
-    if (member != null) {
-      this.member.fromJSON(member);
+    JSONObject parent = reservation.optJSONObject("parent");
+    if (parent != null) {
+      this.parent.fromJSON(parent);
     }
 
     JSONObject copy = reservation.optJSONObject("copy");
@@ -115,11 +116,35 @@ public class Reservation {
   public JSONObject toJSON() {
     JSONObject reservation = new JSONObject();
 
-    reservation.put("member", member.toJSON());
+    reservation.put("parent", parent.toJSON());
     reservation.put("date", DateParser.dateToString(date));
     reservation.put("item", item.toJSON());
     reservation.put("copy", copy.toJSON());
 
     return reservation;
+  }
+
+  public String getMemberName() {
+    return copy.getMember().toString();
+  }
+
+  public String getParentName() {
+    return parent.toString();
+  }
+
+  public String getPrice() {
+    return copy.getDateAdded().isEmpty() ? "" : (int) Math.floor(copy.getPrice() / 2) + " $";
+  }
+
+  public String getItemName() {
+    return item.getName();
+  }
+
+  public String getDateReserved() {
+    return DateParser.dateToString(date);
+  }
+
+  public String getDateAdded() {
+    return copy.getDateAdded();
   }
 }

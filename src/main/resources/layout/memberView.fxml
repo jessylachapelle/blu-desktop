@@ -19,14 +19,14 @@
 
       <!-- Coordinates -->
       <VBox styleClass="section" spacing="10">
-        <Label styleClass="h2" text="Information du member"/>
+        <Label styleClass="h2" text="Information du parent"/>
         <HBox spacing="10">
           <Label text="Nom :"/>
           <Label fx:id="lblName"/>
         </HBox>
 
         <HBox spacing="10">
-          <Label text="Numéro de member :"/>
+          <Label text="Numéro de parent :"/>
           <Label fx:id="lblNo"/>
         </HBox>
 
