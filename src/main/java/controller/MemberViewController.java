@@ -23,6 +23,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.item.Book;
 import model.item.Copy;
+import model.item.Reservation;
 import model.member.Comment;
 import model.member.Member;
 import model.member.StudentParent;
@@ -62,8 +63,12 @@ public class MemberViewController extends PanelController {
   @FXML private Button btnPay;
 
   @FXML private VBox reservation;
-  @FXML private Button btnAddReservation;
   @FXML private TableView tblReservation;
+  @FXML private TableColumn<Reservation, String> colReservationTitle;
+  @FXML private TableColumn<Reservation, String> colReservationDateReserved;
+  @FXML private TableColumn<Reservation, String> colReservationSeller;
+  @FXML private TableColumn<Reservation, String> colReservationDateAdded;
+  @FXML private TableColumn<Reservation, String> colReservationPrice;
 
   @FXML private WebView statistics;
 
@@ -106,7 +111,7 @@ public class MemberViewController extends PanelController {
   }
 
   public TableView[] getCopyTables() {
-    return new TableView[]{tblReservation, tblAvailable, tblSold, tblPaid};
+    return new TableView[]{tblAvailable, tblSold, tblPaid};
   }
 
   public Member getMember() {
@@ -129,11 +134,43 @@ public class MemberViewController extends PanelController {
   }
 
   private void _eventHandlers() {
+    tblReservation.setOnMouseClicked(event -> {
+      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      Reservation reservation = (Reservation) row.getItem();
+
+      if (isRightClick(event) && reservation != null) {
+        final ContextMenu contextMenu = new ContextMenu();
+
+        MenuItem sell = new MenuItem("Vendre");
+        MenuItem cancel = new MenuItem("Annuler la réservation");
+
+        if (reservation.getCopy().getId() == 0) {
+          contextMenu.getItems().addAll(cancel);
+        } else {
+          contextMenu.getItems().addAll(sell, cancel);
+        }
+
+        row.setContextMenu(contextMenu);
+
+        sell.setOnAction(e -> {
+          if (memberHandler.addTransaction(reservation.getCopy().getId(), "SELL_PARENT")) {
+            _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue lors de la vente de l'exemplaire");
+          }
+        });
+
+        cancel.setOnAction(e -> {
+          // TODO: Handle cancellation
+        });
+      }
+    });
+
     tblAvailable.setOnMouseClicked(event -> {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
       Copy copy = (Copy) row.getItem();
 
-      if (event.getButton() == MouseButton.SECONDARY) {
+      if (isRightClick(event)) {
         final ContextMenu contextMenu = new ContextMenu();
 
         MenuItem sell = new MenuItem("Vendre");
@@ -321,9 +358,6 @@ public class MemberViewController extends PanelController {
       }
     });
 
-    // TODO: Handle reservations
-    btnAddReservation.setOnAction(event -> tblReservation.setVisible(!tblReservation.isVisible()));
-
     btnDelete.setOnAction(event -> {
       String message = "Êtes-vous certain.e de vouloir supprimer ce membre ?";
 
@@ -355,12 +389,19 @@ public class MemberViewController extends PanelController {
 
   private void _dataBinding() {
     reservation.managedProperty().bind(reservation.visibleProperty());
+    tblReservation.managedProperty().bind(tblReservation.visibleProperty());
     tblAvailable.managedProperty().bind(tblAvailable.visibleProperty());
     tblSold.managedProperty().bind(tblSold.visibleProperty());
     tblPaid.managedProperty().bind(tblPaid.visibleProperty());
 
     colComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
     colCommentDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+
+    colReservationTitle.setCellValueFactory(new PropertyValueFactory<>("itemName"));
+    colReservationDateReserved.setCellValueFactory(new PropertyValueFactory<>("dateReserved"));
+    colReservationSeller.setCellValueFactory(new PropertyValueFactory<>("memberName"));
+    colReservationDateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colReservationPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
 
     colAvailableTitle.setCellValueFactory(new PropertyValueFactory<>("name"));
     colAvailableEdition.setCellValueFactory(new PropertyValueFactory<>("edition"));
@@ -426,14 +467,17 @@ public class MemberViewController extends PanelController {
   }
 
   private void _displayCopies() {
+    tblReservation.setItems(FXCollections.observableArrayList(getMember().getAccount().getReservation()));
     tblAvailable.setItems(FXCollections.observableArrayList(getMember().getAccount().getAvailable()));
     tblSold.setItems(FXCollections.observableArrayList(getMember().getAccount().getSold()));
     tblPaid.setItems(FXCollections.observableArrayList(getMember().getAccount().getPaid()));
 
+    tblReservation.refresh();
     tblAvailable.refresh();
     tblSold.refresh();
     tblPaid.refresh();
 
+    tblReservation.setVisible(!tblReservation.getItems().isEmpty());
     tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
     tblSold.setVisible(!tblSold.getItems().isEmpty());
     tblPaid.setVisible(!tblPaid.getItems().isEmpty());
@@ -448,7 +492,8 @@ public class MemberViewController extends PanelController {
   }
 
   private void _displayMember() {
-    reservation.setVisible(getMember() instanceof StudentParent);
+    // TODO handle reservation visibility
+    // reservation.setVisible(getMember() instanceof StudentParent);
 
     lblName.setText(getMember().getFirstName() + " " + getMember().getLastName());
     lblNo.setText(Integer.toString(getMember().getNo()));

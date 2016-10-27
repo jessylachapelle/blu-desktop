@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import model.item.Copy;
+import model.item.Reservation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +19,7 @@ import utility.DateParser;
  * @since 26/10/2015
  * @version 1.1
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Account {
 
   private Date registration,
@@ -27,6 +28,7 @@ public class Account {
   private ArrayList<Comment> comments;
 
   private ArrayList<Copy> copies;
+  private ArrayList<Reservation> reservation;
 
   /**
    * Constructeur par défaut, crée compte à valeur null
@@ -45,6 +47,7 @@ public class Account {
     lastActivity = new Date();
     comments = new ArrayList<>();
     copies = new ArrayList<>();
+    reservation = new ArrayList<>();
   }
 
   /**
@@ -326,26 +329,31 @@ public class Account {
     }
   }
 
-  public void fromJSON(JSONObject json) {
+  public ArrayList<Reservation> getReservation() {
+    return reservation;
+  }
+
+  public void fromJSON(JSONObject account) {
+    // TODO: Update json filtering
     try {
-      if (json.has("registration")) {
-        setRegistration(json.getString("registration"));
+      if (account.has("registration")) {
+        setRegistration(account.getString("registration"));
       }
 
-      if(json.has("last_activity")) {
-        setLastActivity(json.getString("last_activity"));
+      if(account.has("last_activity")) {
+        setLastActivity(account.getString("last_activity"));
       }
 
-      if (json.has("comment")) {
-        JSONArray comments = json.getJSONArray("comment");
+      if (account.has("comment")) {
+        JSONArray comments = account.getJSONArray("comment");
 
         for (int i = 0; i < comments.length(); i++) {
           this.comments.add(new Comment(comments.getJSONObject(i)));
         }
       }
 
-      if (json.has("copies")) {
-        JSONArray copies = json.getJSONArray("copies");
+      if (account.has("copies")) {
+        JSONArray copies = account.getJSONArray("copies");
 
         for (int i = 0; i < copies.length(); i++) {
           this.copies.add(new Copy(copies.getJSONObject(i)));
@@ -353,6 +361,13 @@ public class Account {
       }
     } catch (JSONException e) {
       e.printStackTrace();
+    }
+
+    JSONArray reservation = account.optJSONArray("reservation");
+    if (reservation != null) {
+      for (int i = 0; i < reservation.length(); i++) {
+        this.reservation.add(new Reservation(reservation.getJSONObject(i)));
+      }
     }
   }
 

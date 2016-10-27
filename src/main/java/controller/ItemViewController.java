@@ -232,13 +232,12 @@ public class ItemViewController extends PanelController {
         final ContextMenu contextMenu = new ContextMenu();
 
         MenuItem sell = new MenuItem("Vendre");
-        MenuItem update = new MenuItem("Modifier le prix");
         MenuItem cancel = new MenuItem("Annuler réservation");
 
         if (reservation.getCopy().getId() == 0) {
           contextMenu.getItems().addAll(cancel);
         } else {
-          contextMenu.getItems().addAll(sell, update, cancel);
+          contextMenu.getItems().addAll(sell, cancel);
         }
 
         row.setContextMenu(contextMenu);
@@ -248,8 +247,6 @@ public class ItemViewController extends PanelController {
             _displayCopies();
           }
         });
-
-        update.setOnAction(e -> _updatePrice(reservation.getCopy()));
 
         cancel.setOnAction(e -> {
           // TODO: Handle reservations
