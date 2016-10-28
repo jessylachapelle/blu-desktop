@@ -82,22 +82,18 @@ public class MemberHandler {
   private Member _selectMember(JSONObject data) {
     JSONObject req = new JSONObject();
 
-    try {
-      req.put("function", "select");
-      req.put("object", "member");
-      req.put("data", data);
+    req.put("function", "select");
+    req.put("object", "member");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
 
-      if (res.has("data") && res.get("data") instanceof JSONObject) {
-        data = res.getJSONObject("data");
-        member = new Member(data);
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
-      member = new Member();
+    if (data == null) {
+      return new Member();
     }
 
+    member = data.optBoolean("is_parent", false) ? new StudentParent(data) : new Member(data);
     return member;
   }
 

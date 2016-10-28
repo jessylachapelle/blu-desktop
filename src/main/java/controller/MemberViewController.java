@@ -493,7 +493,7 @@ public class MemberViewController extends PanelController {
 
   private void _displayMember() {
     // TODO handle reservation visibility
-    // reservation.setVisible(getMember() instanceof StudentParent);
+    reservation.setVisible(getMember() instanceof StudentParent);
 
     lblName.setText(getMember().getFirstName() + " " + getMember().getLastName());
     lblNo.setText(Integer.toString(getMember().getNo()));
