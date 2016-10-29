@@ -329,6 +329,24 @@ public class Account {
     }
   }
 
+  public void removeCopyReservation(int copyId) {
+    for (Reservation r : reservation) {
+      if (r.getCopy().getId() == copyId) {
+        reservation.remove(r);
+        break;
+      }
+    }
+  }
+
+  public void removeItemReservation(int itemId) {
+    for (Reservation r : reservation) {
+      if (r.getItem().getId() == itemId || r.getCopy().getItem().getId() == itemId) {
+        reservation.remove(r);
+        break;
+      }
+    }
+  }
+
   public ArrayList<Reservation> getReservation() {
     return reservation;
   }

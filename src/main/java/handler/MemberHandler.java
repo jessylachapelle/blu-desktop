@@ -4,6 +4,8 @@ import api.APIConnector;
 import model.member.*;
 import java.util.ArrayList;
 import java.util.Date;
+
+import model.transaction.Transaction;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -507,6 +509,50 @@ public class MemberHandler {
       return data.has("code") && data.getInt("code") == 200;
     } catch (JSONException e) {
       e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  public boolean deleteItemReservation(int itemId) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    data.put("member", member.getNo());
+    data.put("item", itemId);
+
+    req.put("object", "reservation");
+    req.put("function", "delete");
+    req.put("data", data);
+
+    JSONObject res = APIConnector.call(req);
+    data = res.getJSONObject("data");
+
+    if (data.optInt("code", 0) == 200) {
+      member.getAccount().removeItemReservation(itemId);
+      return true;
+    }
+
+    return false;
+  }
+
+  public boolean deleteCopyReservation(int copyId) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    data.put("copy", copyId);
+    data.put("type", Transaction.RESERVATION);
+
+    req.put("object", "transaction");
+    req.put("function", "delete");
+    req.put("data", data);
+
+    JSONObject res = APIConnector.call(req);
+    data = res.getJSONObject("data");
+
+    if (data.optInt("code", 0) == 200) {
+      member.getAccount().removeCopyReservation(copyId);
+      return true;
     }
 
     return false;

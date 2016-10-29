@@ -330,9 +330,9 @@ public class Item {
   }
 
   public void removeReservation(int memberNo) {
-    for (int i = 0; i < reservations.size(); i++) {
-      if (reservations.get(i).getParent().getNo() == memberNo) {
-        reservations.remove(i);
+    for (Reservation reservation : reservations) {
+      if (reservation.getParent().getNo() == memberNo) {
+        reservations.remove(reservation);
         break;
       }
     }

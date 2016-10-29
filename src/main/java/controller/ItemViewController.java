@@ -228,7 +228,7 @@ public class ItemViewController extends PanelController {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
       Reservation reservation = (Reservation) row.getItem();
 
-      if (reservation != null && isRightClick(event)) {
+      if (reservation != null && event.getButton().equals(MouseButton.SECONDARY)) {
         final ContextMenu contextMenu = new ContextMenu();
 
         MenuItem sell = new MenuItem("Vendre");
@@ -245,27 +245,24 @@ public class ItemViewController extends PanelController {
         sell.setOnAction(e -> {
           if (itemHandler.addTransaction(reservation.getCopy().getMember().getNo(), reservation.getCopy().getId(), "SELL_PARENT")) {
             _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue");
           }
         });
 
         cancel.setOnAction(e -> {
-          // TODO: Handle reservations
-//          if (copy.getId() == 0) {
-//            itemHandler.deleteReservation(copy.getParent().getNo(), getBook().getId());
-//            getBook().getReserved().remove(copy);
-//          } else {
-//            itemHandler.deleteReservation(copy.getId());
-//            getBook().getReserved().remove(copy);
-//
-//            for (int noTransaction = 0; noTransaction < copy.getAllTransactions().size(); noTransaction++) {
-//              if (copy.getAllTransactions().get(noTransaction).getType().equals("RESERVE")) {
-//                copy.getAllTransactions().remove(noTransaction);
-//              }
-//            }
-//            getBook().getCopies().add(copy);
-//          }
-//
-//          _displayCopies();
+          boolean success;
+          if (reservation.getCopy() == null || reservation.getCopy().getId() == 0) {
+            success = itemHandler.deleteItemReservation(reservation.getParent().getNo());
+          } else {
+            success = itemHandler.deleteCopyReservation(reservation.getCopy().getId());
+          }
+
+          if (success) {
+            _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue");
+          }
         });
       }
     });

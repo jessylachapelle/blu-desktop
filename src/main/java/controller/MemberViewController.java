@@ -138,7 +138,7 @@ public class MemberViewController extends PanelController {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
       Reservation reservation = (Reservation) row.getItem();
 
-      if (isRightClick(event) && reservation != null) {
+      if (reservation != null && event.getButton().equals(MouseButton.SECONDARY)) {
         final ContextMenu contextMenu = new ContextMenu();
 
         MenuItem sell = new MenuItem("Vendre");
@@ -161,7 +161,18 @@ public class MemberViewController extends PanelController {
         });
 
         cancel.setOnAction(e -> {
-          // TODO: Handle cancellation
+          boolean success;
+          if (reservation.getCopy() == null || reservation.getCopy().getId() == 0) {
+            success = memberHandler.deleteItemReservation(reservation.getParent().getNo());
+          } else {
+            success = memberHandler.deleteCopyReservation(reservation.getCopy().getId());
+          }
+
+          if (success) {
+            _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue");
+          }
         });
       }
     });

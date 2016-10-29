@@ -18,6 +18,8 @@ import utility.DateParser;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Transaction {
+  public final static String RESERVATION = "RESERVE";
+
   private Date date;
   private String type;
   private StudentParent parent;
