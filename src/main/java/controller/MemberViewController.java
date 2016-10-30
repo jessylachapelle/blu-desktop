@@ -163,7 +163,7 @@ public class MemberViewController extends PanelController {
         cancel.setOnAction(e -> {
           boolean success;
           if (reservation.getCopy() == null || reservation.getCopy().getId() == 0) {
-            success = memberHandler.deleteItemReservation(reservation.getParent().getNo());
+            success = memberHandler.deleteItemReservation(reservation.getItem().getId());
           } else {
             success = memberHandler.deleteCopyReservation(reservation.getCopy().getId());
           }
