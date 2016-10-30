@@ -391,6 +391,7 @@ public class ItemViewController extends PanelController {
   }
 
   private void _dataBinding() {
+    btnReserve.managedProperty().bind(btnReserve.visibleProperty());
     tblReservations.managedProperty().bind(tblReservations.visibleProperty());
     tblAvailable.managedProperty().bind(tblAvailable.visibleProperty());
     tblSold.managedProperty().bind(tblSold.visibleProperty());
@@ -499,6 +500,7 @@ public class ItemViewController extends PanelController {
     tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
     tblSold.setVisible(!tblSold.getItems().isEmpty());
     tblPaid.setVisible(!tblPaid.getItems().isEmpty());
+    btnReserve.setVisible(tblAvailable.getItems().isEmpty());
 
     _displayStats();
   }
