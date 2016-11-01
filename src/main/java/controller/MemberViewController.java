@@ -214,6 +214,7 @@ public class MemberViewController extends PanelController {
 
           if (window != null) {
             SearchController searchController = (SearchController) window.get("controller");
+            searchController.setSearchParent();
             Stage stage = (Stage) window.get("stage");
 
             searchController.getTblMemberResults().setOnMouseClicked(ev -> {

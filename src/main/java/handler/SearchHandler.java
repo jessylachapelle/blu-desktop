@@ -18,7 +18,8 @@ public class SearchHandler {
   private ItemHandler itemHandler;
   private String searchQuery;
   private boolean item,
-                  archive;
+                  archive,
+                  parentOnly;
 
   /**
    * Constructeur par défaut
@@ -29,6 +30,7 @@ public class SearchHandler {
     searchQuery = "";
     item = false;
     archive = false;
+    parentOnly = false;
   }
 
   /**
@@ -76,7 +78,7 @@ public class SearchHandler {
    * @return Liste des Membres résultant de la searchQuery
    */
   public ArrayList<Member> searchMembers() {
-    return memberHandler.searchMembers(searchQuery, archive);
+    return memberHandler.searchMembers(searchQuery, archive, parentOnly);
   }
 
   /**
@@ -87,5 +89,9 @@ public class SearchHandler {
    */
   public ArrayList<Item> searchItems() {
     return itemHandler.searchItem(searchQuery, archive);
+  }
+
+  public void setParentSearch() {
+    parentOnly = true;
   }
 }

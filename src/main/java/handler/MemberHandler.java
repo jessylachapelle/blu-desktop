@@ -105,7 +105,7 @@ public class MemberHandler {
    * @param deactivated True if want to search in deactivated accounts
    * @return A List of members
    */
-  ArrayList<Member> searchMembers(String search, boolean deactivated) {
+  ArrayList<Member> searchMembers(String search, boolean deactivated, boolean parentOnly) {
     ArrayList<Member> members = new ArrayList<>();
     JSONObject json = new JSONObject();
     JSONObject data = new JSONObject();
@@ -115,6 +115,10 @@ public class MemberHandler {
 
       if (deactivated) {
         data.put("deactivated", true);
+      }
+
+      if (parentOnly) {
+        data.put("is_parent", true);
       }
 
       json.put("function", "search");
