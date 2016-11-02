@@ -1,5 +1,6 @@
 package model.item;
 
+import model.transaction.Transaction;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -235,8 +236,27 @@ public class Item {
    *
    * @return reserved Liste des exemplaires en réservation
    */
-  public ArrayList<Copy> getReserved() {
-    return copies.stream().filter(Copy::isReserved).collect(Collectors.toCollection(ArrayList::new));
+  public ArrayList<Reservation> getReserved() {
+    ArrayList<Reservation> reservations = new ArrayList<>();
+    ArrayList<Copy> copies = this.copies.stream().filter(Copy::isReserved).collect(Collectors.toCollection(ArrayList::new));
+
+    reservations.addAll(this.reservations);
+
+    for (Copy copy : copies) {
+      Reservation reservation = new Reservation();
+      Transaction transaction = copy.getTransaction("RESERVE");
+
+      if (transaction != null) {
+        reservation.setDate(transaction.getDate());
+        reservation.setParent(transaction.getParent());
+        reservation.setCopy(copy);
+        reservation.setItem(copy.getItem());
+
+        reservations.add(reservation);
+      }
+    }
+
+    return reservations;
   }
 
   private double amountAvailable() {
@@ -301,7 +321,7 @@ public class Item {
 
   public Reservation getReservation(int memberNo) {
     for (Reservation reservation : reservations) {
-      if (reservation.getMember().getNo() == memberNo) {
+      if (reservation.getParent().getNo() == memberNo) {
         return  reservation;
       }
     }
@@ -310,9 +330,9 @@ public class Item {
   }
 
   public void removeReservation(int memberNo) {
-    for (int i = 0; i < reservations.size(); i++) {
-      if (reservations.get(i).getMember().getNo() == memberNo) {
-        reservations.remove(i);
+    for (Reservation reservation : reservations) {
+      if (reservation.getParent().getNo() == memberNo) {
+        reservations.remove(reservation);
         break;
       }
     }
@@ -395,7 +415,7 @@ public class Item {
     item.put("description", description);
     item.put("storage", storage);
     item.put("copies", copies);
-    item.put("reservations", reservations);
+    item.put("reservation", reservations);
 
     return item;
   }
@@ -463,7 +483,7 @@ public class Item {
       total += (int) copy.getPrice();
     }
 
-    return total / copies.size();
+    return copies.size() == 0 ? 0 : total / copies.size();
   }
 
   public int averagePriceStock() {
@@ -473,7 +493,7 @@ public class Item {
       total += (int) copy.getPrice();
     }
 
-    return total / getAvailable().size();
+    return getAvailable().size() == 0 ? 0 : total / getAvailable().size();
   }
 
   public int minimumPriceTotal() {

@@ -4,6 +4,8 @@ import api.APIConnector;
 import model.member.*;
 import java.util.ArrayList;
 import java.util.Date;
+
+import model.transaction.Transaction;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,22 +84,18 @@ public class MemberHandler {
   private Member _selectMember(JSONObject data) {
     JSONObject req = new JSONObject();
 
-    try {
-      req.put("function", "select");
-      req.put("object", "member");
-      req.put("data", data);
+    req.put("function", "select");
+    req.put("object", "member");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
 
-      if (res.has("data") && res.get("data") instanceof JSONObject) {
-        data = res.getJSONObject("data");
-        member = new Member(data);
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
-      member = new Member();
+    if (data == null) {
+      return new Member();
     }
 
+    member = data.optBoolean("is_parent", false) ? new StudentParent(data) : new Member(data);
     return member;
   }
 
@@ -107,7 +105,7 @@ public class MemberHandler {
    * @param deactivated True if want to search in deactivated accounts
    * @return A List of members
    */
-  ArrayList<Member> searchMembers(String search, boolean deactivated) {
+  ArrayList<Member> searchMembers(String search, boolean deactivated, boolean parentOnly) {
     ArrayList<Member> members = new ArrayList<>();
     JSONObject json = new JSONObject();
     JSONObject data = new JSONObject();
@@ -117,6 +115,10 @@ public class MemberHandler {
 
       if (deactivated) {
         data.put("deactivated", true);
+      }
+
+      if (parentOnly) {
+        data.put("is_parent", true);
       }
 
       json.put("function", "search");
@@ -511,6 +513,50 @@ public class MemberHandler {
       return data.has("code") && data.getInt("code") == 200;
     } catch (JSONException e) {
       e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  public boolean deleteItemReservation(int itemId) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    data.put("member", member.getNo());
+    data.put("item", itemId);
+
+    req.put("object", "reservation");
+    req.put("function", "delete");
+    req.put("data", data);
+
+    JSONObject res = APIConnector.call(req);
+    data = res.getJSONObject("data");
+
+    if (data.optInt("code", 0) == 200) {
+      member.getAccount().removeItemReservation(itemId);
+      return true;
+    }
+
+    return false;
+  }
+
+  public boolean deleteCopyReservation(int copyId) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    data.put("copy", copyId);
+    data.put("type", Transaction.RESERVATION);
+
+    req.put("object", "transaction");
+    req.put("function", "delete");
+    req.put("data", data);
+
+    JSONObject res = APIConnector.call(req);
+    data = res.getJSONObject("data");
+
+    if (data.optInt("code", 0) == 200) {
+      member.getAccount().removeCopyReservation(copyId);
+      return true;
     }
 
     return false;

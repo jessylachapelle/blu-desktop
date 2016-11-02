@@ -8,6 +8,8 @@
     <Label styleClass="h1" fx:id="lblAdd" text="Ajouter un membre"/>
 
     <VBox styleClass="section" spacing="10">
+      <CheckBox fx:id="cbIsParent" text="Parent-Étudiant" />
+
       <HBox spacing="10">
         <Label styleClass="form-label" text="Prénom*"/>
         <TextField fx:id="txtFirstName"/>

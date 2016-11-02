@@ -19,14 +19,14 @@
 
       <!-- Coordinates -->
       <VBox styleClass="section" spacing="10">
-        <Label styleClass="h2" text="Information du member"/>
+        <Label styleClass="h2" text="Information du parent"/>
         <HBox spacing="10">
           <Label text="Nom :"/>
           <Label fx:id="lblName"/>
         </HBox>
 
         <HBox spacing="10">
-          <Label text="Numéro de member :"/>
+          <Label text="Numéro de parent :"/>
           <Label fx:id="lblNo"/>
         </HBox>
 
@@ -90,13 +90,13 @@
 
       <VBox fx:id="reservation" spacing="10">
         <Label styleClass="h2" text="Réservations"/>
-        <Button styleClass="form-button" fx:id="btnAddReservation" text="Faire une réservation"/>
         <TableView fx:id="tblReservation">
           <columns>
-            <TableColumn prefWidth="228.0" text="Titre"/>
-            <TableColumn prefWidth="132.0" text="Propriétaire"/>
-            <TableColumn prefWidth="147.0" text="Mise en réservation"/>
-            <TableColumn prefWidth="61.0" text="Prix"/>
+            <TableColumn fx:id="colReservationTitle" prefWidth="228.0" text="Titre"/>
+            <TableColumn fx:id="colReservationDateReserved" prefWidth="228.0" text="Réservé le"/>
+            <TableColumn fx:id="colReservationSeller" prefWidth="132.0" text="Propriétaire"/>
+            <TableColumn fx:id="colReservationDateAdded" prefWidth="147.0" text="Mise en vente"/>
+            <TableColumn fx:id="colReservationPrice" prefWidth="61.0" text="Prix"/>
           </columns>
         </TableView>
       </VBox>

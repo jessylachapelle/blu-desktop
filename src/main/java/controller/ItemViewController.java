@@ -3,7 +3,10 @@ package controller;
 import handler.ItemHandler;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -11,13 +14,14 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import model.item.Book;
-import model.item.Copy;
-import model.item.Item;
-import model.item.Storage;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import model.item.*;
+import model.member.Member;
 import org.json.JSONObject;
 import utility.Dialog;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,12 +58,12 @@ public class ItemViewController extends PanelController {
   @FXML private WebView statistics;
 
   @FXML private Button btnDisplayReservations;
-  @FXML private TableView<Copy> tblReservations;
-  @FXML private TableColumn<Copy, String> colReservationMember;
-  @FXML private TableColumn<Copy, String> colReservationSeller;
-  @FXML private TableColumn<Copy, String> colReservationAdded;
-  @FXML private TableColumn<Copy, String> colReservationDate;
-  @FXML private TableColumn<Copy, String> colReservationPrice;
+  @FXML private TableView<Reservation> tblReservations;
+  @FXML private TableColumn<Reservation, String> colReservationParent;
+  @FXML private TableColumn<Reservation, String> colReservationSeller;
+  @FXML private TableColumn<Reservation, String> colReservationAdded;
+  @FXML private TableColumn<Reservation, String> colReservationDate;
+  @FXML private TableColumn<Reservation, String> colReservationPrice;
 
   @FXML private Button btnDisplayAvailable;
   @FXML private TableView<Copy> tblAvailable;
@@ -124,7 +128,7 @@ public class ItemViewController extends PanelController {
   }
 
   public TableView[] getCopyTables() {
-    return new TableView[]{ tblReservations, tblAvailable, tblSold, tblPaid };
+    return new TableView[]{ tblAvailable, tblSold, tblPaid };
   }
 
   public Button getBtnUpdate() {
@@ -196,77 +200,70 @@ public class ItemViewController extends PanelController {
     });
 
     btnReserve.setOnAction(event -> {
-      // TODO: Handle reservations
-//      String input = "";
-//      int memberNo = 0;
-//      boolean isMember = false;
-//
-//      while (!isMember) {
-//        try {
-//          input = Dialog.input("Réserver cet item", "Entrez le numéro de l'étudiant qui fait la réservation");
-//          memberNo = Integer.parseInt(input);
-//
-//          MemberHandler memberHandler = new MemberHandler();
-//          isMember = memberHandler.exist(memberNo);
-//        } catch (NumberFormatException e) {
-//          if (input.equals("")) {
-//            return;
-//          }
-//        }
-//      }
-//
-//      if (itemHandler.addItemReservation(memberNo)) {
-//        _displayCopies();
-//      }
+      JSONObject window = _openSearchWindow();
+
+      if (window != null) {
+        SearchController searchController = (SearchController) window.get("controller");
+        searchController.setSearchParent();
+        Stage stage = (Stage) window.get("stage");
+
+        searchController.getTblMemberResults().setOnMouseClicked(e -> {
+          TableRow row = _getTableRow(((Node) e.getTarget()).getParent());
+          Member member = (Member) row.getItem();
+          stage.hide();
+
+          if (itemHandler.addItemReservation(member.getNo())) {
+            _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue");
+          }
+
+          e.consume();
+        });
+      }
     });
 
     btnDisplayReservations.setOnAction(event -> tblReservations.setVisible(!tblReservations.isVisible()));
 
     tblReservations.setOnMouseClicked(event -> {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
-      Copy copy = (Copy) row.getItem();
+      Reservation reservation = (Reservation) row.getItem();
 
-      if (event.getButton() == MouseButton.SECONDARY) {
+      if (reservation != null && event.getButton().equals(MouseButton.SECONDARY)) {
         final ContextMenu contextMenu = new ContextMenu();
 
         MenuItem sell = new MenuItem("Vendre");
-        MenuItem update = new MenuItem("Modifier le prix");
         MenuItem cancel = new MenuItem("Annuler réservation");
 
-        if (copy.getId() == 0) {
+        if (reservation.getCopy().getId() == 0) {
           contextMenu.getItems().addAll(cancel);
         } else {
-          contextMenu.getItems().addAll(sell, update, cancel);
+          contextMenu.getItems().addAll(sell, cancel);
         }
 
         row.setContextMenu(contextMenu);
 
         sell.setOnAction(e -> {
-          if (itemHandler.addTransaction(copy.getMember().getNo(), copy.getId(), "SELL_PARENT")) {
+          if (itemHandler.addTransaction(reservation.getCopy().getMember().getNo(), reservation.getCopy().getId(), "SELL_PARENT")) {
             _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue");
           }
         });
 
-        update.setOnAction(e -> _updatePrice(copy));
-
         cancel.setOnAction(e -> {
-          // TODO: Handle reservations
-//          if (copy.getId() == 0) {
-//            itemHandler.deleteReservation(copy.getParent().getNo(), getBook().getId());
-//            getBook().getReserved().remove(copy);
-//          } else {
-//            itemHandler.deleteReservation(copy.getId());
-//            getBook().getReserved().remove(copy);
-//
-//            for (int noTransaction = 0; noTransaction < copy.getAllTransactions().size(); noTransaction++) {
-//              if (copy.getAllTransactions().get(noTransaction).getType().equals("RESERVE")) {
-//                copy.getAllTransactions().remove(noTransaction);
-//              }
-//            }
-//            getBook().getCopies().add(copy);
-//          }
-//
-//          _displayCopies();
+          boolean success;
+          if (reservation.getCopy() == null || reservation.getCopy().getId() == 0) {
+            success = itemHandler.deleteItemReservation(reservation.getParent().getNo());
+          } else {
+            success = itemHandler.deleteCopyReservation(reservation.getCopy().getId());
+          }
+
+          if (success) {
+            _displayCopies();
+          } else {
+            Dialog.information("Une erreur est survenue");
+          }
         });
       }
     });
@@ -282,10 +279,11 @@ public class ItemViewController extends PanelController {
 
         MenuItem sell = new MenuItem("Vendre");
         MenuItem sellParent = new MenuItem("Vendre à 50%");
+        MenuItem reserve = new MenuItem("Réserver");
         MenuItem update = new MenuItem("Modifier le prix");
         MenuItem delete = new MenuItem("Supprimer");
 
-        contextMenu.getItems().addAll(sell, sellParent, update, delete);
+        contextMenu.getItems().addAll(sell, sellParent, reserve, update, delete);
         row.setContextMenu(contextMenu);
 
         sell.setOnAction(e -> {
@@ -301,6 +299,30 @@ public class ItemViewController extends PanelController {
             _displayCopies();
           } else {
             Dialog.information("Une erreur est survenue");
+          }
+        });
+
+        reserve.setOnAction(e -> {
+          JSONObject window = _openSearchWindow();
+
+          if (window != null) {
+            SearchController searchController = (SearchController) window.get("controller");
+            searchController.setSearchParent();
+            Stage stage = (Stage) window.get("stage");
+
+            searchController.getTblMemberResults().setOnMouseClicked(ev -> {
+              TableRow tableRow = _getTableRow(((Node) ev.getTarget()).getParent());
+              Member member = (Member) tableRow.getItem();
+              stage.hide();
+
+              if (itemHandler.addTransaction(member.getNo(), copy.getId(), "RESERVE")) {
+                _displayCopies();
+              } else {
+                Dialog.information("Une erreur est survenue");
+              }
+
+              e.consume();
+            });
           }
         });
 
@@ -371,16 +393,17 @@ public class ItemViewController extends PanelController {
   }
 
   private void _dataBinding() {
+    btnReserve.managedProperty().bind(btnReserve.visibleProperty());
     tblReservations.managedProperty().bind(tblReservations.visibleProperty());
     tblAvailable.managedProperty().bind(tblAvailable.visibleProperty());
     tblSold.managedProperty().bind(tblSold.visibleProperty());
     tblPaid.managedProperty().bind(tblPaid.visibleProperty());
 
-    colReservationMember.setCellValueFactory(new PropertyValueFactory<>("reservee"));
-    colReservationSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
+    colReservationParent.setCellValueFactory(new PropertyValueFactory<>("parentName"));
+    colReservationSeller.setCellValueFactory(new PropertyValueFactory<>("memberName"));
     colReservationAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
     colReservationDate.setCellValueFactory(new PropertyValueFactory<>("dateReserved"));
-    colReservationPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
+    colReservationPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
 
     colAvailableSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
     colAvailableAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
@@ -479,6 +502,7 @@ public class ItemViewController extends PanelController {
     tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
     tblSold.setVisible(!tblSold.getItems().isEmpty());
     tblPaid.setVisible(!tblPaid.getItems().isEmpty());
+    btnReserve.setVisible(tblAvailable.getItems().isEmpty());
 
     _displayStats();
   }
@@ -494,5 +518,31 @@ public class ItemViewController extends PanelController {
      lblMaximum.setText(maximum);
      lblAverage.setText(average);
      lblMinimum.setText(minimum);
+  }
+
+  private JSONObject _openSearchWindow() {
+    try {
+      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layout/search.fxml"));
+      Parent parent = fxmlLoader.load();
+      Stage stage = new Stage();
+      Scene scene = new Scene(parent);
+
+      scene.getStylesheets().addAll("css/window.css");
+      stage.initModality(Modality.APPLICATION_MODAL);
+      stage.setTitle("Sélectionner le parent");
+      stage.setWidth(600);
+      stage.setHeight(650);
+      stage.setScene(scene);
+      stage.show();
+
+      JSONObject window = new JSONObject();
+      window.put("stage", stage);
+      window.put("controller", (SearchController) fxmlLoader.getController());
+      return window;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return null;
   }
 }

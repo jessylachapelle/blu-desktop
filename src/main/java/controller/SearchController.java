@@ -58,6 +58,10 @@ public class SearchController extends PanelController {
   }
 
   private void dataBinding() {
+    cbArchive.managedProperty().bind(cbArchive.visibleProperty());
+    rbMembers.managedProperty().bind(rbMembers.visibleProperty());
+    rbItems.managedProperty().bind(rbItems.visibleProperty());
+    btnAdd.managedProperty().bind(btnAdd.visibleProperty());
     tblMemberResults.managedProperty().bind(tblMemberResults.visibleProperty());
     tblItemResults.managedProperty().bind(tblItemResults.visibleProperty());
 
@@ -191,6 +195,15 @@ public class SearchController extends PanelController {
     rbMembers.setSelected(true);
     lblTitle.setText("Recherche de membres");
     toggleFilters(false);
+  }
+
+  public void setSearchParent() {
+    rbMembers.setSelected(true);
+    cbArchive.setSelected(false);
+    lblTitle.setText("Recherche de parents-étudiants");
+    toggleFilters(false);
+    btnAdd.setVisible(false);
+    searchHandler.setParentSearch();
   }
 
   public Button getBtnAdd() {

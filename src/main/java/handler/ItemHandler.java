@@ -4,6 +4,7 @@ import api.APIConnector;
 import model.item.*;
 import java.util.ArrayList;
 
+import model.transaction.Transaction;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -393,7 +394,6 @@ public class ItemHandler {
   public boolean addItemReservation(int memberNo) {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
-    int id = 0;
 
     try {
       data.put("member", memberNo);
@@ -405,9 +405,10 @@ public class ItemHandler {
 
       JSONObject res = APIConnector.call(req);
       data = res.getJSONObject("data");
+      int id = data.optInt("id", 0);
 
-      if (data.has("code") && data.getInt("code") == 200) {
-        item.addReservation(new Reservation(memberNo));
+      if (data.optInt("code", 0)  == 200) {
+        item.addReservation(new Reservation(id, memberNo));
         return true;
       }
     } catch (JSONException e) {
@@ -441,25 +442,25 @@ public class ItemHandler {
     return id;
   }
 
-  public boolean deleteReservation(int memberNo, int itemId) {
+  public boolean deleteItemReservation(int memberNo) {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("member", memberNo);
-      data.put("item", itemId);
+    data.put("member", memberNo);
+    data.put("item", item.getId());
 
-      req.put("object", "reservation");
-      req.put("function", "delete");
-      req.put("data", data);
+    req.put("object", "reservation");
+    req.put("function", "delete");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
+    JSONObject res = APIConnector.call(req);
+    data = res.getJSONObject("data");
 
-      return data.has("code") && data.getInt("code") == 200;
-    } catch (JSONException e) {
-      e.printStackTrace();
+    if (data.optInt("code", 0) == 200) {
+      getItem().removeReservation(memberNo);
+      return true;
     }
+
     return false;
   }
 
@@ -468,25 +469,25 @@ public class ItemHandler {
    * @param copyId Le id de l'exemplaire
    * @return Vrai si la supression est un succès
    */
-  public boolean deleteReservation(int copyId) {
+  public boolean deleteCopyReservation(int copyId) {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("copy", copyId);
-      data.put("type", "RESERVE");
+    data.put("copy", copyId);
+    data.put("type", Transaction.RESERVATION);
 
-      req.put("object", "transaction");
-      req.put("function", "delete");
-      req.put("data", data);
+    req.put("object", "transaction");
+    req.put("function", "delete");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
+    JSONObject res = APIConnector.call(req);
+    data = res.getJSONObject("data");
 
-      return data.has("code") && data.getInt("code") == 200;
-    } catch (JSONException e) {
-      e.printStackTrace();
+    if (data.optInt("code", 0) == 200) {
+      getItem().getCopy(copyId).removeTransaction(Transaction.RESERVATION);
+      return true;
     }
+
     return false;
   }
 

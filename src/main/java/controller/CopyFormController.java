@@ -107,8 +107,14 @@ public class CopyFormController extends PanelController {
       currentCopy.setMember(member);
       currentCopy.setId(copyHandler.addCopy(currentCopy).getId());
       copies.add(currentCopy);
-      currentCopy = null;
 
+      if (currentCopy.getParent().getNo() != 0) {
+        String title = "Reservation";
+        String message = "Cet article a été réservé par " + currentCopy.getParent().getFirstName() + " " + currentCopy.getParent().getLastName() + " (" + currentCopy.getParent().getNo() + "). Veuillez le mettre dans la section des réservations parents-étudiants";
+        Dialog.information(title, message);
+      }
+
+      currentCopy = null;
       _displayCopies();
       _toggleView(true, true);
     });

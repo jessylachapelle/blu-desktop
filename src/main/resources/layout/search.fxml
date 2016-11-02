@@ -14,7 +14,7 @@
     <TextField fx:id="txtSearch"/>
 
     <HBox spacing="10">
-      <RadioButton fx:id="rbMembers" text="Un member" toggleGroup="$type" userData="member"/>
+      <RadioButton fx:id="rbMembers" text="Un membre" toggleGroup="$type" userData="member"/>
       <RadioButton fx:id="rbItems" text="Un ouvrage" toggleGroup="$type" userData="item"/>
     </HBox>
 

@@ -2,6 +2,7 @@ package model.transaction;
 
 import java.util.Date;
 
+import model.member.StudentParent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,10 +16,13 @@ import utility.DateParser;
  * @since 26/10/2015
  * @version 0.1
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Transaction {
+  public final static String RESERVATION = "RESERVE";
+
   private Date date;
   private String type;
+  private StudentParent parent;
 
   /**
    * Constructeur par défaut, crée une transaction aux valeurs null
@@ -34,11 +38,13 @@ public class Transaction {
 
   public Transaction(String type) {
     this.type = type;
+    parent = new StudentParent();
     date = new Date();
   }
 
   private void init() {
     type = "";
+    parent = new StudentParent();
     date = new Date();
   }
 
@@ -83,25 +89,29 @@ public class Transaction {
     this.date = date;
   }
 
+  public void setParent(StudentParent parent) {
+    this.parent = parent;
+  }
+
+  public StudentParent getParent() {
+    return parent;
+  }
+
   /**
    *
    * @param dateString Formatted date (YYYY-MM-DD)
    */
   public void setDate(String dateString) {
-    this.date = DateParser.dateFromString(dateString);
+    date = dateString.isEmpty() ? date : DateParser.dateFromString(dateString);
   }
 
-  public void fromJSON(JSONObject json) {
-    try {
-      if (json.has("date")) {
-        setDate(json.getString("date"));
-      }
+  public void fromJSON(JSONObject transaction) {
+    setDate(transaction.optString("date", ""));
+    type = transaction.optString("code", "");
 
-      if (json.has("code")) {
-        type = json.getString("code");
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+    JSONObject parent = transaction.optJSONObject("parent");
+    if (parent != null) {
+      this.parent = new StudentParent(parent);
     }
   }
 

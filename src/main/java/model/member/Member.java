@@ -38,7 +38,7 @@ public class Member {
     fromJSON(json);
   }
 
-  private void init() {
+  protected void init() {
     no = 0;
     account = new Account();
 
@@ -360,5 +360,10 @@ public class Member {
     }
 
     return member;
+  }
+
+  @Override
+  public String toString() {
+    return firstName + " " + lastName;
   }
 }

@@ -28,6 +28,11 @@ public class StudentParent extends Member {
     reservations = new ArrayList<>();
   }
 
+  public StudentParent(JSONObject parent) {
+    super.init();
+    fromJSON(parent);
+  }
+
   /**
    * Accède à la liste de toutes les réservations du member
    *

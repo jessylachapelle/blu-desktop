@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 
 import javafx.scene.layout.VBox;
+import model.member.StudentParent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +30,7 @@ public class MemberFormController extends PanelController {
   @FXML private Label lblAdd;
   @FXML private VBox commentSection;
 
+  @FXML private CheckBox cbIsParent;
   @FXML private TextField txtNo;
   @FXML private TextField txtLastName;
   @FXML private TextField txtFirstName;
@@ -90,6 +92,7 @@ public class MemberFormController extends PanelController {
     cbGenerateMemberNo.setVisible(false);
     btnCancel.setVisible(true);
 
+    cbIsParent.setSelected(member instanceof StudentParent);
     txtNo.setText(Integer.toString(member.getNo()));
     txtFirstName.setText(member.getFirstName());
     txtLastName.setText(member.getLastName());
@@ -138,22 +141,24 @@ public class MemberFormController extends PanelController {
       return false;
     }
 
-    if (!txtNo.getText().isEmpty() && memberHandler.exist(Integer.parseInt(txtNo.getText()))) {
-      String message = "Le numéro étudiant inscrit est déjà associé à un membre. Voulez-vous aller à sa fiche ?";
-      if (Dialog.confirmation(message)) {
-        ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(Integer.parseInt(txtNo.getText()));
+    if (insertion) {
+      if (!txtNo.getText().isEmpty() && memberHandler.exist(Integer.parseInt(txtNo.getText()))) {
+        String message = "Le numéro étudiant inscrit est déjà associé à un membre. Voulez-vous aller à sa fiche ?";
+        if (Dialog.confirmation(message)) {
+          ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(Integer.parseInt(txtNo.getText()));
+        } else {
+          return false;
+        }
       }
 
-      return false;
-    }
-
-    if (memberHandler.exist(txtEmail.getText())) {
-      String message = "L'addresse courriel inscrit est déjà associé à un membre. Voulez-vous aller à sa fiche ?";
-      if (Dialog.confirmation(message)) {
-        ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(txtEmail.getText());
+      if (memberHandler.exist(txtEmail.getText())) {
+        String message = "L'addresse courriel inscrit est déjà associé à un membre. Voulez-vous aller à sa fiche ?";
+        if (Dialog.confirmation(message)) {
+          ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(txtEmail.getText());
+        } else {
+          return false;
+        }
       }
-
-      return false;
     }
 
     return true;
@@ -173,6 +178,8 @@ public class MemberFormController extends PanelController {
     JSONArray phones = new JSONArray();
 
     try {
+      form.put("is_parent", cbIsParent.isSelected());
+
       if (cbGenerateMemberNo.isSelected()) {
         form.put("no", _getRandomMemberNo());
       } else if (insertion || Integer.parseInt(txtNo.getText()) != getMember().getNo()) {
