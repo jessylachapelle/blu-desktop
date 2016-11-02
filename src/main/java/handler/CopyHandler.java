@@ -2,6 +2,7 @@ package handler;
 
 import api.APIConnector;
 import model.item.Copy;
+import model.member.StudentParent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -77,27 +78,26 @@ public class CopyHandler {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("item_id", copy.getItem().getId());
-      data.put("price", copy.getPrice());
-      data.put("member_no", copy.getMember().getNo());
+    data.put("item_id", copy.getItem().getId());
+    data.put("price", copy.getPrice());
+    data.put("member_no", copy.getMember().getNo());
 
-      req.put("object", "copy");
-      req.put("function", "insert");
-      req.put("data", data);
+    req.put("object", "copy");
+    req.put("function", "insert");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
+    JSONObject res = APIConnector.call(req);
+    data = res.getJSONObject("data");
 
-      if (data.has("id")) {
-        copy.setId(data.getInt("id"));
-        return copy;
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+
+    copy.setId(data.optInt("id", 0));
+    JSONObject reservation = data.optJSONObject("reservation");
+
+    if (reservation != null) {
+      copy.setParent(new StudentParent(reservation));
     }
 
-    return null;
+    return copy.getId() != 0 ? copy : null;
   }
 
   /**
