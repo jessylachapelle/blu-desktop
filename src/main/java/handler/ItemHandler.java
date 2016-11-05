@@ -3,6 +3,7 @@ package handler;
 import api.APIConnector;
 import model.item.*;
 import java.util.ArrayList;
+import java.util.Date;
 
 import model.transaction.Transaction;
 import org.json.JSONArray;
@@ -502,23 +503,23 @@ public class ItemHandler {
     return false;
   }
 
-  public boolean setStatus(int id, String status) {
+  public boolean updateStatus(int id, String status) {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("id", id);
-      data.put("status", status.toUpperCase());
+    data.put("id", id);
+    data.put("status", status);
 
-      req.put("object", "item");
-      req.put("function", "setStatus");
-      req.put("data", data);
+    req.put("object", "item");
+    req.put("function", "updateStatus");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
-      return data.has("code") && data.getInt("code") == 200;
-    } catch (JSONException e) {
-      e.printStackTrace();
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
+
+    if (data != null && data.optInt("code", 0) == 200) {
+      ((Book) item).updateStatus(status, new Date());
+      return true;
     }
 
     return false;

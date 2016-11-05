@@ -17,6 +17,9 @@ import java.util.Date;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Book extends Item {
+  public static final String STATUS_VALID = "VALID";
+  public static final String STATUS_OUTDATED = "OUTDATED";
+  public static final String STATUS_REMOVED = "REMOVED";
 
   private String publication;
   private ArrayList<Author> author;
@@ -210,6 +213,23 @@ public class Book extends Item {
 
   public void setOutdated(Date date) {
     outdated = date;
+  }
+
+  public void updateStatus(String status, Date date) {
+    switch (status) {
+      case STATUS_VALID:
+        added = date;
+        outdated = null;
+        removed = null;
+        break;
+      case STATUS_OUTDATED:
+        outdated = date;
+        removed = null;
+        break;
+      case STATUS_REMOVED:
+        removed = date;
+        break;
+    }
   }
 
   public void setOutdated(String date) {

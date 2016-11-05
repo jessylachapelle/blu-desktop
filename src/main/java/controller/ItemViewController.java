@@ -11,6 +11,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -24,7 +26,6 @@ import utility.Dialog;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.ResourceBundle;
 
 /**
@@ -56,6 +57,10 @@ public class ItemViewController extends PanelController {
   @FXML private Button btnReserve;
 
   @FXML private WebView statistics;
+
+  @FXML private VBox commentPane;
+  @FXML private HBox statusPane;
+  @FXML private HBox descriptionPane;
 
   @FXML private Button btnDisplayReservations;
   @FXML private TableView<Reservation> tblReservations;
@@ -152,31 +157,27 @@ public class ItemViewController extends PanelController {
     });
 
     statusUp.setOnAction(event -> {
-      if (((Book) getItem()).getStatus().equals("REMOVED")) {
-        if (itemHandler.setStatus(getItem().getId(), "OUTDATED")) {
-          ((Book) getItem()).setRemoved("");
-        }
-      } else if (((Book) getItem()).getStatus().equals("OUTDATED")) {
-        if (itemHandler.setStatus(getItem().getId(), "VALID")) {
-          ((Book) getItem()).setOutdated("");
-        }
-      }
+      Book book = (Book) getItem();
+      String status = book.getStatus().equals("REMOVED") ? Book.STATUS_OUTDATED : Book.STATUS_VALID;
 
-      lblStatus.setText(((Book) getItem()).getStatus());
+      if (itemHandler.updateStatus(book.getId(), status)) {
+        lblStatus.setText(book.getStatus());
+        _displayStatusButtons();
+      } else {
+        Dialog.information("Une erreur est survenue");
+      }
     });
 
     statusDown.setOnAction(event -> {
-      if (((Book) getItem()).getStatus().equals("VALID")) {
-        if (itemHandler.setStatus(getItem().getId(), "OUTDATED")) {
-          ((Book) getItem()).setOutdated(new Date());
-        }
-      } else if (((Book) getItem()).getStatus().equals("OUTDATED")) {
-        if (itemHandler.setStatus(getItem().getId(), "REMOVED")) {
-          ((Book) getItem()).setRemoved(new Date());
-        }
-      }
+      Book book = (Book) getItem();
+      String status = book.getStatus().equals(Book.STATUS_VALID) ? Book.STATUS_OUTDATED : Book.STATUS_REMOVED;
 
-      lblStatus.setText(((Book) getItem()).getStatus());
+      if (itemHandler.updateStatus(book.getId(), status)) {
+        lblStatus.setText(book.getStatus());
+        _displayStatusButtons();
+      } else {
+        Dialog.information("Une erreur est survenue");
+      }
     });
 
     btnStorage.setOnAction(event -> {
@@ -400,6 +401,9 @@ public class ItemViewController extends PanelController {
     tblAvailable.managedProperty().bind(tblAvailable.visibleProperty());
     tblSold.managedProperty().bind(tblSold.visibleProperty());
     tblPaid.managedProperty().bind(tblPaid.visibleProperty());
+    statusPane.managedProperty().bind(statusPane.visibleProperty());
+    commentPane.managedProperty().bind(commentPane.visibleProperty());
+    descriptionPane.managedProperty().bind(descriptionPane.visibleProperty());
 
     colReservationParent.setCellValueFactory(new PropertyValueFactory<>("parentName"));
     colReservationSeller.setCellValueFactory(new PropertyValueFactory<>("memberName"));
@@ -448,6 +452,10 @@ public class ItemViewController extends PanelController {
     lblEan13.setText(getItem().getEan13());
     lblStorage.setText(getItem().getStorageString());
 
+    descriptionPane.setVisible(!isBook);
+    statusPane.setVisible(isBook);
+    commentPane.setVisible(isBook);
+
     if (isBook) {
       _displayBook();
     } else {
@@ -481,12 +489,21 @@ public class ItemViewController extends PanelController {
   }
 
   private void _displayBook() {
-    lblComment.setText(getItem().getDescription());
-    lblPublication.setText(((Book) getItem()).getPublication());
-    lblAuthor.setText(((Book) getItem()).getAuthorString());
-    lblEditor.setText(((Book) getItem()).getEditor());
-    lblEdition.setText(Integer.toString(((Book) getItem()).getEdition()));
-    lblStatus.setText(((Book) getItem()).getStatus());
+    Book book = (Book) getItem();
+
+    lblComment.setText(book.getDescription());
+    lblPublication.setText(book.getPublication());
+    lblAuthor.setText(book.getAuthorString());
+    lblEditor.setText(book.getEditor());
+    lblEdition.setText(Integer.toString(book.getEdition()));
+    lblStatus.setText(book.getStatus());
+    _displayStatusButtons();
+  }
+
+  private void _displayStatusButtons() {
+    Book book = (Book) getItem();
+    statusUp.setVisible(!book.getStatus().equals(Book.STATUS_VALID));
+    statusDown.setVisible(!book.getStatus().equals(Book.STATUS_REMOVED));
   }
 
   private void _displayCopies() {
