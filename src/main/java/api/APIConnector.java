@@ -53,7 +53,7 @@ public class APIConnector {
       bufferedReader.close();
       connection.disconnect();
 
-      System.out.println(jsonData);
+      System.out.println(req.toString());
       System.out.println(response + '\n');
       return new JSONObject(response);
     } catch (MalformedURLException e) {

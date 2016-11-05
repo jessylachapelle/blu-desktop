@@ -23,7 +23,7 @@
           <Label text="Titre :"/>
           <Label fx:id="lblTitle"/>
         </HBox>
-        <HBox spacing="10">
+        <HBox fx:id="descriptionPane" spacing="10">
           <Label text="Description :"/>
           <Label fx:id="lblDescription"/>
         </HBox>
@@ -47,20 +47,22 @@
           <Label text="Code EAN13 :"/>
           <Label fx:id="lblEan13"/>
         </HBox>
-        <HBox spacing="10">
-          <Label text="Commentaire :"/>
-          <Label fx:id="lblComment"/>
-        </HBox>
-        <AnchorPane>
-          <Button styleClass="form-button" fx:id="btnAddComment" text="Modifier le commentaire"
-                  AnchorPane.rightAnchor="0"/>
-        </AnchorPane>
+        <VBox fx:id="commentPane">
+          <HBox spacing="10">
+            <Label text="Commentaire :"/>
+            <Label fx:id="lblComment"/>
+          </HBox>
+          <AnchorPane>
+            <Button styleClass="form-button" fx:id="btnAddComment" text="Modifier le commentaire"
+                    AnchorPane.rightAnchor="0"/>
+          </AnchorPane>
+        </VBox>
       </VBox>
 
       <VBox styleClass="section" spacing="10">
         <Label styleClass="h2" text="Gestion interne"/>
 
-        <HBox spacing="10">
+        <HBox fx:id="statusPane" spacing="10">
           <Label text="Statut :"/>
           <Label fx:id="lblStatus"/>
           <Button styleClass="form-button" fx:id="statusUp" text="^"/>
