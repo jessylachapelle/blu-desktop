@@ -22,6 +22,10 @@ public class Storage {
     init();
   }
 
+  public Storage(String code) {
+    this.code = code;
+  }
+
   public Storage(JSONObject json) {
     init();
     fromJSON(json);

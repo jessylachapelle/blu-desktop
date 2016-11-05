@@ -191,9 +191,11 @@ public class ItemViewController extends PanelController {
         for (String unit : storageArray) {
           Storage storageUnit = new Storage();
           storageUnit.setCode(unit);
+          storage.add(storageUnit);
         }
 
         getItem().setStorage(storage);
+        lblStorage.setText(getItem().getStorageString());
       } else {
         Dialog.information("Une erreur est survenue");
       }
