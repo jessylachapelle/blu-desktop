@@ -371,7 +371,7 @@ public class Item {
     JSONArray storage = json.optJSONArray("storage");
     if (storage != null) {
       for (int i = 0; i < storage.length(); i++) {
-        this.storage.add(new Storage(storage.getJSONObject(i)));
+        this.storage.add(new Storage(storage.getString(i)));
       }
     }
 
