@@ -7,6 +7,8 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
+import javafx.print.Printer;
+import javafx.print.PrinterJob;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -61,6 +63,7 @@ public class MemberViewController extends PanelController {
   @FXML private Button btnRenew;
   @FXML private Button btnAddComment;
   @FXML private Button btnPay;
+  @FXML private Button btnReceipt;
 
   @FXML private VBox reservation;
   @FXML private TableView tblReservation;
@@ -357,6 +360,28 @@ public class MemberViewController extends PanelController {
         Dialog.information("Le compte a été renouvelé");
       } else {
         Dialog.information("Une erreur empêche le compte d'être renouvelé");
+      }
+    });
+
+    btnReceipt.setOnAction(event -> {
+      Printer printer = Printer.getDefaultPrinter();
+
+      if (printer != null) {
+        WebView statement = new WebView();
+        WebEngine webEngine = statement.getEngine();
+        URL url = getClass().getClassLoader().getResource("html/account_statement.html");
+
+        // TODO: Set proper data
+        JSONObject data = new JSONObject();
+        data.put("firstName", getMember().getFirstName());
+        webEngine.load(url.toExternalForm() + "?data=" + data.toString());
+
+        PrinterJob job = PrinterJob.createPrinterJob(printer);
+        webEngine.print(job);
+        Dialog.information("L'impression du relevé est en cours...");
+        job.endJob();
+      } else {
+        Dialog.information("Vous devez installer une imprimante pour pouvoir imprimer");
       }
     });
 
