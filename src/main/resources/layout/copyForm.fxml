@@ -3,8 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.CopyFormController">
+<ScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.CopyFormController" prefHeight="950">
   <VBox styleClass="main" spacing="10">
     <Label styleClass="h2" text="Ajouter des livres à vendre"/>
     <Label styleClass="h3" fx:id="memberName"/>
@@ -32,4 +32,4 @@
       <fx:include source="search.fxml"/>
     </Pane>
   </VBox>
-</Pane>
+</ScrollPane>

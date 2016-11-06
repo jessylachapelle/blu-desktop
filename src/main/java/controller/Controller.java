@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.Node;
@@ -97,7 +98,7 @@ public class Controller implements javafx.fxml.Initializable {
   }
 
   protected boolean isRightClick(MouseEvent event) {
-    return event.isSecondaryButtonDown();
+    return event.getButton() == MouseButton.SECONDARY;
   }
 
   protected void initText(Pane pane) {

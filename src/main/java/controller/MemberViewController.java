@@ -272,7 +272,7 @@ public class MemberViewController extends PanelController {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
       Copy copy = (Copy) row.getItem();
 
-      if (event.getButton() == MouseButton.SECONDARY) {
+      if (isRightClick(event)) {
         final ContextMenu contextMenu = new ContextMenu();
         MenuItem cancel = new MenuItem("Annuler la vente");
 
@@ -295,7 +295,7 @@ public class MemberViewController extends PanelController {
       if (row != null) {
         Comment comment = (Comment) row.getItem();
 
-        if (event.getButton() == MouseButton.SECONDARY) {
+        if (isRightClick(event)) {
           final ContextMenu contextMenu = new ContextMenu();
 
           MenuItem update = new MenuItem("Modifier");

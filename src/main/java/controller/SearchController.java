@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import model.item.Item;
 import model.item.Book;
 import handler.SearchHandler;
@@ -126,6 +128,22 @@ public class SearchController extends PanelController {
         if (item != null) {
           ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(item.getId());
         }
+      }
+    });
+
+    tblItemResults.setOnKeyPressed(event -> {
+      Item item = tblItemResults.getSelectionModel().getSelectedItem();
+
+      if (event.getCode().equals(KeyCode.ENTER) && item != null) {
+        ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(item.getId());
+      }
+    });
+
+    tblMemberResults.setOnKeyPressed(event -> {
+      Member member = tblMemberResults.getSelectionModel().getSelectedItem();
+
+      if (event.getCode().equals(KeyCode.ENTER) && member != null) {
+        ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(member.getNo());
       }
     });
 

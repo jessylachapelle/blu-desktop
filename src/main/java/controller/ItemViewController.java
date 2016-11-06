@@ -232,7 +232,7 @@ public class ItemViewController extends PanelController {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
       Reservation reservation = (Reservation) row.getItem();
 
-      if (reservation != null && event.getButton().equals(MouseButton.SECONDARY)) {
+      if (reservation != null && isRightClick(event)) {
         final ContextMenu contextMenu = new ContextMenu();
 
         MenuItem sell = new MenuItem("Vendre");
@@ -277,7 +277,7 @@ public class ItemViewController extends PanelController {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
       Copy copy = (Copy) row.getItem();
 
-      if (event.getButton() == MouseButton.SECONDARY) {
+      if (isRightClick(event)) {
         final ContextMenu contextMenu = new ContextMenu();
 
         MenuItem sell = new MenuItem("Vendre");
@@ -349,7 +349,7 @@ public class ItemViewController extends PanelController {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
       Copy copy = (Copy) row.getItem();
 
-      if (event.getButton() == MouseButton.SECONDARY) {
+      if (isRightClick(event)) {
         final ContextMenu contextMenu = new ContextMenu();
         MenuItem cancel = new MenuItem("Annuler la vente");
 
