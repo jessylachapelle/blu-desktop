@@ -342,7 +342,7 @@ public class MemberViewController extends PanelController {
           if (memberHandler.pay()) {
             _displayCopies();
           } else {
-            Dialog.information("Error");
+            Dialog.information("Une erreur est survenue");
           }
         }
       } else {
@@ -504,7 +504,6 @@ public class MemberViewController extends PanelController {
   }
 
   private void _displayMember() {
-    // TODO handle reservation visibility
     reservation.setVisible(getMember() instanceof StudentParent);
 
     lblName.setText(getMember().getFirstName() + " " + getMember().getLastName());
