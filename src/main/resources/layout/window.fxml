@@ -34,7 +34,7 @@
       </VBox>
 
       <VBox styleClass="main" spacing="10">
-        <Button styleClass="form-button" fx:id="btnBack" text="Back"/>
+        <Button styleClass="form-button" fx:id="btnBack" text="Back" visible="false" managed="false"/>
         <Pane fx:id="mainPanel" />
       </VBox>
     </HBox>

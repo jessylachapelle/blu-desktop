@@ -2,148 +2,145 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.scene.web.WebView?>
-<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
-      fx:controller="controller.ItemViewController">
-  <ScrollPane prefHeight="1200">
-    <VBox spacing="10" styleClass="main">
-      <Label styleClass="h1" text="Ouvrage"/>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="controller.ItemViewController" prefHeight="950">
+  <VBox spacing="10" styleClass="main">
+    <Label styleClass="h1" text="Ouvrage"/>
+
+    <HBox spacing="10">
+      <Button styleClass="form-button" fx:id="btnUpdate" text="Modifier l'ouvrage"/>
+      <Button styleClass="form-button" fx:id="btnDelete" text="Supprimer" visible="false" managed="false"/>
+      <Button styleClass="form-button" fx:id="btnMerge" text="Fusionner avec un autre ouvrage" visible="false" managed="false"/>
+    </HBox>
+
+    <VBox spacing="10" styleClass="section">
+      <Label styleClass="h2" text="Informations"/>
 
       <HBox spacing="10">
-        <Button styleClass="form-button" fx:id="btnUpdate" text="Modifier l'ouvrage"/>
-        <Button styleClass="form-button" fx:id="btnDelete" text="Supprimer"/>
-        <Button styleClass="form-button" fx:id="btnMerge" text="Fusionner avec un autre ouvrage"/>
+        <Label text="Titre :"/>
+        <Label fx:id="lblTitle"/>
       </HBox>
-
-      <VBox spacing="10" styleClass="section">
-        <Label styleClass="h2" text="Informations"/>
-
-        <HBox spacing="10">
-          <Label text="Titre :"/>
-          <Label fx:id="lblTitle"/>
-        </HBox>
-        <HBox fx:id="descriptionPane" spacing="10">
-          <Label text="Description :"/>
-          <Label fx:id="lblDescription"/>
-        </HBox>
-        <HBox spacing="10">
-          <Label text="Auteur :"/>
-          <Label fx:id="lblAuthor"/>
-        </HBox>
-        <HBox spacing="10">
-          <Label text="Édition :"/>
-          <Label fx:id="lblEdition"/>
-        </HBox>
-        <HBox spacing="10">
-          <Label text="Éditeur :"/>
-          <Label fx:id="lblEditor"/>
-        </HBox>
-        <HBox spacing="10">
-          <Label text="Année :"/>
-          <Label fx:id="lblPublication"/>
-        </HBox>
-        <HBox spacing="10">
-          <Label text="Code EAN13 :"/>
-          <Label fx:id="lblEan13"/>
-        </HBox>
-        <VBox fx:id="commentPane">
-          <HBox spacing="10">
-            <Label text="Commentaire :"/>
-            <Label fx:id="lblComment"/>
-          </HBox>
-          <AnchorPane>
-            <Button styleClass="form-button" fx:id="btnAddComment" text="Modifier le commentaire"
-                    AnchorPane.rightAnchor="0"/>
-          </AnchorPane>
-        </VBox>
-      </VBox>
-
-      <VBox styleClass="section" spacing="10">
-        <Label styleClass="h2" text="Gestion interne"/>
-
-        <HBox fx:id="statusPane" spacing="10">
-          <Label text="Statut :"/>
-          <Label fx:id="lblStatus"/>
-          <Button styleClass="form-button" fx:id="statusUp" text="^"/>
-          <Button styleClass="form-button" fx:id="statusDown" text="v"/>
-        </HBox>
-        <HBox spacing="10">
-          <Label text="Catégorie :"/>
-          <Label fx:id="lblCategory"/>
-        </HBox>
-        <HBox spacing="10">
-          <Label text="Matière :"/>
-          <Label fx:id="lblSubject"/>
-        </HBox>
-        <HBox spacing="10">
-          <Label text="Caisses de rangement :"/>
-          <Label fx:id="lblStorage"/>
-          <Button styleClass="form-button" fx:id="btnStorage" text="Modifier les caisses"/>
-        </HBox>
-
-        <Button styleClass="form-button" fx:id="btnReserve" text="Faire une réservation"/>
-      </VBox>
-
-      <Label styleClass="h2" text="Statistiques"/>
-      <HBox styleClass="section" spacing="10">
-        <VBox spacing="10">
-          <HBox spacing="10">
-            <Label>Prix maximum :</Label>
-            <Label fx:id="lblMaximum" />
-          </HBox>
-          <HBox spacing="10">
-            <Label>Prix moyen :</Label>
-            <Label fx:id="lblAverage" />
-          </HBox>
-          <HBox spacing="10">
-            <Label>Prix minimum :</Label>
-            <Label fx:id="lblMinimum" />
-          </HBox>
-        </VBox>
-        <WebView fx:id="statistics" prefHeight="375" />
+      <HBox fx:id="descriptionPane" spacing="10">
+        <Label text="Description :"/>
+        <Label fx:id="lblDescription"/>
       </HBox>
-
-      <Button fx:id="btnDisplayReservations" text="Réservation  v"/>
-      <TableView fx:id="tblReservations">
-        <columns>
-          <TableColumn fx:id="colReservationParent" prefWidth="196.0" text="Membre"/>
-          <TableColumn fx:id="colReservationDate" prefWidth="147.0" text="Date de réservation"/>
-          <TableColumn fx:id="colReservationSeller" prefWidth="164.0" text="Vendeur"/>
-          <TableColumn fx:id="colReservationAdded" prefWidth="147.0" text="Date d'ajout"/>
-          <TableColumn fx:id="colReservationPrice" prefWidth="61.0" text="Prix"/>
-        </columns>
-      </TableView>
-
-      <Button fx:id="btnDisplayAvailable" text="À vendre  v"/>
-      <TableView fx:id="tblAvailable">
-        <columns>
-          <TableColumn fx:id="colAvailableSeller" prefWidth="360.0" text="Vendeur"/>
-          <TableColumn fx:id="colAvailableAdded" prefWidth="108.0" text="Date d'ajout"/>
-          <TableColumn fx:id="colAvailablePrice" prefWidth="62.0" text="Prix"/>
-        </columns>
-      </TableView>
-
-      <Button fx:id="btnSold" text="Vendu  v"/>
-      <TableView fx:id="tblSold">
-        <columns>
-          <TableColumn fx:id="colSoldSeller" prefWidth="255.0" text="Vendeur"/>
-          <TableColumn fx:id="colSoldAdded" prefWidth="137.0" text="Date d'ajout"/>
-          <TableColumn fx:id="colSoldDateSold" prefWidth="91.0" text="Date de vente"/>
-          <TableColumn fx:id="colSoldPrice" prefWidth="55.0" text="Prix"/>
-        </columns>
-      </TableView>
-
-      <Button fx:id="btnPaid" text="Argent remis  v"/>
-      <TableView fx:id="tblPaid">
-        <columns>
-          <TableColumn fx:id="colPaidSeller" prefWidth="255.0" text="Vendeur"/>
-          <TableColumn fx:id="colPaidAdded" prefWidth="137.0" text="Date d'ajout"/>
-          <TableColumn fx:id="colPaidDateSold" prefWidth="91.0" text="Date de vente"/>
-          <TableColumn fx:id="colPaidDatePaid" prefWidth="91.0" text="Date de remise d'argent"/>
-          <TableColumn fx:id="colPaidPrice" prefWidth="55.0" text="Prix"/>
-        </columns>
-      </TableView>
+      <HBox spacing="10">
+        <Label text="Auteur :"/>
+        <Label fx:id="lblAuthor"/>
+      </HBox>
+      <HBox spacing="10">
+        <Label text="Édition :"/>
+        <Label fx:id="lblEdition"/>
+      </HBox>
+      <HBox spacing="10">
+        <Label text="Éditeur :"/>
+        <Label fx:id="lblEditor"/>
+      </HBox>
+      <HBox spacing="10">
+        <Label text="Année :"/>
+        <Label fx:id="lblPublication"/>
+      </HBox>
+      <HBox spacing="10">
+        <Label text="Code EAN13 :"/>
+        <Label fx:id="lblEan13"/>
+      </HBox>
+      <VBox fx:id="commentPane">
+        <HBox spacing="10">
+          <Label text="Commentaire :"/>
+          <Label fx:id="lblComment"/>
+        </HBox>
+        <AnchorPane>
+          <Button styleClass="form-button" fx:id="btnAddComment" text="Modifier le commentaire"
+                  AnchorPane.rightAnchor="0"/>
+        </AnchorPane>
+      </VBox>
     </VBox>
-  </ScrollPane>
-</Pane>
+
+    <VBox styleClass="section" spacing="10">
+      <Label styleClass="h2" text="Gestion interne"/>
+
+      <HBox fx:id="statusPane" spacing="10">
+        <Label text="Statut :"/>
+        <Label fx:id="lblStatus"/>
+        <Button styleClass="form-button" fx:id="statusUp" text="^"/>
+        <Button styleClass="form-button" fx:id="statusDown" text="v"/>
+      </HBox>
+      <HBox spacing="10">
+        <Label text="Catégorie :"/>
+        <Label fx:id="lblCategory"/>
+      </HBox>
+      <HBox spacing="10">
+        <Label text="Matière :"/>
+        <Label fx:id="lblSubject"/>
+      </HBox>
+      <HBox spacing="10">
+        <Label text="Caisses de rangement :"/>
+        <Label fx:id="lblStorage"/>
+        <Button styleClass="form-button" fx:id="btnStorage" text="Modifier les caisses"/>
+      </HBox>
+
+      <Button styleClass="form-button" fx:id="btnReserve" text="Faire une réservation"/>
+    </VBox>
+
+    <Label styleClass="h2" text="Statistiques"/>
+    <HBox styleClass="section" spacing="10">
+      <VBox spacing="10">
+        <HBox spacing="10">
+          <Label>Prix maximum :</Label>
+          <Label fx:id="lblMaximum" />
+        </HBox>
+        <HBox spacing="10">
+          <Label>Prix moyen :</Label>
+          <Label fx:id="lblAverage" />
+        </HBox>
+        <HBox spacing="10">
+          <Label>Prix minimum :</Label>
+          <Label fx:id="lblMinimum" />
+        </HBox>
+      </VBox>
+      <WebView fx:id="statistics" prefHeight="375" />
+    </HBox>
+
+    <Button fx:id="btnDisplayReservations" text="Réservation  v"/>
+    <TableView fx:id="tblReservations">
+      <columns>
+        <TableColumn fx:id="colReservationParent" prefWidth="196.0" text="Membre"/>
+        <TableColumn fx:id="colReservationDate" prefWidth="147.0" text="Date de réservation"/>
+        <TableColumn fx:id="colReservationSeller" prefWidth="164.0" text="Vendeur"/>
+        <TableColumn fx:id="colReservationAdded" prefWidth="147.0" text="Date d'ajout"/>
+        <TableColumn fx:id="colReservationPrice" prefWidth="61.0" text="Prix"/>
+      </columns>
+    </TableView>
+
+    <Button fx:id="btnDisplayAvailable" text="À vendre  v"/>
+    <TableView fx:id="tblAvailable">
+      <columns>
+        <TableColumn fx:id="colAvailableSeller" prefWidth="360.0" text="Vendeur"/>
+        <TableColumn fx:id="colAvailableAdded" prefWidth="108.0" text="Date d'ajout"/>
+        <TableColumn fx:id="colAvailablePrice" prefWidth="62.0" text="Prix"/>
+      </columns>
+    </TableView>
+
+    <Button fx:id="btnSold" text="Vendu  v"/>
+    <TableView fx:id="tblSold">
+      <columns>
+        <TableColumn fx:id="colSoldSeller" prefWidth="255.0" text="Vendeur"/>
+        <TableColumn fx:id="colSoldAdded" prefWidth="137.0" text="Date d'ajout"/>
+        <TableColumn fx:id="colSoldDateSold" prefWidth="91.0" text="Date de vente"/>
+        <TableColumn fx:id="colSoldPrice" prefWidth="55.0" text="Prix"/>
+      </columns>
+    </TableView>
+
+    <Button fx:id="btnPaid" text="Argent remis  v"/>
+    <TableView fx:id="tblPaid">
+      <columns>
+        <TableColumn fx:id="colPaidSeller" prefWidth="255.0" text="Vendeur"/>
+        <TableColumn fx:id="colPaidAdded" prefWidth="137.0" text="Date d'ajout"/>
+        <TableColumn fx:id="colPaidDateSold" prefWidth="91.0" text="Date de vente"/>
+        <TableColumn fx:id="colPaidDatePaid" prefWidth="91.0" text="Date de remise d'argent"/>
+        <TableColumn fx:id="colPaidPrice" prefWidth="55.0" text="Prix"/>
+      </columns>
+    </TableView>
+  </VBox>
+</ScrollPane>

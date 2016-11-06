@@ -21,6 +21,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -124,7 +125,7 @@ public class CopyFormController extends PanelController {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
       Copy copy = (Copy) row.getItem();
 
-      if (copy != null && event.getButton() == MouseButton.SECONDARY) {
+      if (copy != null && isRightClick(event)) {
         final ContextMenu contextMenu = new ContextMenu();
         MenuItem supprimer = new MenuItem("Supprimer");
         contextMenu.getItems().addAll(supprimer);
@@ -153,17 +154,30 @@ public class CopyFormController extends PanelController {
         Item item = (Item) row.getItem();
 
         if (item != null) {
-          currentCopy = new Copy();
-          currentCopy.setItem(item);
-          itemTitle.setText(item.getName());
-
-          _toggleView(true, false);
+          _selectItem(item);
         }
+      }
+    });
+
+    searchController.getTblItemResults().setOnKeyPressed(event -> {
+      Item item = searchController.getTblItemResults().getSelectionModel().getSelectedItem();
+
+      if (event.getCode().equals(KeyCode.ENTER) && item != null) {
+        _selectItem(item);
+        event.consume();
       }
     });
 
     // Ouvrir l'interface pour ajouter un nouvel item
     searchController.getBtnAdd().setOnAction((ActionEvent event) -> _displayItemForm());
+  }
+
+  private void _selectItem(Item item) {
+    currentCopy = new Copy();
+    currentCopy.setItem(item);
+    itemTitle.setText(item.getName());
+
+    _toggleView(true, false);
   }
 
   private void _itemFormEventHandlers() {
@@ -217,7 +231,8 @@ public class CopyFormController extends PanelController {
   private SearchController _displaySearchPanel() {
     controller = _loadPanel("layout/search.fxml");
     _searchEventHandlers();
-    ((SearchController )controller).setParentController(this);
+    ((SearchController) controller).setParentController(this);
+    ((SearchController) controller).setSearchItems();
     return (SearchController) controller;
   }
 

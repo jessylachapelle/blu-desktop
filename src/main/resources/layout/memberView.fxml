@@ -5,153 +5,151 @@
 
 
 <?import javafx.scene.web.WebView?>
-<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.MemberViewController">
-  <ScrollPane prefHeight="900">
-    <VBox styleClass="main" spacing="10">
-      <Label styleClass="h1" text="Compte Étudiant"/>
+<ScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.MemberViewController" prefHeight="950">
+  <VBox styleClass="main" spacing="10">
+    <Label styleClass="h1" text="Compte Étudiant"/>
+
+    <HBox spacing="10">
+      <Button styleClass="form-button" fx:id="btnAddCopy" text="Ajouter des livres"/>
+      <Button styleClass="form-button" fx:id="btnUpdate" text="Modifier"/>
+      <Button styleClass="form-button" fx:id="btnDelete" text="Supprimer" visible="false" managed="false"/>
+    </HBox>
+
+    <!-- Coordinates -->
+    <VBox styleClass="section" spacing="10">
+      <Label styleClass="h2" text="Information du parent"/>
+      <HBox spacing="10">
+        <Label text="Nom :"/>
+        <Label fx:id="lblName"/>
+      </HBox>
 
       <HBox spacing="10">
-        <Button styleClass="form-button" fx:id="btnAddCopy" text="Ajouter des livres"/>
-        <Button styleClass="form-button" fx:id="btnUpdate" text="Modifier"/>
-        <Button styleClass="form-button" fx:id="btnDelete" text="Supprimer"/>
+        <Label text="Numéro de parent :"/>
+        <Label fx:id="lblNo"/>
       </HBox>
 
-      <!-- Coordinates -->
-      <VBox styleClass="section" spacing="10">
-        <Label styleClass="h2" text="Information du parent"/>
-        <HBox spacing="10">
-          <Label text="Nom :"/>
-          <Label fx:id="lblName"/>
-        </HBox>
-
-        <HBox spacing="10">
-          <Label text="Numéro de parent :"/>
-          <Label fx:id="lblNo"/>
-        </HBox>
-
-        <HBox spacing="10">
-          <Label text="Adresse :"/>
-          <Label fx:id="lblAddress"/>
-        </HBox>
-
-        <HBox spacing="10">
-          <Label text="Courriel :"/>
-          <Label fx:id="lblEmail"/>
-        </HBox>
-
-        <HBox spacing="10">
-          <Label text="Téléphone 1 :"/>
-          <Label fx:id="lblPhone1"/>
-        </HBox>
-
-        <HBox spacing="10">
-          <Label text="Téléphone 2 :"/>
-          <Label fx:id="lblPhone2"/>
-        </HBox>
-      </VBox>
-
-      <!-- Account information -->
-      <VBox styleClass="section" spacing="10">
-        <Label styleClass="h2" text="État du account"/>
-
-        <HBox spacing="10">
-          <Label text="État d'activation :"/>
-          <Label fx:id="lblState"/>
-        </HBox>
-
-        <HBox spacing="10">
-          <Label text="Date d'inscription :"/>
-          <Label fx:id="lblRegistration"/>
-        </HBox>
-
-        <HBox spacing="10">
-          <Label text="Dernière activité :"/>
-          <Label fx:id="lblLastActivity"/>
-        </HBox>
-
-        <HBox spacing="10">
-          <Label text="Date de désactivation :"/>
-          <Label fx:id="lblDeactivation"/>
-        </HBox>
-      </VBox>
-
-      <VBox styleClass="section" spacing="10">
-        <Label styleClass="h2" text="Notes et commentaires"/>
-        <Button styleClass="form-button" fx:id="btnAddComment" text="Ajouter un commentaire"/>
-
-        <TableView fx:id="tblComments">
-          <columns>
-            <TableColumn fx:id="colComment" prefWidth="450.0" text="Commentaire"/>
-            <TableColumn fx:id="colCommentDate" prefWidth="120.0" text="Date"/>
-          </columns>
-        </TableView>
-      </VBox>
-
-      <VBox fx:id="reservation" spacing="10">
-        <Label styleClass="h2" text="Réservations"/>
-        <TableView fx:id="tblReservation">
-          <columns>
-            <TableColumn fx:id="colReservationTitle" prefWidth="228.0" text="Titre"/>
-            <TableColumn fx:id="colReservationDateReserved" prefWidth="228.0" text="Réservé le"/>
-            <TableColumn fx:id="colReservationSeller" prefWidth="132.0" text="Propriétaire"/>
-            <TableColumn fx:id="colReservationDateAdded" prefWidth="147.0" text="Mise en vente"/>
-            <TableColumn fx:id="colReservationPrice" prefWidth="61.0" text="Prix"/>
-          </columns>
-        </TableView>
-      </VBox>
-
-      <HBox styleClass="section" spacing="10" alignment="CENTER">
-        <Button styleClass="form-button" fx:id="btnPay" text="Remboursement"/>
-        <Button styleClass="form-button" fx:id="btnRenew" text="Renouveller"/>
-        <Button styleClass="form-button" fx:id="btnReceipt" text="Impression reçu"/>
+      <HBox spacing="10">
+        <Label text="Adresse :"/>
+        <Label fx:id="lblAddress"/>
       </HBox>
 
-      <VBox styleClass="section" spacing="10">
-        <Label styleClass="h2" text="Statistiques"/>
-        <WebView fx:id="statistics" prefHeight="375" />
-      </VBox>
+      <HBox spacing="10">
+        <Label text="Courriel :"/>
+        <Label fx:id="lblEmail"/>
+      </HBox>
 
-      <!-- Member's copies -->
-      <VBox styleClass="section" spacing="10">
-        <Label styleClass="h2" text="Ouvrages"/>
+      <HBox spacing="10">
+        <Label text="Téléphone 1 :"/>
+        <Label fx:id="lblPhone1"/>
+      </HBox>
 
-        <Label styleClass="h3" text="À vendre"/>
-        <TableView fx:id="tblAvailable">
-          <columns>
-            <TableColumn fx:id="colAvailableTitle" prefWidth="217.0" text="Titre"/>
-            <TableColumn fx:id="colAvailableEditor" prefWidth="93.0" text="Éditeur"/>
-            <TableColumn fx:id="colAvailableEdition" prefWidth="63.0" text="Édition"/>
-            <TableColumn fx:id="colAvailableDateAdded" prefWidth="92.0" text="Mise en vente"/>
-            <TableColumn fx:id="colAvailablePrice" prefWidth="60.0" text="Prix"/>
-          </columns>
-        </TableView>
-
-        <Label styleClass="h3" text="Vendu"/>
-        <TableView fx:id="tblSold">
-          <columns>
-            <TableColumn fx:id="colSoldTitle" prefWidth="201.0" text="Titre"/>
-            <TableColumn fx:id="colSoldEditor" prefWidth="105.0" text="Éditeur"/>
-            <TableColumn fx:id="colSoldEdition" prefWidth="52.0" text="Édition"/>
-            <TableColumn fx:id="colSoldDateAdded" prefWidth="95.0" text="Mise en vente"/>
-            <TableColumn fx:id="colSoldDateSold" prefWidth="95.0" text="Vente"/>
-            <TableColumn fx:id="colSoldPrice" prefWidth="77.0" text="Prix"/>
-          </columns>
-        </TableView>
-
-        <Label styleClass="h3" text="Remboursé"/>
-        <TableView fx:id="tblPaid">
-          <columns>
-            <TableColumn fx:id="colPaidTitle" prefWidth="215.0" text="Titre"/>
-            <TableColumn fx:id="colPaidEditor" prefWidth="96.0" text="Éditeur"/>
-            <TableColumn fx:id="colPaidEdition" prefWidth="52.0" text="Édition"/>
-            <TableColumn fx:id="colPaidDateAdded" prefWidth="147.0" text="Mise en Vente"/>
-            <TableColumn fx:id="colPaidDateSold" prefWidth="147.0" text="Vente"/>
-            <TableColumn fx:id="colPaidDatePaid" prefWidth="147.0" text="Remise d'argent"/>
-            <TableColumn fx:id="colPaidPrice" prefWidth="58.0" text="Prix"/>
-          </columns>
-        </TableView>
-      </VBox>
+      <HBox spacing="10">
+        <Label text="Téléphone 2 :"/>
+        <Label fx:id="lblPhone2"/>
+      </HBox>
     </VBox>
-  </ScrollPane>
-</Pane>
+
+    <!-- Account information -->
+    <VBox styleClass="section" spacing="10">
+      <Label styleClass="h2" text="État du account"/>
+
+      <HBox spacing="10">
+        <Label text="État d'activation :"/>
+        <Label fx:id="lblState"/>
+      </HBox>
+
+      <HBox spacing="10">
+        <Label text="Date d'inscription :"/>
+        <Label fx:id="lblRegistration"/>
+      </HBox>
+
+      <HBox spacing="10">
+        <Label text="Dernière activité :"/>
+        <Label fx:id="lblLastActivity"/>
+      </HBox>
+
+      <HBox spacing="10">
+        <Label text="Date de désactivation :"/>
+        <Label fx:id="lblDeactivation"/>
+      </HBox>
+    </VBox>
+
+    <VBox styleClass="section" spacing="10">
+      <Label styleClass="h2" text="Notes et commentaires"/>
+      <Button styleClass="form-button" fx:id="btnAddComment" text="Ajouter un commentaire"/>
+
+      <TableView fx:id="tblComments">
+        <columns>
+          <TableColumn fx:id="colComment" prefWidth="450.0" text="Commentaire"/>
+          <TableColumn fx:id="colCommentDate" prefWidth="120.0" text="Date"/>
+        </columns>
+      </TableView>
+    </VBox>
+
+    <VBox fx:id="reservation" spacing="10">
+      <Label styleClass="h2" text="Réservations"/>
+      <TableView fx:id="tblReservation">
+        <columns>
+          <TableColumn fx:id="colReservationTitle" prefWidth="228.0" text="Titre"/>
+          <TableColumn fx:id="colReservationDateReserved" prefWidth="228.0" text="Réservé le"/>
+          <TableColumn fx:id="colReservationSeller" prefWidth="132.0" text="Propriétaire"/>
+          <TableColumn fx:id="colReservationDateAdded" prefWidth="147.0" text="Mise en vente"/>
+          <TableColumn fx:id="colReservationPrice" prefWidth="61.0" text="Prix"/>
+        </columns>
+      </TableView>
+    </VBox>
+
+    <HBox styleClass="section" spacing="10" alignment="CENTER">
+      <Button styleClass="form-button" fx:id="btnPay" text="Remboursement"/>
+      <Button styleClass="form-button" fx:id="btnRenew" text="Renouveller"/>
+      <Button styleClass="form-button" fx:id="btnReceipt" text="Impression reçu"/>
+    </HBox>
+
+    <VBox styleClass="section" spacing="10">
+      <Label styleClass="h2" text="Statistiques"/>
+      <WebView fx:id="statistics" prefHeight="375" />
+    </VBox>
+
+    <!-- Member's copies -->
+    <VBox styleClass="section" spacing="10">
+      <Label styleClass="h2" text="Ouvrages"/>
+
+      <Label styleClass="h3" text="À vendre"/>
+      <TableView fx:id="tblAvailable">
+        <columns>
+          <TableColumn fx:id="colAvailableTitle" prefWidth="217.0" text="Titre"/>
+          <TableColumn fx:id="colAvailableEditor" prefWidth="93.0" text="Éditeur"/>
+          <TableColumn fx:id="colAvailableEdition" prefWidth="63.0" text="Édition"/>
+          <TableColumn fx:id="colAvailableDateAdded" prefWidth="92.0" text="Mise en vente"/>
+          <TableColumn fx:id="colAvailablePrice" prefWidth="60.0" text="Prix"/>
+        </columns>
+      </TableView>
+
+      <Label styleClass="h3" text="Vendu"/>
+      <TableView fx:id="tblSold">
+        <columns>
+          <TableColumn fx:id="colSoldTitle" prefWidth="201.0" text="Titre"/>
+          <TableColumn fx:id="colSoldEditor" prefWidth="105.0" text="Éditeur"/>
+          <TableColumn fx:id="colSoldEdition" prefWidth="52.0" text="Édition"/>
+          <TableColumn fx:id="colSoldDateAdded" prefWidth="95.0" text="Mise en vente"/>
+          <TableColumn fx:id="colSoldDateSold" prefWidth="95.0" text="Vente"/>
+          <TableColumn fx:id="colSoldPrice" prefWidth="77.0" text="Prix"/>
+        </columns>
+      </TableView>
+
+      <Label styleClass="h3" text="Remboursé"/>
+      <TableView fx:id="tblPaid">
+        <columns>
+          <TableColumn fx:id="colPaidTitle" prefWidth="215.0" text="Titre"/>
+          <TableColumn fx:id="colPaidEditor" prefWidth="96.0" text="Éditeur"/>
+          <TableColumn fx:id="colPaidEdition" prefWidth="52.0" text="Édition"/>
+          <TableColumn fx:id="colPaidDateAdded" prefWidth="147.0" text="Mise en Vente"/>
+          <TableColumn fx:id="colPaidDateSold" prefWidth="147.0" text="Vente"/>
+          <TableColumn fx:id="colPaidDatePaid" prefWidth="147.0" text="Remise d'argent"/>
+          <TableColumn fx:id="colPaidPrice" prefWidth="58.0" text="Prix"/>
+        </columns>
+      </TableView>
+    </VBox>
+  </VBox>
+</ScrollPane>
