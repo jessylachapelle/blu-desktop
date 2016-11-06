@@ -395,21 +395,17 @@ public class MemberHandler {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("no", member.getNo());
-      req.put("function", "pay");
-      req.put("object", "member");
-      req.put("data", data);
+    data.put("no", member.getNo());
+    req.put("function", "pay");
+    req.put("object", "member");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
 
-      if (data.has("code") && data.getInt("code") == 200) {
-        member.getAccount().pay();
-        return true;
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+    if (data != null && data.optInt("code", 0) == 200) {
+      member.getAccount().pay();
+      return true;
     }
 
     return false;

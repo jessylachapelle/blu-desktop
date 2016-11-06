@@ -317,7 +317,7 @@ public class Account {
   }
 
   public void pay() {
-    copies.stream().filter(Copy::isPaid).forEach(copy -> copy.addTransaction("PAY"));
+    copies.stream().filter(Copy::isSold).forEach(copy -> copy.addTransaction("PAY"));
   }
 
   public void removeCopy(int copyId) {
