@@ -1,6 +1,7 @@
 package handler;
 
 import api.APIConnector;
+import model.item.Copy;
 import model.member.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -541,7 +542,7 @@ public class MemberHandler {
     JSONObject data = new JSONObject();
 
     data.put("copy", copyId);
-    data.put("type", Transaction.RESERVATION);
+    data.put("type", Transaction.Type.RESERVATION);
 
     req.put("object", "transaction");
     req.put("function", "delete");
@@ -552,6 +553,41 @@ public class MemberHandler {
 
     if (data.optInt("code", 0) == 200) {
       member.getAccount().removeCopyReservation(copyId);
+      return true;
+    }
+
+    return false;
+  }
+
+  public boolean donate() {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
+    JSONArray copyList = new JSONArray();
+    ArrayList<Copy> copies = new ArrayList<>();
+
+    copies.addAll(member.getAccount().getAvailable());
+    copies.addAll(member.getAccount().getSold());
+
+    for (Copy copy : copies) {
+      copyList.put(copy.getId());
+    }
+
+    data.put("member", member.getNo());
+    data.put("copies", copyList);
+    data.put("type", Transaction.Type.DONATION);
+
+    req.put("data", data);
+    req.put("object", "transaction");
+    req.put("function", "insert");
+
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
+
+    if (data != null && data.optInt("code", 0) == 200) {
+      for (Copy copy : copies) {
+        member.getAccount().removeCopy(copy.getId());
+      }
+
       return true;
     }
 

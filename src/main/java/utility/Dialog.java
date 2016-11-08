@@ -7,6 +7,7 @@ package utility;
 
 import java.util.Optional;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 
@@ -91,5 +92,36 @@ public class Dialog {
     alert.setHeaderText(null);
     alert.setContentText(message);
     alert.showAndWait();
-  }  
+  }
+
+  public static int confirmation(String message, boolean canCancel) {
+    return confirmation("Confirmation", message, canCancel);
+  }
+
+  public static int confirmation(String title, String message, boolean canCancel) {
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    alert.setTitle(title);
+    alert.setContentText(message);
+
+    ButtonType accept = new ButtonType("Oui");
+    ButtonType decline = new ButtonType("Non");
+    alert.getButtonTypes().setAll(accept, decline);
+
+    if (canCancel) {
+      ButtonType cancel = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+      alert.getButtonTypes().add(cancel);
+    }
+
+    Optional<ButtonType> result = alert.showAndWait();
+
+    if (result.isPresent() && result.get() == accept) {
+      return 1;
+    }
+
+    if (result.isPresent() && result.get() == decline) {
+      return 0;
+    }
+
+    return -1;
+  }
 }

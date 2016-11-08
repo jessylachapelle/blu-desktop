@@ -52,6 +52,7 @@ public class MemberViewController extends PanelController {
   @FXML private Label lblRegistration;
   @FXML private Label lblLastActivity;
   @FXML private Label lblDeactivation;
+  @FXML private Button btnReactivate;
 
   @FXML private TableView<Comment> tblComments;
   @FXML private TableColumn<Comment, String> colComment;
@@ -134,6 +135,23 @@ public class MemberViewController extends PanelController {
   }
 
   private void _eventHandlers() {
+    btnReactivate.setOnAction(event -> {
+      boolean success = true;
+      String message = "Vous êtes sur le point de réactiver ce compte. Voulez-vous transférer ses livres en don à la BLU ?";
+      switch (Dialog.confirmation(message, true)) {
+        case 1:
+          success = memberHandler.donate();
+        case 0:
+          if (success && memberHandler.renewAccount()) {
+            _displayMember();
+            Dialog.information("Le compte a été réactivé");
+          } else {
+            Dialog.information("Une erreur est survenue");
+          }
+          break;
+      }
+    });
+
     tblReservation.setOnMouseClicked(event -> {
       TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
       Reservation reservation = (Reservation) row.getItem();
@@ -400,6 +418,8 @@ public class MemberViewController extends PanelController {
   }
 
   private void _dataBinding() {
+    btnReactivate.managedProperty().bind(btnReactivate.visibleProperty());
+    btnReactivate.visibleProperty().bind(btnAddCopy.disableProperty());
     reservation.managedProperty().bind(reservation.visibleProperty());
     tblReservation.managedProperty().bind(tblReservation.visibleProperty());
     tblAvailable.managedProperty().bind(tblAvailable.visibleProperty());
@@ -471,6 +491,10 @@ public class MemberViewController extends PanelController {
     lblRegistration.setText(getMember().getAccount().getRegistrationString());
     lblLastActivity.setText(getMember().getAccount().getLastActivityString());
     lblDeactivation.setText(getMember().getAccount().getDeactivationString());
+
+    btnAddCopy.setDisable(getMember().getAccount().isDeactivated());
+    btnRenew.setDisable(getMember().getAccount().isDeactivated());
+    btnPay.setDisable(getMember().getAccount().isDeactivated());
   }
 
   private void _displayComment() {

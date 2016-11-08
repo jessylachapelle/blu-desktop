@@ -258,6 +258,16 @@ public class Copy {
     return false;
   }
 
+  public boolean isDonated() {
+    for (Transaction t : transaction) {
+      if (t.getType().equals(Transaction.Type.DONATION)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   public boolean isAvailable() {
     return getState().equals("ADDED");
   }
@@ -319,6 +329,10 @@ public class Copy {
   }
 
   public String getSeller() {
+    if (isDonated()) {
+      return "BLU";
+    }
+
     if (member != null) {
       return member.getFirstName() + " " + member.getLastName();
     }
