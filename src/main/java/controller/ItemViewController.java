@@ -10,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -433,7 +432,9 @@ public class ItemViewController extends PanelController {
           @Override
           protected void updateItem(String data, boolean empty) {
             TableRow<Copy> row = getTableRow();
-            boolean deactivated = data != null && row.getItem().getMember().getAccount().isDeactivated();
+            boolean deactivated = data != null &&
+                                  !row.getItem().isDonated() &&
+                                  row.getItem().getMember().getAccount().isDeactivated();
 
             super.updateItem(data, empty);
             setText(data != null ? data : "");
