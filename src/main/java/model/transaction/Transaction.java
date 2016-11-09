@@ -18,7 +18,10 @@ import utility.DateParser;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Transaction {
-  public final static String RESERVATION = "RESERVE";
+  public final static class Type {
+    public final static String RESERVATION = "RESERVE";
+    public final static String DONATION = "DONATE";
+  }
 
   private Date date;
   private String type;

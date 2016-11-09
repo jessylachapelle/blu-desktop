@@ -73,6 +73,7 @@
         <Label text="Date de désactivation :"/>
         <Label fx:id="lblDeactivation"/>
       </HBox>
+      <Button styleClass="form-button" fx:id="btnReactivate" text="Réactiver le compte"/>
     </VBox>
 
     <VBox styleClass="section" spacing="10">

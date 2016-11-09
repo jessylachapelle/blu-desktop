@@ -475,7 +475,7 @@ public class ItemHandler {
     JSONObject data = new JSONObject();
 
     data.put("copy", copyId);
-    data.put("type", Transaction.RESERVATION);
+    data.put("type", Transaction.Type.RESERVATION);
 
     req.put("object", "transaction");
     req.put("function", "delete");
@@ -485,7 +485,7 @@ public class ItemHandler {
     data = res.getJSONObject("data");
 
     if (data.optInt("code", 0) == 200) {
-      getItem().getCopy(copyId).removeTransaction(Transaction.RESERVATION);
+      getItem().getCopy(copyId).removeTransaction(Transaction.Type.RESERVATION);
       return true;
     }
 
