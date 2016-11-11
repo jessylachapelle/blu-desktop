@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="style.css" rel="stylesheet">
+    <script src="script.js" defer="defer"></script>
+  </head>
+  <body>
+    <main>
+      <p id="trimester"></p>
+      <h1>Banque de livres usagés</h1>
+
+      <h2>Compte étudiant</h2>
+      <hr/>
+      <p>Nom : <span class="name"></span></p>
+      <p>Numéro de membre : <span id="no"></span></p>
+      <p>Adresse postale : <span id="address"></span></p>
+      <p>Adresse courriel : <span id="email"></span></p>
+      <p>Numéro de téléphone (1) : <span id="phone1"></span></p>
+      <p>Numéro de téléphone (2) : <span id="phone2"></span></p>
+      <hr/>
+
+      <h2>Livres mis en vente</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Titre</th>
+            <th>Édition</th>
+            <th>Éditeur</th>
+            <th>Date d'ajout<br>(AAAA-MM-JJ)</th>
+            <th>Date de vente<br>(AAAA-MM-JJ)</th>
+            <th>Date de remise d'argent<br>(AAAA-MM-JJ)</th>
+            <th>Prix</th>
+          </tr>
+        </thead>
+        <tbody id=copies></tbody>
+      </table>
+
+      <p>Je, <span class="name"></span>, atteste que les informations précitées sont valides et que l'Association Étudiante du Cégep de Sherbrooke (AÉCS) m'a remis le montant de <span id="amount">125</span> $ en date du <span id="date"></span>.</p>
+      <div class="signature">
+        <hr/>
+        <p class="name"><p>
+      </div>
+      <p class="terms">La banque de livres usagées...</p>
+    </main>
+  </body>
+</html>
