@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
@@ -9,6 +10,9 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -27,7 +31,9 @@ import model.item.Reservation;
 import model.member.Comment;
 import model.member.Member;
 import model.member.StudentParent;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import utility.DateParser;
 import utility.Dialog;
 
 /**
@@ -62,6 +68,7 @@ public class MemberViewController extends PanelController {
   @FXML private Button btnRenew;
   @FXML private Button btnAddComment;
   @FXML private Button btnPay;
+  @FXML private Button btnReceipt;
 
   @FXML private VBox reservation;
   @FXML private TableView tblReservation;
@@ -359,6 +366,7 @@ public class MemberViewController extends PanelController {
         if (Dialog.confirmation(message)) {
           if (memberHandler.pay()) {
             _displayCopies();
+            btnReceipt.fire();
           } else {
             Dialog.information("Une erreur est survenue");
           }
@@ -375,6 +383,50 @@ public class MemberViewController extends PanelController {
         Dialog.information("Le compte a été renouvelé");
       } else {
         Dialog.information("Une erreur empêche le compte d'être renouvelé");
+      }
+    });
+
+    btnReceipt.setOnAction(event -> {
+      URL url = getClass().getClassLoader().getResource("html/account_statement/index.html");
+      JSONObject data = new JSONObject();
+      JSONArray copies = new JSONArray();
+      int amount = 0;
+
+      for (Copy copy : getMember().getAccount().getCopies()) {
+        JSONObject c = new JSONObject();
+
+        c.put("title", copy.getName());
+        c.put("price", copy.getPriceString());
+        c.put("added", copy.getDateAdded());
+        c.put("sold", copy.getDateSold());
+        c.put("paid", copy.getDatePaid());
+
+        if (copy.getItem() instanceof Book) {
+          Book book = (Book) copy.getItem();
+          c.put("editor", book.getEditor());
+          c.put("edition", book.getEdition());
+        }
+
+        if (copy.getDateSold().equals(DateParser.dateToString(new Date()))) {
+          amount += copy.getPrice();
+        }
+
+        copies.put(c);
+      }
+
+      data.put("name", getMember().toString());
+      data.put("no", getMember().getNo());
+      data.put("address", getMember().getAddressString());
+      data.put("email", getMember().getEmail());
+      data.put("phone1", getMember().getPhone(0).toString());
+      data.put("phone2", getMember().getPhone(1).toString());
+      data.put("amount", amount);
+      data.put("copies", copies);
+
+      try {
+        new ProcessBuilder("x-www-browser", url.toExternalForm() + "?data=" + data.toString()).start();
+      } catch (IOException e) {
+        e.printStackTrace();
       }
     });
 
