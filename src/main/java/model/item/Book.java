@@ -293,8 +293,14 @@ public class Book extends Item {
 
     JSONArray authors = json.optJSONArray("author");
     if (authors != null) {
+      this.author.clear();
+
       for(int i = 0; i < authors.length(); i++) {
-        this.author.add(new Author(authors.getJSONObject(i)));
+        JSONObject author = authors.optJSONObject(i);
+
+        if (author != null) {
+          this.author.add(new Author(author));
+        }
       }
     }
 

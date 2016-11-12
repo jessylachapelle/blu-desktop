@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import model.item.Reservation;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -85,17 +84,16 @@ public class StudentParent extends Member {
 
   public void fromJSON(JSONObject parent) {
     super.fromJSON(parent);
+    JSONArray reservations = parent.optJSONArray("reservations");
 
-    try {
-      if (parent.has("reservations")) {
-        JSONArray reservations = parent.getJSONArray("reservations");
-
-        for (int i = 0; i < reservations.length(); i++) {
-          this.reservations.add(new Reservation(reservations.getJSONObject(i)));
+    if (reservations != null) {
+      this.reservations.clear();
+      for (int i = 0; i < reservations.length(); i++) {
+        JSONObject r = reservations.optJSONObject(i);
+        if (r != null) {
+          this.reservations.add(new Reservation(r));
         }
       }
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
   }
 
@@ -103,15 +101,11 @@ public class StudentParent extends Member {
     JSONObject studentParent = super.toJSON();
     JSONArray reservations = new JSONArray();
 
-    try {
-      for (Reservation reservation : this.reservations) {
-        reservations.put(reservation.toJSON());
-      }
-
-      studentParent.put("reservation", reservations);
-    } catch (JSONException e) {
-      e.printStackTrace();
+    for (Reservation reservation : this.reservations) {
+      reservations.put(reservation.toJSON());
     }
+
+    studentParent.put("reservation", reservations);
 
     return studentParent;
   }

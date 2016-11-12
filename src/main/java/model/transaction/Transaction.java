@@ -3,7 +3,6 @@ package model.transaction;
 import java.util.Date;
 
 import model.member.StudentParent;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import utility.DateParser;
@@ -109,8 +108,8 @@ public class Transaction {
   }
 
   public void fromJSON(JSONObject transaction) {
-    setDate(transaction.optString("date", ""));
-    type = transaction.optString("code", "");
+    setDate(transaction.optString("date", getDateString()));
+    type = transaction.optString("code", type);
 
     JSONObject parent = transaction.optJSONObject("parent");
     if (parent != null) {
@@ -121,12 +120,8 @@ public class Transaction {
   public JSONObject toJSON() {
     JSONObject transaction = new JSONObject();
 
-    try {
-      transaction.put("date", getDateString());
-      transaction.put("type", type);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+    transaction.put("date", getDateString());
+    transaction.put("type", type);
 
     return transaction;
   }

@@ -1,7 +1,6 @@
 package handler;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.APIConnector;
@@ -30,23 +29,17 @@ public class TransactionHandler {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("copy", copyId);
-      data.put("type", type);
+    data.put("copy", copyId);
+    data.put("type", type);
 
-      req.put("function", "delete");
-      req.put("object", "transaction");
-      req.put("data", data);
+    req.put("function", "delete");
+    req.put("object", "transaction");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
 
-      return data.has("code") && data.getInt("code") == 200;
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    return false;
+    return data != null && data.optInt("code", 0) == 200;
   }
 
   /**
@@ -74,27 +67,21 @@ public class TransactionHandler {
     JSONObject data = new JSONObject();
     JSONArray copies = new JSONArray();
 
-    try {
-      for (int copyId : copyIds) {
-        copies.put(copyId);
-      }
-
-      data.put("member", memberNo);
-      data.put("copies", copies);
-      data.put("type", type);
-
-      req.put("function", "insert");
-      req.put("object", "transaction");
-      req.put("data", data);
-
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
-
-      return data.has("code") && data.getInt("code") == 200;
-    } catch (JSONException e) {
-      e.printStackTrace();
+    for (int copyId : copyIds) {
+      copies.put(copyId);
     }
 
-    return false;
+    data.put("member", memberNo);
+    data.put("copies", copies);
+    data.put("type", type);
+
+    req.put("function", "insert");
+    req.put("object", "transaction");
+    req.put("data", data);
+
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
+
+    return data != null && data.optInt("code", 0) == 200;
   }
 }

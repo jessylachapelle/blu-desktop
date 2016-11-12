@@ -9,7 +9,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import model.item.*;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -165,49 +164,45 @@ public class BookTabController extends PanelController {
     JSONObject form = new JSONObject();
     JSONArray authorArray = new JSONArray();
 
-    try {
-      for (AuthorController authorController : authorControllers) {
-        JSONObject author = authorController.toJSON();
-        if (author != null) {
-          authorArray.put(author);
-        }
-      }
-
-      for (int id : deletedAuthors) {
-        JSONObject author = new JSONObject();
-        author.put("id", id);
+    for (AuthorController authorController : authorControllers) {
+      JSONObject author = authorController.toJSON();
+      if (author != null) {
         authorArray.put(author);
       }
-
-      if (!txtTitle.getText().equals(getBook().getName())) {
-        form.put("name", txtTitle.getText());
-      }
-
-      if (!txtEdition.getText().equals(Integer.toString(getBook().getEdition()))) {
-        form.put("edition", txtEdition.getText());
-      }
-
-      if (!txtPublication.getText().equals(getBook().getPublication())) {
-        form.put("publication", txtPublication.getText());
-      }
-
-      if (!txtEditor.getText().equals(getBook().getEditor())) {
-        form.put("editor", txtEditor.getText());
-      }
-
-      if (!txtEan13.getText().equals(getBook().getEan13())) {
-        form.put("ean13", txtEan13.getText());
-      }
-
-      if (getBook().getSubject().getId() != subjectController.getSubjectId()) {
-        form.put("subject", subjectController.getSubjectId());
-      }
-
-      form.put("author", authorArray);
-      form.put("is_book", true);
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
+
+    for (int id : deletedAuthors) {
+      JSONObject author = new JSONObject();
+      author.put("id", id);
+      authorArray.put(author);
+    }
+
+    if (!txtTitle.getText().equals(getBook().getName())) {
+      form.put("name", txtTitle.getText());
+    }
+
+    if (!txtEdition.getText().equals(Integer.toString(getBook().getEdition()))) {
+      form.put("edition", txtEdition.getText());
+    }
+
+    if (!txtPublication.getText().equals(getBook().getPublication())) {
+      form.put("publication", txtPublication.getText());
+    }
+
+    if (!txtEditor.getText().equals(getBook().getEditor())) {
+      form.put("editor", txtEditor.getText());
+    }
+
+    if (!txtEan13.getText().equals(getBook().getEan13())) {
+      form.put("ean13", txtEan13.getText());
+    }
+
+    if (getBook().getSubject().getId() != subjectController.getSubjectId()) {
+      form.put("subject", subjectController.getSubjectId());
+    }
+
+    form.put("author", authorArray);
+    form.put("is_book", true);
 
     return form;
   }

@@ -1,6 +1,5 @@
 package model.item;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -58,13 +57,9 @@ public class Author {
   public JSONObject toJSON() {
     JSONObject author = new JSONObject();
 
-    try {
-      author.put("id", id);
-      author.put("first_name", firstName);
-      author.put("last_name", lastName);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+    author.put("id", id);
+    author.put("first_name", firstName);
+    author.put("last_name", lastName);
 
     return author;
   }

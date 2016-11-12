@@ -371,21 +371,30 @@ public class Item {
     JSONArray storage = json.optJSONArray("storage");
     if (storage != null) {
       for (int i = 0; i < storage.length(); i++) {
-        this.storage.add(new Storage(storage.getString(i)));
+        String s = storage.optString(i, "");
+        if (!s.isEmpty()) {
+          this.storage.add(new Storage(s));
+        }
       }
     }
 
     JSONArray copies = json.optJSONArray("copies");
     if (copies != null) {
       for (int i = 0; i < copies.length(); i++) {
-        _addCopy(new Copy(copies.getJSONObject(i)));
+        JSONObject copy = copies.optJSONObject(i);
+        if (copy != null) {
+          _addCopy(new Copy(copy));
+        }
       }
     }
 
     JSONArray reservations = json.optJSONArray("reservation");
     if (reservations != null) {
       for (int i = 0; i < reservations.length(); i++) {
-        addReservation(new Reservation(reservations.getJSONObject(i)));
+        JSONObject reservation = reservations.optJSONObject(i);
+        if (reservation != null) {
+          addReservation(new Reservation(reservation));
+        }
       }
     }
   }

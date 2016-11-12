@@ -55,8 +55,14 @@ public class Category {
 
     JSONArray subjects = category.optJSONArray("subject");
     if (subjects != null) {
+      this.subjects.clear();
+
       for (int i = 0; i < subjects.length(); i++) {
-        this.subjects.add(new Subject(subjects.getJSONObject(i)));
+        JSONObject subject = subjects.optJSONObject(i);
+
+        if (subject != null) {
+          this.subjects.add(new Subject(subject));
+        }
       }
     }
   }
