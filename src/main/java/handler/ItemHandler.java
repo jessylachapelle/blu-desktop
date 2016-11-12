@@ -7,7 +7,6 @@ import java.util.Date;
 
 import model.transaction.Transaction;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -19,7 +18,7 @@ import org.json.JSONObject;
  * @version 1.1
  * @since 2016/19/07
  */
-@SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "unused", "WeakerAccess"})
+@SuppressWarnings("unused")
 public class ItemHandler {
 
   private ArrayList<Item> items;
@@ -43,22 +42,19 @@ public class ItemHandler {
     JSONObject json = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("id", id);
-      data.put("comment", comment.replaceAll("'", "''"));
+    data.put("id", id);
+    data.put("comment", comment.replaceAll("'", "''"));
 
-      json.put("function", "update_comment");
-      json.put("object", "item");
-      json.put("data", data);
+    json.put("function", "update_comment");
+    json.put("object", "item");
+    json.put("data", data);
 
-      JSONObject response = APIConnector.call(json).getJSONObject("data");
+    JSONObject res = APIConnector.call(json);
+    data = res.optJSONObject("data");
 
-      if (response.has("code") && response.getInt("code") == 200) {
-        item.setDescription(comment);
-        return true;
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+    if (data != null && data.optInt("code", 0) == 200) {
+      item.setDescription(comment);
+      return true;
     }
 
     return false;
@@ -101,28 +97,23 @@ public class ItemHandler {
   public boolean updateStorage(int id, String[] storage) {
     JSONObject json = new JSONObject();
     JSONObject data = new JSONObject();
-    JSONArray storagejson = new JSONArray();
+    JSONArray storageArray = new JSONArray();
 
-    try {
-      for (String storageUnit : storage) {
-        storagejson.put(storageUnit);
-      }
-
-      data.put("id", id);
-      data.put("storage", storagejson);
-
-      json.put("function", "update_storage");
-      json.put("object", "item");
-      json.put("data", data);
-
-      JSONObject response = APIConnector.call(json).getJSONObject("data");
-
-      return response.has("code") && response.getInt("code") == 200;
-    } catch (JSONException e) {
-      e.printStackTrace();
+    for (String storageUnit : storage) {
+      storageArray.put(storageUnit);
     }
 
-    return false;
+    data.put("id", id);
+    data.put("storage", storageArray);
+
+    json.put("function", "update_storage");
+    json.put("object", "item");
+    json.put("data", data);
+
+    JSONObject res = APIConnector.call(json);
+    data = res.optJSONObject("data");
+
+    return data != null && data.optInt("code", 0) == 200;
   }
 
   public Item getItem() {
@@ -147,47 +138,30 @@ public class ItemHandler {
   }
 
   public Item selectItem(int id) {
-    try {
-      JSONObject data = new JSONObject();
-      return _selectItem(data.put("id", id));
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    return null;
+    JSONObject data = new JSONObject();
+    data.put("id", id);
+    return _selectItem(data);
   }
 
   public Item selectItem(String ean13) {
-    try {
-      JSONObject data = new JSONObject();
-      return _selectItem(data.put("ean13", ean13));
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    return null;
+    JSONObject data = new JSONObject();
+    data.put("ean13", ean13);
+    return _selectItem(data);
   }
 
   private Item _selectItem(JSONObject data) {
     JSONObject req = new JSONObject();
 
-    try {
-      req.put("object", "item");
-      req.put("function", "select");
-      req.put("data", data);
+    req.put("object", "item");
+    req.put("function", "select");
+    req.put("data", data);
 
-      JSONObject response = APIConnector.call(req);
-      JSONObject itemData = response.getJSONObject("data");
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
 
-      if (itemData.has("is_book") && itemData.getBoolean("is_book")) {
-        item = new Book(itemData);
-      } else {
-        item = new Item(itemData);
-      }
-
+    if (data != null) {
+      item = data.optBoolean("is_book", false) ? new Book(data) : new Item(data);
       return item;
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
 
     return null;
@@ -207,11 +181,7 @@ public class ItemHandler {
     data = res.optJSONObject("data") != null ? res.getJSONObject("data") : new JSONObject();
 
     item.remove("author");
-    if (item.optBoolean("is_book", false)) {
-      this.item = new Book(item);
-    } else {
-      this.item = new Item(item);
-    }
+    this.item = item.optBoolean("is_book", false) ? new Book(item) : new Item(item);
 
     if (data.optInt("id", 0) > 0) {
       this.item.setId(data.getInt("id"));
@@ -220,7 +190,10 @@ public class ItemHandler {
     JSONArray authorList = data.optJSONArray("author");
     if (authorList != null) {
       for (int i = 0; i < authorList.length(); i++) {
-        ((Book) this.item).addAuthor(new Author(authorList.getJSONObject(i)));
+        JSONObject a = authorList.optJSONObject(i);
+        if (a != null) {
+          ((Book) this.item).addAuthor(new Author(a));
+        }
       }
     }
 
@@ -265,7 +238,10 @@ public class ItemHandler {
     authorList = data.optJSONArray("author");
     if (authorList != null) {
       for (int i = 0; i < authorList.length(); i++) {
-        ((Book) this.item).setAuthorId(new Author(authorList.getJSONObject(i)));
+        JSONObject a = authorList.optJSONObject(i);
+        if (a != null) {
+          ((Book) this.item).setAuthorId(new Author(a));
+        }
       }
     }
 
@@ -282,30 +258,26 @@ public class ItemHandler {
     JSONObject json = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("search", search);
+    data.put("search", search);
 
-      if (outdated) {
-        data.put("outdated", true);
-      }
+    if (outdated) {
+      data.put("outdated", true);
+    }
 
-      json.put("function", "search");
-      json.put("object", "item");
-      json.put("data", data);
+    json.put("function", "search");
+    json.put("object", "item");
+    json.put("data", data);
 
-      JSONArray itemArray = APIConnector.call(json).getJSONArray("data");
+    JSONObject req = APIConnector.call(json);
+    JSONArray itemArray = req.optJSONArray("data");
 
+    if (itemArray != null) {
       for (int i = 0; i < itemArray.length(); i++) {
-        JSONObject item = itemArray.getJSONObject(i);
-
-        if (item.has("is_book") && item.getBoolean("is_book")) {
-          items.add(new Book(item));
-        } else {
-          items.add(new Item(item));
+        JSONObject item = itemArray.optJSONObject(i);
+        if (item != null) {
+          items.add(item.optBoolean("is_book", false) ? new Book(item) : new Item(item));
         }
       }
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
 
     return items;
@@ -320,22 +292,20 @@ public class ItemHandler {
     JSONObject req = new JSONObject();
     ArrayList<Subject> subjects = new ArrayList<>();
 
-    try {
-      req.put("object", "subject");
-      req.put("function", "select");
-      req.put("data", new JSONObject());
+    req.put("object", "subject");
+    req.put("function", "select");
+    req.put("data", new JSONObject());
 
-      JSONObject res = APIConnector.call(req);
+    JSONObject res = APIConnector.call(req);
+    JSONArray data = res.optJSONArray("data");
 
-      if (res.has("data") && res.get("data") instanceof JSONArray) {
-        JSONArray data = res.getJSONArray("data");
-
-        for (int i = 0; i < data.length(); i++) {
-          subjects.add(new Subject(data.getJSONObject(i)));
+    if (data != null) {
+      for (int i = 0; i < data.length(); i++) {
+        JSONObject s = data.optJSONObject(i);
+        if (s != null) {
+          subjects.add(new Subject(s));
         }
       }
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
 
     return subjects;
@@ -349,22 +319,20 @@ public class ItemHandler {
     categories = new ArrayList<>();
     JSONObject req = new JSONObject();
 
-    try {
-      req.put("object", "category");
-      req.put("function", "select");
-      req.put("data", new JSONObject());
+    req.put("object", "category");
+    req.put("function", "select");
+    req.put("data", new JSONObject());
 
-      JSONObject res = APIConnector.call(req);
+    JSONObject res = APIConnector.call(req);
+    JSONArray data = res.optJSONArray("data");
 
-      if (res.has("data") && res.get("data") instanceof JSONArray) {
-        JSONArray data = res.getJSONArray("data");
-
-        for (int i = 0; i < data.length(); i++) {
-          categories.add(new Category(data.getJSONObject(i)));
+    if (data != null) {
+      for (int i = 0; i < data.length(); i++) {
+        JSONObject c = data.optJSONObject(i);
+        if (c != null) {
+          categories.add(new Category(c));
         }
       }
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
   }
 
@@ -372,48 +340,36 @@ public class ItemHandler {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("ean13", ean13);
+    data.put("ean13", ean13);
 
-      req.put("object", "item");
-      req.put("function", "exists");
-      req.put("data", data);
+    req.put("object", "item");
+    req.put("function", "exists");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
 
-      if (res.has("data") && res.get("data") instanceof JSONObject) {
-        data = res.getJSONObject("data");
-        return data.has("code") && data.getInt("code") == 200;
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    return false;
+    return data != null && data.optInt("code", 0) == 200;
   }
 
   public boolean addItemReservation(int memberNo) {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("member", memberNo);
-      data.put("item", item.getId());
+    data.put("member", memberNo);
+    data.put("item", item.getId());
 
-      req.put("object", "reservation");
-      req.put("function", "insert");
-      req.put("data", data);
+    req.put("object", "reservation");
+    req.put("function", "insert");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
+
+    if (data != null && data.optInt("code", 0)  == 200) {
       int id = data.optInt("id", 0);
-
-      if (data.optInt("code", 0)  == 200) {
-        item.addReservation(new Reservation(id, memberNo));
-        return true;
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+      item.addReservation(new Reservation(id, memberNo));
+      return true;
     }
 
     return false;
@@ -424,20 +380,19 @@ public class ItemHandler {
     JSONObject data = new JSONObject();
     int id = 0;
 
-    try {
-      data.put("member", memberNo);
-      data.put("copy", copyId);
-      data.put("type", "RESERVE");
+    data.put("member", memberNo);
+    data.put("copy", copyId);
+    data.put("type", "RESERVE");
 
-      req.put("object", "transaction");
-      req.put("function", "insert");
-      req.put("data", data);
+    req.put("object", "transaction");
+    req.put("function", "insert");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
-      id = data.getInt("id");
-    } catch (JSONException e) {
-      e.printStackTrace();
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
+
+    if (data != null) {
+      id = data.optInt("id", 0);
     }
 
     return id;
@@ -455,9 +410,9 @@ public class ItemHandler {
     req.put("data", data);
 
     JSONObject res = APIConnector.call(req);
-    data = res.getJSONObject("data");
+    data = res.optJSONObject("data");
 
-    if (data.optInt("code", 0) == 200) {
+    if (data != null && data.optInt("code", 0) == 200) {
       getItem().removeReservation(memberNo);
       return true;
     }
@@ -482,9 +437,9 @@ public class ItemHandler {
     req.put("data", data);
 
     JSONObject res = APIConnector.call(req);
-    data = res.getJSONObject("data");
+    data = res.optJSONObject("data");
 
-    if (data.optInt("code", 0) == 200) {
+    if (data != null && data.optInt("code", 0) == 200) {
       getItem().getCopy(copyId).removeTransaction(Transaction.Type.RESERVATION);
       return true;
     }
@@ -529,20 +484,15 @@ public class ItemHandler {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("id", item.getId());
+    data.put("id", item.getId());
 
-      req.put("object", "item");
-      req.put("function", "delete");
-      req.put("data", data);
+    req.put("object", "item");
+    req.put("function", "delete");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.optJSONObject("data");
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
 
-      return data != null && data.has("code") && data.getInt("code") == 200;
-    } catch (JSONException e) {
-      e.printStackTrace();
-      return false;
-    }
+    return data != null && data.optInt("code", 0) == 200;
   }
 }

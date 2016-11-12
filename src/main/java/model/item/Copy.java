@@ -352,17 +352,19 @@ public class Copy {
 
     JSONObject item = json.optJSONObject("item");
     if (item != null) {
-      if (item.optBoolean("is_book", false)) {
-        this.item = new Book(item);
-      } else {
-        this.item = new Item(item);
-      }
+      this.item = item.optBoolean("is_book", false) ? new Book(item) : new Item(item);
     }
 
     JSONArray transactions = json.optJSONArray("transaction");
     if (transactions != null) {
+      transaction.clear();
+
       for(int i = 0; i < transactions.length(); i++) {
-        transaction.add(new Transaction(transactions.getJSONObject(i)));
+        JSONObject t = transactions.optJSONObject(i);
+
+        if (t != null) {
+          transaction.add(new Transaction(t));
+        }
       }
     }
   }

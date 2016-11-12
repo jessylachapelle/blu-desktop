@@ -3,11 +3,7 @@ package handler;
 import api.APIConnector;
 import model.item.Copy;
 import model.member.StudentParent;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Permet de reprendre des resultset et de les transformer en objet et de
@@ -17,7 +13,6 @@ import java.util.logging.Logger;
  * @since 28/03/2016
  * @version 1.0
  */
-@SuppressWarnings("unused")
 public class CopyHandler {
   private Copy copy;
 
@@ -26,14 +21,6 @@ public class CopyHandler {
    */
   public CopyHandler() {
     this.copy = new Copy();
-  }
-
-  /**
-   * Constructeur avec un copy
-   * @param copy Copy à utiliser
-   */
-  public CopyHandler(Copy copy) {
-    this.copy = copy;
   }
 
   public Copy getCopy() {
@@ -50,23 +37,17 @@ public class CopyHandler {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("id", id);
-      data.put("price", price);
+    data.put("id", id);
+    data.put("price", price);
 
-      req.put("function", "update");
-      req.put("object", "copy");
-      req.put("data", data);
+    req.put("function", "update");
+    req.put("object", "copy");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
 
-      return data.has("code") && data.getInt("code") == 200;
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    return false;
+    return data != null && data.optInt("code", 0) == 200;
   }
 
   /**
@@ -87,14 +68,15 @@ public class CopyHandler {
     req.put("data", data);
 
     JSONObject res = APIConnector.call(req);
-    data = res.getJSONObject("data");
+    data = res.optJSONObject("data");
 
+    if (data != null) {
+      copy.setId(data.optInt("id", 0));
+      JSONObject reservation = data.optJSONObject("reservation");
 
-    copy.setId(data.optInt("id", 0));
-    JSONObject reservation = data.optJSONObject("reservation");
-
-    if (reservation != null) {
-      copy.setParent(new StudentParent(reservation));
+      if (reservation != null) {
+        copy.setParent(new StudentParent(reservation));
+      }
     }
 
     return copy.getId() != 0 ? copy : null;
@@ -109,20 +91,15 @@ public class CopyHandler {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("id", id);
+    data.put("id", id);
 
-      req.put("object", "copy");
-      req.put("function", "delete");
-      req.put("data", data);
+    req.put("object", "copy");
+    req.put("function", "delete");
+    req.put("data", data);
 
-      JSONObject res = APIConnector.call(req);
-      data = res.getJSONObject("data");
-      return data.has("code") && data.getInt("code") == 200;
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
 
-    return false;
+    return data != null && data.optInt("code", 0) == 200;
   }
 }

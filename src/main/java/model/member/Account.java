@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import model.item.Copy;
 import model.item.Reservation;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import utility.DateParser;
 
@@ -352,39 +351,46 @@ public class Account {
   }
 
   public void fromJSON(JSONObject account) {
-    // TODO: Update json filtering
-    try {
-      if (account.has("registration")) {
-        setRegistration(account.getString("registration"));
-      }
-
-      if(account.has("last_activity")) {
-        setLastActivity(account.getString("last_activity"));
-      }
-
-      if (account.has("comment")) {
-        JSONArray comments = account.getJSONArray("comment");
-
-        for (int i = 0; i < comments.length(); i++) {
-          this.comments.add(new Comment(comments.getJSONObject(i)));
-        }
-      }
-
-      if (account.has("copies")) {
-        JSONArray copies = account.getJSONArray("copies");
-
-        for (int i = 0; i < copies.length(); i++) {
-          this.copies.add(new Copy(copies.getJSONObject(i)));
-        }
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+    String registration = account.optString("registration", "");
+    if (!registration.isEmpty()) {
+      setRegistration(registration);
     }
 
-    JSONArray reservation = account.optJSONArray("reservation");
-    if (reservation != null) {
-      for (int i = 0; i < reservation.length(); i++) {
-        this.reservation.add(new Reservation(reservation.getJSONObject(i)));
+    String lastActivity = account.optString("last_activity", "");
+    if (!lastActivity.isEmpty()) {
+      setLastActivity(lastActivity);
+    }
+
+    JSONArray comments = account.optJSONArray("comment");
+    if (comments != null) {
+      this.comments.clear();
+      for (int i = 0; i < comments.length(); i++) {
+        JSONObject c = comments.optJSONObject(i);
+        if (c != null) {
+          this.comments.add(new Comment(c));
+        }
+      }
+    }
+
+    JSONArray copies = account.optJSONArray("copies");
+    if (copies != null) {
+      this.copies.clear();
+      for (int i = 0; i < copies.length(); i++) {
+        JSONObject c = copies.optJSONObject(i);
+        if (c != null) {
+          this.copies.add(new Copy(c));
+        }
+      }
+    }
+
+    JSONArray reservations = account.optJSONArray("reservation");
+    if (reservations != null) {
+      this.reservation.clear();
+      for (int i = 0; i < reservations.length(); i++) {
+        JSONObject r = reservations.optJSONObject(i);
+        if (r != null) {
+          this.reservation.add(new Reservation(r));
+        }
       }
     }
   }
@@ -394,23 +400,19 @@ public class Account {
     JSONArray comments = new JSONArray();
     JSONArray copies = new JSONArray();
 
-    try {
-      account.put("registration", registration);
-      account.put("last_activity", lastActivity);
+    account.put("registration", registration);
+    account.put("last_activity", lastActivity);
 
-      for (Comment comment : this.comments) {
-        comments.put(comment.toJSON());
-      }
-
-      for (Copy copy : this.copies) {
-        copies.put(copy.toJSON());
-      }
-
-      account.put("comment", comments);
-      account.put("copies", copies);
-    } catch (JSONException e) {
-      e.printStackTrace();
+    for (Comment comment : this.comments) {
+      comments.put(comment.toJSON());
     }
+
+    for (Copy copy : this.copies) {
+      copies.put(copy.toJSON());
+    }
+
+    account.put("comment", comments);
+    account.put("copies", copies);
 
     return account;
   }

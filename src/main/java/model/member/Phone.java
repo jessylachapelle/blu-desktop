@@ -1,6 +1,5 @@
 package model.member;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -10,7 +9,7 @@ import org.json.JSONObject;
  * @since 26/10/2015
  * @version 0.1
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Phone {
   private int id;
   private String number;
@@ -119,40 +118,24 @@ public class Phone {
   }
 
   public void fromJSON(JSONObject phone) {
-    try {
-      if (phone.has("id")) {
-        setId(phone.getInt("id"));
-      }
-
-      if (phone.has("number")) {
-        setNumber(phone.getString("number"));
-      }
-
-      if (phone.has("note")) {
-        setNote(phone.getString("note"));
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+    id = phone.optInt("id", id);
+    number = phone.optString("number", number);
+    note = phone.optString("note", note);
   }
 
   public JSONObject toJSON() {
     JSONObject phone = new JSONObject();
 
-    try {
-      if (!number.isEmpty()) {
-        phone.put("number", number);
+    if (!number.isEmpty()) {
+      phone.put("number", number);
 
-        if (id != 0) {
-          phone.put("id", id);
-        }
-
-        if (!note.isEmpty()) {
-          phone.put("note", note);
-        }
+      if (id != 0) {
+        phone.put("id", id);
       }
-    } catch (JSONException e) {
-      e.printStackTrace();
+
+      if (!note.isEmpty()) {
+        phone.put("note", note);
+      }
     }
 
     return phone;

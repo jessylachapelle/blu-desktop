@@ -105,11 +105,7 @@ public class Reservation {
 
     JSONObject item = reservation.optJSONObject("item");
     if (item != null) {
-      if (item.optBoolean("is_book", false)) {
-        this.item = new Book(item);
-      } else {
-        this.item = new Item(item);
-      }
+      this.item = item.optBoolean("is_book", false) ? new Book(item) : new Item(item);
     }
   }
 

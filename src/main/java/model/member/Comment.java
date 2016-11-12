@@ -5,7 +5,6 @@
  */
 package model.member;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import utility.DateParser;
 
@@ -15,7 +14,7 @@ import java.util.Date;
  *
  * @author Jessy
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Comment {
 
   private int id;
@@ -101,38 +100,23 @@ public class Comment {
   }
 
   public void fromJSON(JSONObject comment) {
-    try {
-      if (comment.has("id")) {
-        setId(comment.getInt("id"));
-      }
+    id = comment.optInt("id", id);
+    this.comment = comment.optString("comment", this.comment);
+    updatedBy = comment.optString("updated_by", updatedBy);
 
-      if (comment.has("comment")) {
-        setComment(comment.getString("comment"));
-      }
-
-      if (comment.has("updated_at")) {
-        setDate(comment.getString("updated_at"));
-      }
-
-      if (comment.has("updated_by")) {
-        setUpdatedBy(comment.getString("updated_by"));
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
+    String date = comment.optString("updated_at", "");
+    if (!date.isEmpty()) {
+      setDate(date);
     }
   }
 
   public JSONObject toJSON() {
     JSONObject json = new JSONObject();
 
-    try {
-      json.put("id", id);
-      json.put("comment", comment);
-      json.put("updated_at", getDateString());
-      json.put("updated_by", updatedBy);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+    json.put("id", id);
+    json.put("comment", comment);
+    json.put("updated_at", getDateString());
+    json.put("updated_by", updatedBy);
 
     return json;
   }

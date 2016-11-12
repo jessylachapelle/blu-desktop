@@ -112,8 +112,13 @@ public class Storage {
 
     JSONArray content = storage.optJSONArray("content");
     if (content != null) {
+      this.content.clear();
+
       for(int i = 0; i < content.length(); i++) {
-        this.content.add(new Item(content.getJSONObject(i)));
+        JSONObject item = content.optJSONObject(i);
+        if (item != null) {
+          this.content.add(new Item(item));
+        }
       }
     }
   }

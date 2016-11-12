@@ -10,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import model.member.StudentParent;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import handler.MemberHandler;
@@ -177,83 +176,79 @@ public class MemberFormController extends PanelController {
     JSONObject form = new JSONObject();
     JSONArray phones = new JSONArray();
 
-    try {
-      form.put("is_parent", cbIsParent.isSelected());
+    form.put("is_parent", cbIsParent.isSelected());
 
-      if (cbGenerateMemberNo.isSelected()) {
-        form.put("no", _getRandomMemberNo());
-      } else if (insertion || Integer.parseInt(txtNo.getText()) != getMember().getNo()) {
-        String no = txtNo.getText().length() == 7 ? "20" + txtNo.getText() : txtNo.getText();
-        form.put("no", no);
-      }
+    if (cbGenerateMemberNo.isSelected()) {
+      form.put("no", _getRandomMemberNo());
+    } else if (insertion || Integer.parseInt(txtNo.getText()) != getMember().getNo()) {
+      String no = txtNo.getText().length() == 7 ? "20" + txtNo.getText() : txtNo.getText();
+      form.put("no", no);
+    }
 
-      if (!txtLastName.getText().equals(getMember().getLastName())) {
-        form.put("last_name", capitalize(txtLastName.getText()));
-      }
+    if (!txtLastName.getText().equals(getMember().getLastName())) {
+      form.put("last_name", capitalize(txtLastName.getText()));
+    }
 
-      if (!txtFirstName.getText().equals(getMember().getFirstName())) {
-        form.put("first_name", capitalize(txtFirstName.getText()));
-      }
+    if (!txtFirstName.getText().equals(getMember().getFirstName())) {
+      form.put("first_name", capitalize(txtFirstName.getText()));
+    }
 
-      if (!txtAddress.getText().equals(getMember().getAddress())) {
-        form.put("address", txtAddress.getText());
-      }
+    if (!txtAddress.getText().equals(getMember().getAddress())) {
+      form.put("address", txtAddress.getText());
+    }
 
-      if (!txtZip.getText().equals(getMember().getZip())) {
-        form.put("zip", txtZip.getText().replaceAll(" ", "").toUpperCase());
-      }
+    if (!txtZip.getText().equals(getMember().getZip())) {
+      form.put("zip", txtZip.getText().replaceAll(" ", "").toUpperCase());
+    }
 
-      if (!txtCity.getText().equals(getMember().getCity()) || !cbState.getValue().equals(getMember().getStateCode())) {
-        JSONObject city = new JSONObject();
-        JSONObject state = new JSONObject();
+    if (!txtCity.getText().equals(getMember().getCity()) || !cbState.getValue().equals(getMember().getStateCode())) {
+      JSONObject city = new JSONObject();
+      JSONObject state = new JSONObject();
 
-        state.put("code", cbState.getValue());
-        city.put("name", capitalize(txtCity.getText()));
-        city.put("state", state);
-        form.put("city", city);
-      }
+      state.put("code", cbState.getValue());
+      city.put("name", capitalize(txtCity.getText()));
+      city.put("state", state);
+      form.put("city", city);
+    }
 
-      if (!txtEmail.getText().equals(getMember().getEmail())) {
-        form.put("email", txtEmail.getText());
-      }
+    if (!txtEmail.getText().equals(getMember().getEmail())) {
+      form.put("email", txtEmail.getText());
+    }
 
-      if (!txtComment.getText().isEmpty()) {
-        JSONObject account = new JSONObject();
-        JSONArray commentArray = new JSONArray();
-        JSONObject comment = new JSONObject();
+    if (!txtComment.getText().isEmpty()) {
+      JSONObject account = new JSONObject();
+      JSONArray commentArray = new JSONArray();
+      JSONObject comment = new JSONObject();
 
-        comment.put("comment", txtComment.getText());
-        commentArray.put(comment);
-        account.put("comment", commentArray);
-        form.put("account", account);
-      }
+      comment.put("comment", txtComment.getText());
+      commentArray.put(comment);
+      account.put("comment", commentArray);
+      form.put("account", account);
+    }
 
-      for (int i = 0; i < txtPhones.length; i++) {
-        if (!txtPhones[i][0].getText().isEmpty() &&
-            (!txtPhones[i][0].getText().equals(getMember().getPhone(i).getNumber()) ||
-             !txtPhones[i][1].getText().equals(getMember().getPhone(i).getNote()))) {
-          JSONObject phone = new JSONObject();
+    for (int i = 0; i < txtPhones.length; i++) {
+      if (!txtPhones[i][0].getText().isEmpty() &&
+          (!txtPhones[i][0].getText().equals(getMember().getPhone(i).getNumber()) ||
+           !txtPhones[i][1].getText().equals(getMember().getPhone(i).getNote()))) {
+        JSONObject phone = new JSONObject();
 
-          if (getMember().getPhone(i).getId() != 0) {
-            phone.put("id", getMember().getPhone(i).getId());
-          }
-
-          phone.put("number", txtPhones[i][0].getText().replaceAll("[^\\d]", ""));
-          phone.put("note", txtPhones[i][1].getText());
-
-          phones.put(phone);
-        } else if (txtPhones[i][0].getText().isEmpty() && getMember().getPhone(i).getId() > 0) {
-          JSONObject phone = new JSONObject();
+        if (getMember().getPhone(i).getId() != 0) {
           phone.put("id", getMember().getPhone(i).getId());
-          phones.put(phone);
         }
-      }
 
-      if (phones.length() > 0) {
-        form.put("phone", phones);
+        phone.put("number", txtPhones[i][0].getText().replaceAll("[^\\d]", ""));
+        phone.put("note", txtPhones[i][1].getText());
+
+        phones.put(phone);
+      } else if (txtPhones[i][0].getText().isEmpty() && getMember().getPhone(i).getId() > 0) {
+        JSONObject phone = new JSONObject();
+        phone.put("id", getMember().getPhone(i).getId());
+        phones.put(phone);
       }
-    } catch (JSONException e) {
-      e.printStackTrace();
+    }
+
+    if (phones.length() > 0) {
+      form.put("phone", phones);
     }
 
     return form;

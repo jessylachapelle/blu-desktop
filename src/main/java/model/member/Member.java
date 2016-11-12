@@ -1,7 +1,6 @@
 package model.member;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -277,87 +276,66 @@ public class Member {
   }
 
   public void fromJSON(JSONObject member) {
-    try {
-      if (member.has("no")) {
-        no = member.getInt("no");
-      }
+    no = member.optInt("no", no);
+    firstName = member.optString("first_name", firstName);
+    lastName = member.optString("last_name", lastName);
+    email = member.optString("email", email);
+    address = member.optString("address", address);
+    zip = member.optString("zip", zip);
 
-      if (member.has("first_name")) {
-        firstName = member.getString("first_name");
-      }
 
-      if (member.has("last_name")) {
-        lastName = member.getString("last_name");
-      }
+    JSONObject city = member.optJSONObject("city");
+    if (city != null) {
+      JSONObject state = city.optJSONObject("state");
 
-      if (member.has("email")) {
-        email = member.getString("email");
-      }
+      this.city = city.optString("name", this.city);
+      cityId = city.optInt("id", cityId);
+      this.state = state != null ? state.optString("name", this.state) : this.state;
+      stateCode = state != null ? state.optString("code", stateCode) : stateCode;
+    }
 
-      if (member.has("address")) {
-        address = member.getString("address");
-      }
+    JSONObject account = member.optJSONObject("account");
+    if (account != null) {
+      this.account.fromJSON(account);
+    }
 
-      if (member.has("zip")) {
-        zip = member.getString("zip");
-      }
-
-      if (member.has("city")) {
-        JSONObject city = member.getJSONObject("city");
-        JSONObject state = city.optJSONObject("state");
-
-        this.city = city.optString("name");
-        cityId = city.optInt("id");
-        this.state = state != null ? state.optString("name") : "";
-        stateCode = state != null ? state.optString("code") : "";
-      }
-
-      if (member.has("account")) {
-        account.fromJSON(member.getJSONObject("account"));
-      }
-
-      if (member.has("phone")) {
-        JSONArray phones = member.getJSONArray("phone");
-
-        for(int i = 0; i < phones.length() && i < this.phone.length; i++) {
-          phone[i] = new Phone(phones.getJSONObject(i));
+    JSONArray phones = member.optJSONArray("phone");
+    if (phones != null) {
+      for(int i = 0; i < phones.length() && i < this.phone.length; i++) {
+        JSONObject p = phones.optJSONObject(i);
+        if (p != null) {
+          phone[i] = new Phone(p);
         }
       }
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
   }
 
   public JSONObject toJSON() {
     JSONObject member = new JSONObject();
 
-    try {
-      JSONArray phoneArray = new JSONArray();
-      for (Phone phone : this.phone) {
-        if (!phone.getNumber().isEmpty()) {
-          phoneArray.put(phone.toJSON());
-        }
+    JSONArray phoneArray = new JSONArray();
+    for (Phone phone : this.phone) {
+      if (!phone.getNumber().isEmpty()) {
+        phoneArray.put(phone.toJSON());
       }
-
-      JSONObject city = new JSONObject();
-      JSONObject state = new JSONObject();
-      state.put("name", this.state);
-      state.put("code", stateCode);
-      city.put("name", this.city);
-      city.put("id", cityId);
-      city.put("state", state);
-
-      member.put("no", no);
-      member.put("account", account.toJSON());
-      member.put("first_name", firstName);
-      member.put("last_name", lastName);
-      member.put("email", email);
-      member.put("address", address);
-      member.put("phone", phoneArray);
-      member.put("city", city);
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
+
+    JSONObject city = new JSONObject();
+    JSONObject state = new JSONObject();
+    state.put("name", this.state);
+    state.put("code", stateCode);
+    city.put("name", this.city);
+    city.put("id", cityId);
+    city.put("state", state);
+
+    member.put("no", no);
+    member.put("account", account.toJSON());
+    member.put("first_name", firstName);
+    member.put("last_name", lastName);
+    member.put("email", email);
+    member.put("address", address);
+    member.put("phone", phoneArray);
+    member.put("city", city);
 
     return member;
   }
