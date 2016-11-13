@@ -8,9 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Handle app settings
@@ -120,5 +118,37 @@ public class Settings {
     }
 
     return true;
+  }
+
+  @SuppressWarnings("deprecation")
+  static public String lastSemester() {
+    Date today = new Date();
+    int year = today.getYear() + 1900;
+    return today.getMonth() < 5 ? "Automne " + (year - 1) : "Hiver " + year;
+  }
+
+  @SuppressWarnings("deprecation")
+  static public Date[] lastSemesterDates() {
+    Date[] range = new Date[2];
+    range[0] = new Date();
+    range[1] = new Date();
+    Date today = new Date();
+    int year = today.getYear();
+
+    if (today.getMonth() < 5) {
+      range[0].setYear(year - 1);
+      range[0].setMonth(5);
+      range[1].setYear(year - 1);
+      range[1].setMonth(11);
+    } else {
+      range[0].setYear(year);
+      range[0].setMonth(0);
+      range[1].setYear(year);
+      range[1].setMonth(4);
+    }
+
+    range[0].setDate(1);
+    range[1].setDate(31);
+    return range;
   }
 }
