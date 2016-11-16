@@ -62,6 +62,7 @@ public class BLU extends Application {
 
   private boolean hasAPIConnection() {
     JSONObject res = APIConnector.call(new JSONObject());
-    return res != null && res.optInt("code", 404) != 404;
+    JSONObject data = res.optJSONObject("data");
+    return data != null && data.optInt("code", 404) != 404;
   }
 }
