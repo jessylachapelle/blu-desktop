@@ -1,5 +1,6 @@
 import java.io.*;
 
+import api.APIConnector;
 import javafx.application.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
@@ -7,6 +8,8 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 
+import org.json.JSONObject;
+import utility.Dialog;
 import utility.I18N;
 import utility.Settings;
 
@@ -30,6 +33,11 @@ public class BLU extends Application {
     settings = new Settings();
     i18n = new I18N();
 
+    if (!hasAPIConnection()) {
+      Dialog.information("Veuillez vérifier votre connexion au réseau puis redémarrer l'application");
+      Platform.exit();
+    }
+
     double width = Screen.getPrimary().getVisualBounds().getWidth();
     double height = Screen.getPrimary().getVisualBounds().getHeight();
 
@@ -50,5 +58,10 @@ public class BLU extends Application {
     } catch(IOException e) {
       e.printStackTrace();
     }
+  }
+
+  private boolean hasAPIConnection() {
+    JSONObject res = APIConnector.call(new JSONObject());
+    return res != null && res.optInt("code", 404) != 404;
   }
 }

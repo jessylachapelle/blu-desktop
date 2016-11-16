@@ -59,7 +59,6 @@ public class APIConnector {
     } catch (MalformedURLException e) {
       return error(422, "INVALID_DATA");
     } catch (ConnectException e) {
-      Dialog.information("La connection au serveur n'a pu être établie, veuillez vérifier votre connection internet");
       return error(404, "NOT_FOUND");
     } catch (IOException | JSONException e) {
       return error(500, "INTERNAL_SERVER_ERROR");
