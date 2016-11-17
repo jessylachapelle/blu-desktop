@@ -4,8 +4,12 @@ import handler.ItemHandler;
 import handler.MemberHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.concurrent.Task;
+import javafx.scene.Cursor;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
+import model.item.Item;
+import model.member.Member;
 import utility.Settings;
 
 import java.net.URL;
@@ -81,7 +85,18 @@ public class PanelController extends Controller {
       ItemHandler itemHandler = new ItemHandler();
 
       if (itemHandler.exists(code)) {
-        ((ItemViewController) loadPanel(target, "layout/itemView.fxml")).loadItem(code);
+        window.setCursor(Cursor.WAIT);
+        Task<Item> t = new Task<Item>() {
+          @Override
+          protected Item call() throws Exception {
+            return itemHandler.selectItem(code);
+          }
+        };
+        t.setOnSucceeded(e -> {
+          window.setCursor(Cursor.DEFAULT);
+          ((ItemViewController) loadPanel(target, "layout/itemView.fxml")).loadItem(t.getValue());
+        });
+        new Thread(t).start();
       } else {
         ((ItemFormController) loadPanel(target, "layout/itemForm.fxml")).loadItem(code);
       }
@@ -90,7 +105,18 @@ public class PanelController extends Controller {
       int memberNo = Integer.parseInt(code);
 
       if(memberHandler.exist(memberNo)) {
-        ((MemberViewController) loadPanel(target, "layout/memberView.fxml")).loadMember(memberNo);
+        window.setCursor(Cursor.WAIT);
+        Task<Member> t = new Task<Member>() {
+          @Override
+          protected Member call() throws Exception {
+            return memberHandler.selectMember(memberNo);
+          }
+        };
+        t.setOnSucceeded(e -> {
+          window.setCursor(Cursor.DEFAULT);
+          ((MemberViewController) loadPanel(target, "layout/memberView.fxml")).loadMember(t.getValue());
+        });
+        new Thread(t).start();
       } else {
         ((MemberFormController) loadPanel(target, "layout/memberForm.fxml")).loadMember(memberNo);
       }

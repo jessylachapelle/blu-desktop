@@ -5,9 +5,12 @@ import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
 
+import handler.ItemHandler;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -27,6 +30,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.item.Book;
 import model.item.Copy;
+import model.item.Item;
 import model.item.Reservation;
 import model.member.Comment;
 import model.member.Member;
@@ -42,7 +46,7 @@ import utility.Dialog;
  * @since 2016/07/24
  * @version 1.0
  */
-@SuppressWarnings({"WeakerAccess", "unchecked", "ConstantConditions"})
+@SuppressWarnings({"WeakerAccess", "unchecked", "ConstantConditions", "unused"})
 public class MemberViewController extends PanelController {
   @FXML private Button btnUpdate;
   @FXML private Button btnDelete;
@@ -460,7 +464,19 @@ public class MemberViewController extends PanelController {
           Copy copy = (Copy) row.getItem();
 
           if (copy != null) {
-            ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(copy.getItem().getId());
+            window.setCursor(Cursor.WAIT);
+            Task<Item> t = new Task<Item>() {
+              @Override
+              protected Item call() throws Exception {
+                ItemHandler itemHandler = new ItemHandler();
+                return itemHandler.selectItem(copy.getItem().getId());
+              }
+            };
+            t.setOnSucceeded(e -> {
+              window.setCursor(Cursor.DEFAULT);
+              ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(t.getValue());
+            });
+            new Thread(t).start();
           }
         }
       });
