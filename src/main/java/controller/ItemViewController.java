@@ -1,9 +1,12 @@
 package controller;
 
 import handler.ItemHandler;
+import handler.MemberHandler;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -387,7 +390,19 @@ public class ItemViewController extends PanelController {
           Copy copy = (Copy) row.getItem();
 
           if (copy != null) {
-            ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(copy.getMember().getNo());
+            window.setCursor(Cursor.WAIT);
+            Task<Member> t = new Task<Member>() {
+              @Override
+              protected Member call() throws Exception {
+                MemberHandler memberHandler = new MemberHandler();
+                return memberHandler.selectMember(copy.getMember().getNo());
+              }
+            };
+            t.setOnSucceeded(e -> {
+              window.setCursor(Cursor.DEFAULT);
+              ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(t.getValue());
+            });
+            new Thread(t).start();
           }
         }
       });

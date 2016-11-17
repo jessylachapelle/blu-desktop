@@ -3,8 +3,10 @@ package controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
 
 import javafx.scene.layout.VBox;
@@ -144,7 +146,18 @@ public class MemberFormController extends PanelController {
       if (!txtNo.getText().isEmpty() && memberHandler.exist(Integer.parseInt(txtNo.getText()))) {
         String message = "Le numéro étudiant inscrit est déjà associé à un membre. Voulez-vous aller à sa fiche ?";
         if (Dialog.confirmation(message)) {
-          ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(Integer.parseInt(txtNo.getText()));
+          window.setCursor(Cursor.WAIT);
+          Task<Member> t = new Task<Member>() {
+            @Override
+            protected Member call() throws Exception {
+              return memberHandler.selectMember(Integer.parseInt(txtNo.getText()));
+            }
+          };
+          t.setOnSucceeded(e -> {
+            window.setCursor(Cursor.DEFAULT);
+            ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(t.getValue());
+          });
+          new Thread(t).start();
         } else {
           return false;
         }
@@ -153,7 +166,18 @@ public class MemberFormController extends PanelController {
       if (memberHandler.exist(txtEmail.getText())) {
         String message = "L'addresse courriel inscrit est déjà associé à un membre. Voulez-vous aller à sa fiche ?";
         if (Dialog.confirmation(message)) {
-          ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(txtEmail.getText());
+          window.setCursor(Cursor.WAIT);
+          Task<Member> t = new Task<Member>() {
+            @Override
+            protected Member call() throws Exception {
+              return memberHandler.selectMember(txtEmail.getText());
+            }
+          };
+          t.setOnSucceeded(e -> {
+            window.setCursor(Cursor.DEFAULT);
+            ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(t.getValue());
+          });
+          new Thread(t).start();
         } else {
           return false;
         }

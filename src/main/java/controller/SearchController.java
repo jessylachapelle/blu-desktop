@@ -1,15 +1,20 @@
 package controller;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import handler.ItemHandler;
+import handler.MemberHandler;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+
 import model.item.Item;
 import model.item.Book;
 import handler.SearchHandler;
@@ -115,7 +120,19 @@ public class SearchController extends PanelController {
         Member member = (Member) row.getItem();
 
         if (member != null) {
-          ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(member.getNo());
+          window.setCursor(Cursor.WAIT);
+          Task<Member> t = new Task<Member>() {
+            @Override
+            protected Member call() throws Exception {
+              MemberHandler memberHandler = new MemberHandler();
+              return memberHandler.selectMember(member.getNo());
+            }
+          };
+          t.setOnSucceeded(e -> {
+            window.setCursor(Cursor.DEFAULT);
+            ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(t.getValue());
+          });
+          new Thread(t).start();
         }
       }
     });
@@ -126,7 +143,19 @@ public class SearchController extends PanelController {
         Item item = (Item) row.getItem();
 
         if (item != null) {
-          ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(item.getId());
+          window.setCursor(Cursor.WAIT);
+          Task<Item> t = new Task<Item>() {
+            @Override
+            protected Item call() throws Exception {
+              ItemHandler itemHandler = new ItemHandler();
+              return itemHandler.selectItem(item.getId());
+            }
+          };
+          t.setOnSucceeded(e -> {
+            window.setCursor(Cursor.DEFAULT);
+            ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(t.getValue());
+          });
+          new Thread(t).start();
         }
       }
     });
@@ -135,7 +164,19 @@ public class SearchController extends PanelController {
       Item item = tblItemResults.getSelectionModel().getSelectedItem();
 
       if (event.getCode().equals(KeyCode.ENTER) && item != null) {
-        ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(item.getId());
+        window.setCursor(Cursor.WAIT);
+        Task<Item> t = new Task<Item>() {
+          @Override
+          protected Item call() throws Exception {
+            ItemHandler itemHandler = new ItemHandler();
+            return itemHandler.selectItem(item.getId());
+          }
+        };
+        t.setOnSucceeded(e -> {
+          window.setCursor(Cursor.DEFAULT);
+          ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(t.getValue());
+        });
+        new Thread(t).start();
       }
     });
 
@@ -143,7 +184,19 @@ public class SearchController extends PanelController {
       Member member = tblMemberResults.getSelectionModel().getSelectedItem();
 
       if (event.getCode().equals(KeyCode.ENTER) && member != null) {
-        ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(member.getNo());
+        window.setCursor(Cursor.WAIT);
+        Task<Member> t = new Task<Member>() {
+          @Override
+          protected Member call() throws Exception {
+            MemberHandler memberHandler = new MemberHandler();
+            return memberHandler.selectMember(member.getNo());
+          }
+        };
+        t.setOnSucceeded(e -> {
+          window.setCursor(Cursor.DEFAULT);
+          ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(t.getValue());
+        });
+        new Thread(t).start();
       }
     });
 
@@ -164,15 +217,36 @@ public class SearchController extends PanelController {
   }
 
   private void _searchMembers() {
-    tblMemberResults.setItems(FXCollections.observableArrayList(searchHandler.searchMembers()));
-    tblMemberResults.setVisible(!tblMemberResults.getItems().isEmpty());
-    lblMessage.setText(tblMemberResults.getItems().size() + " résultats");
+    window.setCursor(Cursor.WAIT);
+    Task<ArrayList<Member>> t = new Task<ArrayList<Member>>() {
+      @Override
+      protected ArrayList<Member> call() throws Exception {
+        return searchHandler.searchMembers();      }
+    };
+    t.setOnSucceeded(e -> {
+      window.setCursor(Cursor.DEFAULT);
+      tblMemberResults.setItems(FXCollections.observableArrayList(t.getValue()));
+      tblMemberResults.setVisible(!tblMemberResults.getItems().isEmpty());
+      lblMessage.setText(tblMemberResults.getItems().size() + " résultats");
+    });
+    new Thread(t).start();
   }
 
   private void _searchItems() {
-    tblItemResults.setItems(FXCollections.observableArrayList(searchHandler.searchItems()));
-    lblMessage.setText(tblItemResults.getItems().size() + " résultats");
-    tblItemResults.setVisible(!tblItemResults.getItems().isEmpty());
+    window.setCursor(Cursor.WAIT);
+    Task<ArrayList<Item>> t = new Task<ArrayList<Item>>() {
+      @Override
+      protected ArrayList<Item> call() throws Exception {
+        return searchHandler.searchItems();
+      }
+    };
+    t.setOnSucceeded(e -> {
+      window.setCursor(Cursor.DEFAULT);
+      tblItemResults.setItems(FXCollections.observableArrayList(t.getValue()));
+      lblMessage.setText(tblItemResults.getItems().size() + " résultats");
+      tblItemResults.setVisible(!tblItemResults.getItems().isEmpty());
+    });
+    new Thread(t).start();
   }
 
   public void setParentController(PanelController controller) {

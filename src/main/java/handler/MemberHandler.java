@@ -35,11 +35,11 @@ public class MemberHandler {
   }
 
   public void setMember(int no) {
-    member = _selectMember(no);
+    member = selectMember(no);
   }
 
   public void setMember(String email) {
-    member = _selectMember(email);
+    member = selectMember(email);
   }
 
   public void setMember(Member member) {
@@ -47,7 +47,7 @@ public class MemberHandler {
   }
 
   public Member getMember(int no) {
-    _selectMember(no);
+    selectMember(no);
     return member;
   }
 
@@ -55,13 +55,13 @@ public class MemberHandler {
     return member;
   }
 
-  private Member _selectMember(int no) {
+  public Member selectMember(int no) {
     JSONObject data = new JSONObject();
     data.put("no", no);
     return _selectMember(data);
   }
 
-  private Member _selectMember(String email) {
+  public Member selectMember(String email) {
     JSONObject data = new JSONObject();
     data.put("email", email);
     return _selectMember(data);
