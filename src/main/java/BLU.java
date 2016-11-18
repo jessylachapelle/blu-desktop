@@ -41,11 +41,11 @@ public class BLU extends Application {
     double width = Screen.getPrimary().getVisualBounds().getWidth();
     double height = Screen.getPrimary().getVisualBounds().getHeight();
 
-    stage.setTitle(i18n.getString("title"));
+    stage.setTitle("Banque de Livres Usagés");
     stage.getIcons().add(new Image(getClass().getResourceAsStream("images/icon.png")));
     stage.setWidth(width);
     stage.setHeight(height);
-    //stage.setMaximized(true);
+    stage.setMaximized(true);
 
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("layout/window.fxml"));

@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Button?>
 
 <Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:id="window"
       fx:controller="controller.WindowController">
@@ -33,7 +39,7 @@
         <Button fx:id="btnAdmin"/>
       </VBox>
 
-      <VBox styleClass="main" spacing="10">
+      <VBox>
         <Button styleClass="form-button" fx:id="btnBack" text="Back" visible="false" managed="false"/>
         <Pane fx:id="mainPanel" />
       </VBox>
