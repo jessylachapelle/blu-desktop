@@ -22,7 +22,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
@@ -71,6 +70,7 @@ public class CopyFormController extends PanelController {
     setPrice.setVisible(false);
     _displaySearchPanel();
     _eventHandlers();
+    _displayCopies();
   }
 
   /**
@@ -79,9 +79,8 @@ public class CopyFormController extends PanelController {
   private void _dataBinding() {
     setPrice.managedProperty().bind(setPrice.visibleProperty());
     resources.managedProperty().bind(resources.visibleProperty());
-
     colItem.setCellValueFactory(new PropertyValueFactory<>("name"));
-    colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+    colPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
   }
 
   /**
@@ -267,10 +266,7 @@ public class CopyFormController extends PanelController {
   private void _displayCopies() {
     ObservableList<Copy> copiesList = FXCollections.observableArrayList(copies);
     tblCopies.setItems(copiesList);
-
-    tblCopies.setPrefHeight(50 * (copies.size() + 1));
-    resources.setLayoutY(150 + 50 * copies.size());
-    setPrice.setLayoutY(150 + 50 * copies.size());
+    tblCopies.setVisible(!tblCopies.getItems().isEmpty());
   }
 
   /**

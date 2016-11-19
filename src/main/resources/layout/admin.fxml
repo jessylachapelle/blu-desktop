@@ -3,32 +3,29 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.web.WebView?>
 <?import layout.DynamicVBox?>
+<?import layout.DynamicTableView?>
 
-<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AdminController">
+<DynamicVBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AdminController">
   <WebView fx:id="webView" managed="false" visible="false"/>
-  <DynamicVBox>
-    <Label styleClass="h2" text="Reservation"/>
-    <Label styleClass="h3" text="Supprimer les réservations"/>
-    <HBox spacing="10">
-      <Button fx:id="btnDeleteAllReservations" styleClass="form-button" text="Toutes"/>
-      <Button fx:id="btnDeleteLastReservations" styleClass="form-button" text="Dernière session" />
-    </HBox>
-    <Label styleClass="h3" text="Liste des réservations" />
-    <TableView fx:id="tblReservations">
-      <columns>
-        <TableColumn fx:id="colParent" text="Réservé à" />
-        <TableColumn fx:id="colTitle" text="Titre du livre" />
-        <TableColumn fx:id="colDateReserved" text="Date réservée" />
-        <TableColumn fx:id="colDateReceived" text="Date reçue" />
-        <TableColumn fx:id="colPrice" text="Prix" />
-      </columns>
-    </TableView>
-    <Label styleClass="h2" text="Caisses de rangement"/>
-    <Button fx:id="btnDeleteStorage" styleClass="form-button" text="Supprimer les caisses" />
-  </DynamicVBox>
-</Pane>
+  <Label styleClass="h2" text="Reservation"/>
+  <Label styleClass="h3" text="Supprimer les réservations"/>
+  <HBox spacing="10">
+    <Button fx:id="btnDeleteAllReservations" styleClass="form-button" text="Toutes"/>
+    <Button fx:id="btnDeleteLastReservations" styleClass="form-button" text="Dernière session" />
+  </HBox>
+  <Label styleClass="h3" text="Liste des réservations" />
+  <DynamicTableView fx:id="tblReservations">
+    <columns>
+      <TableColumn userData="3" fx:id="colParent" text="Réservé à" />
+      <TableColumn userData="3" fx:id="colTitle" text="Titre du livre" />
+      <TableColumn userData="1" fx:id="colDateReserved" text="Date réservée" />
+      <TableColumn userData="1" fx:id="colDateReceived" text="Date reçue" />
+      <TableColumn userData="1" fx:id="colPrice" text="Prix" />
+    </columns>
+  </DynamicTableView>
+  <Label styleClass="h2" text="Caisses de rangement"/>
+  <Button fx:id="btnDeleteStorage" styleClass="form-button" text="Supprimer les caisses" />
+</DynamicVBox>

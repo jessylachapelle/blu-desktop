@@ -69,8 +69,6 @@ public class SearchController extends PanelController {
     rbMembers.managedProperty().bind(rbMembers.visibleProperty());
     rbItems.managedProperty().bind(rbItems.visibleProperty());
     btnAdd.managedProperty().bind(btnAdd.visibleProperty());
-    tblMemberResults.managedProperty().bind(tblMemberResults.visibleProperty());
-    tblItemResults.managedProperty().bind(tblItemResults.visibleProperty());
 
     // Member results
     colNo.setCellValueFactory(new PropertyValueFactory<>("no"));

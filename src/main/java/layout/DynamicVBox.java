@@ -2,6 +2,7 @@ package layout;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import org.json.JSONObject;
 
 /**
  * @author Jessy Lachapelle
@@ -11,8 +12,11 @@ import javafx.scene.layout.VBox;
 public class DynamicVBox extends VBox {
   public DynamicVBox() {
     super();
+    JSONObject userData = getUserData() != null ? new JSONObject(getUserData().toString()) : new JSONObject();
+
     getStyleClass().add("main");
-    setSpacing(10);
+    setSpacing(userData.optDouble("spacing", 10));
+
     parentProperty().addListener((observable, oldValue, newValue) -> {
       if (newValue != null && (newValue.getClass().toString().equals("class com.sun.javafx.scene.control.skin.ScrollPaneSkin$4") || newValue.getChildrenUnmodifiable().size() > 1)) {
         Pane parent = (Pane) getParent();

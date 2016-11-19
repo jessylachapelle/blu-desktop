@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import layout.DynamicScrollPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import layout.DynamicVBox?>
+<?import layout.DynamicTableView?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.CopyFormController" prefHeight="950">
-  <VBox styleClass="main" spacing="10">
+<DynamicScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CopyFormController">
+  <DynamicVBox minHeight="1000">
     <Label styleClass="h2" text="Ajouter des livres à vendre"/>
     <Label styleClass="h3" fx:id="memberName"/>
 
-    <TableView fx:id="tblCopies">
+    <DynamicTableView fx:id="tblCopies" minWidth="400" maxWidth="400">
       <columns>
-        <TableColumn prefWidth="100.0" text="Article" fx:id="colItem"/>
-        <TableColumn prefWidth="80.0" text="Prix" fx:id="colPrice"/>
+        <TableColumn minWidth="315" maxWidth="315" text="Article" fx:id="colItem"/>
+        <TableColumn minWidth="80" maxWidth="80" text="Prix" fx:id="colPrice"/>
       </columns>
-    </TableView>
+    </DynamicTableView>
 
-    <VBox fx:id="setPrice" spacing="10">
+    <VBox fx:id="setPrice" spacing="10" minWidth="400" maxWidth="400" styleClass="main">
       <Label styleClass="h3" fx:id="itemTitle"/>
       <Label text="Veuillez indiquer le prix de vente de cet item"/>
       <TextField fx:id="txtPrice"/>
-      <AnchorPane>
+      <AnchorPane styleClass="main">
         <HBox spacing="10" AnchorPane.rightAnchor="0">
           <Button styleClass="form-button" fx:id="btnCancel" text="Annuler"/>
           <Button styleClass="form-button" fx:id="btnAdd" text="Ajouter"/>
@@ -28,8 +35,6 @@
       </AnchorPane>
     </VBox>
 
-    <Pane fx:id="resources">
-      <fx:include source="search.fxml"/>
-    </Pane>
-  </VBox>
-</ScrollPane>
+    <DynamicVBox userData="{spacing:0}" fx:id="resources" minHeight="600" />
+  </DynamicVBox>
+</DynamicScrollPane>

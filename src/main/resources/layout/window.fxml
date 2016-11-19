@@ -9,40 +9,41 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.control.Button?>
+<?import layout.DynamicVBox?>
+<?import layout.FlexVBox?>
 
-<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:id="window"
-      fx:controller="controller.WindowController">
-  <VBox fx:id="menu">
-    <MenuBar>
-      <Menu text="Fichier">
-        <MenuItem text="Déconnecter"/>
-        <MenuItem fx:id="exit" text="Quitter"/>
-      </Menu>
-      <Menu text="Édition">
-        <MenuItem fx:id="settings" text="Paramètres"/>
-      </Menu>
-      <Menu text="Aide">
-        <MenuItem fx:id="about" text="À propos"/>
-        <MenuItem text="Documentation"/>
-        <MenuItem text="License"/>
-      </Menu>
-    </MenuBar>
+<?import layout.DynamicScrollPane?>
+<FlexVBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:id="window"
+          fx:controller="controller.WindowController">
+  <MenuBar>
+    <Menu text="Fichier">
+      <MenuItem text="Déconnecter" disable="true"/>
+      <MenuItem fx:id="exit" text="Quitter"/>
+    </Menu>
+    <Menu text="Édition">
+      <MenuItem fx:id="settings" text="Paramètres"/>
+    </Menu>
+    <Menu text="Aide">
+      <MenuItem fx:id="about" text="À propos"/>
+      <MenuItem text="Documentation" disable="true"/>
+      <MenuItem text="License" disable="true"/>
+    </Menu>
+  </MenuBar>
 
-    <HBox>
-      <VBox fx:id="sideMenu" styleClass="aside" >
-        <ImageView fitHeight="135.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-          <Image url="@../images/logo.png"/>
-        </ImageView>
-        <Button fx:id="btnSearch"/>
-        <Button fx:id="btnItemForm"/>
-        <Button fx:id="btnMemberForm"/>
-        <Button fx:id="btnAdmin"/>
-      </VBox>
+  <HBox>
+    <VBox fx:id="sideMenu" styleClass="aside" >
+      <ImageView fitHeight="135.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+        <Image url="@../images/logo.png"/>
+      </ImageView>
+      <Button fx:id="btnSearch"/>
+      <Button fx:id="btnItemForm"/>
+      <Button fx:id="btnMemberForm"/>
+      <Button fx:id="btnAdmin"/>
+    </VBox>
 
-      <VBox>
-        <Button styleClass="form-button" fx:id="btnBack" text="Back" visible="false" managed="false"/>
-        <Pane fx:id="mainPanel" />
-      </VBox>
-    </HBox>
-  </VBox>
-</Pane>
+    <DynamicVBox userData="{spacing:0}">
+      <Button styleClass="form-button" fx:id="btnBack" text="Back" visible="false" managed="false"/>
+      <Pane styleClass="main" fx:id="mainPanel" />
+    </DynamicVBox>
+  </HBox>
+</FlexVBox>

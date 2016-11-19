@@ -46,7 +46,7 @@ public class WindowController extends Controller {
     double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
     double screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
 
-    menu.setPrefWidth(screenWidth);
+    //menu.setPrefWidth(screenWidth);
     sideMenu.setPrefSize(screenWidth * .15, screenHeight);
     mainPanel.setPrefSize(screenWidth * .85, screenHeight);
     setMainPanel(mainPanel);

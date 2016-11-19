@@ -411,10 +411,6 @@ public class ItemViewController extends PanelController {
 
   private void _dataBinding() {
     btnReserve.managedProperty().bind(btnReserve.visibleProperty());
-    tblReservations.managedProperty().bind(tblReservations.visibleProperty());
-    tblAvailable.managedProperty().bind(tblAvailable.visibleProperty());
-    tblSold.managedProperty().bind(tblSold.visibleProperty());
-    tblPaid.managedProperty().bind(tblPaid.visibleProperty());
     statusPane.managedProperty().bind(statusPane.visibleProperty());
     commentPane.managedProperty().bind(commentPane.visibleProperty());
     descriptionPane.managedProperty().bind(descriptionPane.visibleProperty());

@@ -1,13 +1,14 @@
 import java.io.*;
 
 import api.APIConnector;
-import javafx.application.*;
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.*;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.*;
-import javafx.stage.*;
-
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import layout.FlexVBox;
 import org.json.JSONObject;
 import utility.Dialog;
 import utility.I18N;
@@ -49,7 +50,7 @@ public class BLU extends Application {
 
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("layout/window.fxml"));
-      Pane window = loader.load();
+      FlexVBox window = loader.load();
 
       Scene scene = new Scene(window);
       scene.getStylesheets().addAll("css/window.css");
