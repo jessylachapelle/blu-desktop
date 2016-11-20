@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import layout.DynamicVBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
 
-<Pane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
-      fx:controller="controller.ItemFormController">
-  <VBox styleClass="main" spacing="10">
-    <Label styleClass="h1" text="Ajouter un item"/>
-    <TabPane fx:id="tabpane" tabClosingPolicy="UNAVAILABLE">
-      <Tab styleClass="form-button" text="Ouvrage">
-        <fx:include source="bookTab.fxml"/>
-      </Tab>
-      <Tab styleClass="form-button" text="Objet">
-        <fx:include source="itemTab.fxml"/>
-      </Tab>
-    </TabPane>
-  </VBox>
-</Pane>
+<DynamicVBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="controller.ItemFormController">
+  <Label styleClass="h1" text="Ajouter un ouvrage"/>
+  <TabPane fx:id="tabpane" tabClosingPolicy="UNAVAILABLE" minHeight="800">
+    <Tab styleClass="form-button" text="Ouvrage">
+      <fx:include source="bookTab.fxml"/>
+    </Tab>
+    <Tab styleClass="form-button" text="Objet">
+      <fx:include source="itemTab.fxml"/>
+    </Tab>
+  </TabPane>
+</DynamicVBox>

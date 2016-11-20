@@ -19,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.item.*;
 import model.member.Member;
@@ -411,10 +412,6 @@ public class ItemViewController extends PanelController {
 
   private void _dataBinding() {
     btnReserve.managedProperty().bind(btnReserve.visibleProperty());
-    tblReservations.managedProperty().bind(tblReservations.visibleProperty());
-    tblAvailable.managedProperty().bind(tblAvailable.visibleProperty());
-    tblSold.managedProperty().bind(tblSold.visibleProperty());
-    tblPaid.managedProperty().bind(tblPaid.visibleProperty());
     statusPane.managedProperty().bind(statusPane.visibleProperty());
     commentPane.managedProperty().bind(commentPane.visibleProperty());
     descriptionPane.managedProperty().bind(descriptionPane.visibleProperty());
@@ -565,8 +562,8 @@ public class ItemViewController extends PanelController {
       scene.getStylesheets().addAll("css/window.css");
       stage.initModality(Modality.APPLICATION_MODAL);
       stage.setTitle("Sélectionner le parent");
-      stage.setWidth(600);
-      stage.setHeight(650);
+      stage.setWidth(Screen.getPrimary().getVisualBounds().getWidth() * .8);
+      stage.setHeight(750);
       stage.setScene(scene);
       stage.show();
 

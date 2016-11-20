@@ -22,7 +22,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
@@ -71,6 +70,7 @@ public class CopyFormController extends PanelController {
     setPrice.setVisible(false);
     _displaySearchPanel();
     _eventHandlers();
+    _displayCopies();
   }
 
   /**
@@ -79,9 +79,8 @@ public class CopyFormController extends PanelController {
   private void _dataBinding() {
     setPrice.managedProperty().bind(setPrice.visibleProperty());
     resources.managedProperty().bind(resources.visibleProperty());
-
     colItem.setCellValueFactory(new PropertyValueFactory<>("name"));
-    colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+    colPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
   }
 
   /**
@@ -183,27 +182,26 @@ public class CopyFormController extends PanelController {
   private void _itemFormEventHandlers() {
     ItemFormController itemFormController = (ItemFormController) controller;
 
-    itemFormController.getBtnSaveBook().setOnAction((ActionEvent event) -> {
-      if (itemFormController.save()) {
-        currentCopy = new Copy();
-        currentCopy.setItem(itemFormController.getItem());
-        itemTitle.setText(itemFormController.getItem().getName());
+    Button[] saveButtons = new Button[]{itemFormController.getBtnSaveBook(), itemFormController.getBtnSaveItem()};
+    for (Button save : saveButtons) {
+      save.setOnAction((ActionEvent event) -> {
+        if (itemFormController.save()) {
+          currentCopy = new Copy();
+          currentCopy.setItem(itemFormController.getItem());
+          itemTitle.setText(itemFormController.getItem().getName());
 
+          _displaySearchPanel();
+          _toggleView(true, true);
+        }
+      });
+    }
+
+    for (Button cancel : itemFormController.getCancelButtons()) {
+      cancel.setOnAction((ActionEvent event) -> {
         _displaySearchPanel();
-        _toggleView(true, true);
-      }
-    });
-
-    itemFormController.getBtnSaveItem().setOnAction((ActionEvent event) -> {
-      if (itemFormController.save()) {
-        currentCopy = new Copy();
-        currentCopy.setItem(itemFormController.getItem());
-        itemTitle.setText(itemFormController.getItem().getName());
-
-        _displaySearchPanel();
-        _toggleView(true, true);
-      }
-    });
+        event.consume();
+      });
+    }
   }
 
   /**
@@ -267,19 +265,16 @@ public class CopyFormController extends PanelController {
   private void _displayCopies() {
     ObservableList<Copy> copiesList = FXCollections.observableArrayList(copies);
     tblCopies.setItems(copiesList);
-
-    tblCopies.setPrefHeight(50 * (copies.size() + 1));
-    resources.setLayoutY(150 + 50 * copies.size());
-    setPrice.setLayoutY(150 + 50 * copies.size());
+    tblCopies.setVisible(!tblCopies.getItems().isEmpty());
   }
 
   /**
    * Toggle entre la view de recherche et d'ajout de prix
-   * @param restPrice S'il faut effacer le champs de prix
+   * @param resetPrice S'il faut effacer le champs de prix
    * @param resetSearch S'il faut effacer les données de recherche
    */
-  private void _toggleView(boolean restPrice, boolean resetSearch) {
-    if (restPrice) {
+  private void _toggleView(boolean resetPrice, boolean resetSearch) {
+    if (resetPrice) {
      txtPrice.setText("");
     }
 

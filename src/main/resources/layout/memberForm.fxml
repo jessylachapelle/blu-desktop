@@ -36,7 +36,7 @@
       </HBox>
 
       <HBox spacing="10">
-        <Label styleClass="form-label" text="Code Postal"/>
+        <Label styleClass="form-label" text="Code postal"/>
         <TextField fx:id="txtZip"/>
       </HBox>
 
@@ -51,7 +51,7 @@
       </HBox>
 
       <HBox spacing="10">
-        <Label styleClass="form-label" text="Adresse email* :"/>
+        <Label styleClass="form-label" text="Adresse courriel*"/>
         <TextField fx:id="txtEmail"/>
       </HBox>
 
@@ -63,7 +63,7 @@
       </HBox>
 
       <HBox spacing="10">
-        <Label styleClass="form-label" text="Telephone 2"/>
+        <Label styleClass="form-label" text="Téléphone 2"/>
         <TextField fx:id="txtPhoneNumber2"/>
         <Label text="Note"/>
         <TextField fx:id="txtPhoneNote2"/>

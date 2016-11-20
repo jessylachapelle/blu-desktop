@@ -10,8 +10,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.Node;
-
-import utility.*;
+import utility.I18N;
 
 /**
  *
@@ -73,13 +72,14 @@ public class Controller implements javafx.fxml.Initializable {
     parent.getChildren().clear();
 
     try {
-//      Pane pane = loader.load();
-//
-//      viewStack.push(pane, loader.getController());
-//      btnBack.setVisible(viewStack.size() > 1);
-//
+      // TODO: Back button
+      // Pane pane = loader.load();
+      // viewStack.push(pane, loader.getController());
+      // btnBack.setVisible(viewStack.size() > 1);
+
       parent.getChildren().add(loader.load());
-      initText(parent);
+      // TODO: i18n
+      // initText(parent);
       return loader.getController();
     } catch (IOException e) {
       e.printStackTrace();

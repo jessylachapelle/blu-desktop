@@ -489,10 +489,6 @@ public class MemberViewController extends PanelController {
     btnReactivate.managedProperty().bind(btnReactivate.visibleProperty());
     btnReactivate.visibleProperty().bind(btnAddCopy.disableProperty());
     reservation.managedProperty().bind(reservation.visibleProperty());
-    tblReservation.managedProperty().bind(tblReservation.visibleProperty());
-    tblAvailable.managedProperty().bind(tblAvailable.visibleProperty());
-    tblSold.managedProperty().bind(tblSold.visibleProperty());
-    tblPaid.managedProperty().bind(tblPaid.visibleProperty());
 
     colComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
     colCommentDate.setCellValueFactory(new PropertyValueFactory<>("date"));
@@ -531,22 +527,24 @@ public class MemberViewController extends PanelController {
           @Override
           protected void updateItem(String data, boolean empty) {
             TableRow<Copy> row = getTableRow();
-            boolean isBook = row.getItem() != null && row.getItem().getItem() instanceof Book;
-            boolean outdated = isBook && ((Book) row.getItem().getItem()).isOutdated();
-            boolean removed = isBook && ((Book) row.getItem().getItem()).isRemoved();
+            if (row != null) {
+              boolean isBook = row.getItem() != null && row.getItem().getItem() instanceof Book;
+              boolean outdated = isBook && ((Book) row.getItem().getItem()).isOutdated();
+              boolean removed = isBook && ((Book) row.getItem().getItem()).isRemoved();
 
-            super.updateItem(data, empty);
-            setText(data != null ? data : "");
+              super.updateItem(data, empty);
+              setText(data != null ? data : "");
 
-            if (removed) {
-              setStyle("-fx-background-color: black");
-              setTextFill(Color.WHITE);
-            } else if (outdated) {
-              setStyle("-fx-background-color: grey");
-              setTextFill(Color.WHITE);
-            } else {
-              setStyle("");
-              setTextFill(Color.BLACK);
+              if (removed) {
+                setStyle("-fx-background-color: black");
+                setTextFill(Color.WHITE);
+              } else if (outdated) {
+                setStyle("-fx-background-color: grey");
+                setTextFill(Color.WHITE);
+              } else {
+                setStyle("");
+                setTextFill(Color.BLACK);
+              }
             }
           }
         });

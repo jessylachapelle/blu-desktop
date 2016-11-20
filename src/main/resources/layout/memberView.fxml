@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-
 <?import javafx.scene.web.WebView?>
-<ScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controller.MemberViewController" prefHeight="950">
-  <VBox styleClass="main" spacing="10">
+<?import layout.DynamicScrollPane?>
+<?import layout.DynamicVBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TableColumn?>
+
+<?import layout.DynamicTableView?>
+<?import javafx.scene.layout.Pane?>
+<DynamicScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+                   fx:controller="controller.MemberViewController" >
+  <DynamicVBox>
     <Label styleClass="h1" text="Compte Étudiant"/>
 
     <HBox spacing="10">
@@ -76,21 +82,21 @@
       <Button styleClass="form-button" fx:id="btnReactivate" text="Réactiver le compte"/>
     </VBox>
 
-    <VBox styleClass="section" spacing="10">
+    <DynamicVBox styleClass="section" spacing="10">
       <Label styleClass="h2" text="Notes et commentaires"/>
       <Button styleClass="form-button" fx:id="btnAddComment" text="Ajouter un commentaire"/>
 
-      <TableView fx:id="tblComments">
+      <DynamicTableView fx:id="tblComments">
         <columns>
-          <TableColumn fx:id="colComment" prefWidth="450.0" text="Commentaire"/>
-          <TableColumn fx:id="colCommentDate" prefWidth="120.0" text="Date"/>
+          <TableColumn userData="1" fx:id="colComment" text="Commentaire"/>
+          <TableColumn userData="1" fx:id="colCommentDate" text="Date"/>
         </columns>
-      </TableView>
-    </VBox>
+      </DynamicTableView>
+    </DynamicVBox>
 
     <VBox fx:id="reservation" spacing="10">
       <Label styleClass="h2" text="Réservations"/>
-      <TableView fx:id="tblReservation">
+      <DynamicTableView fx:id="tblReservation">
         <columns>
           <TableColumn fx:id="colReservationTitle" prefWidth="228.0" text="Titre"/>
           <TableColumn fx:id="colReservationDateReserved" prefWidth="228.0" text="Réservé le"/>
@@ -98,7 +104,7 @@
           <TableColumn fx:id="colReservationDateAdded" prefWidth="147.0" text="Mise en vente"/>
           <TableColumn fx:id="colReservationPrice" prefWidth="61.0" text="Prix"/>
         </columns>
-      </TableView>
+      </DynamicTableView>
     </VBox>
 
     <HBox styleClass="section" spacing="10" alignment="CENTER">
@@ -117,18 +123,18 @@
       <Label styleClass="h2" text="Ouvrages"/>
 
       <Label styleClass="h3" text="À vendre"/>
-      <TableView fx:id="tblAvailable">
+      <DynamicTableView fx:id="tblAvailable">
         <columns>
-          <TableColumn fx:id="colAvailableTitle" prefWidth="217.0" text="Titre"/>
-          <TableColumn fx:id="colAvailableEditor" prefWidth="93.0" text="Éditeur"/>
-          <TableColumn fx:id="colAvailableEdition" prefWidth="63.0" text="Édition"/>
-          <TableColumn fx:id="colAvailableDateAdded" prefWidth="92.0" text="Mise en vente"/>
-          <TableColumn fx:id="colAvailablePrice" prefWidth="60.0" text="Prix"/>
+          <TableColumn fx:id="colAvailableTitle" userData="5" text="Titre"/>
+          <TableColumn fx:id="colAvailableEditor" userData="4" text="Éditeur"/>
+          <TableColumn fx:id="colAvailableEdition" userData="1" text="Édition"/>
+          <TableColumn fx:id="colAvailableDateAdded" userData="2" text="Mise en vente"/>
+          <TableColumn fx:id="colAvailablePrice" userData="1" text="Prix"/>
         </columns>
-      </TableView>
+      </DynamicTableView>
 
       <Label styleClass="h3" text="Vendu"/>
-      <TableView fx:id="tblSold">
+      <DynamicTableView fx:id="tblSold">
         <columns>
           <TableColumn fx:id="colSoldTitle" prefWidth="201.0" text="Titre"/>
           <TableColumn fx:id="colSoldEditor" prefWidth="105.0" text="Éditeur"/>
@@ -137,10 +143,10 @@
           <TableColumn fx:id="colSoldDateSold" prefWidth="95.0" text="Vente"/>
           <TableColumn fx:id="colSoldPrice" prefWidth="77.0" text="Prix"/>
         </columns>
-      </TableView>
+      </DynamicTableView>
 
       <Label styleClass="h3" text="Remboursé"/>
-      <TableView fx:id="tblPaid">
+      <DynamicTableView fx:id="tblPaid">
         <columns>
           <TableColumn fx:id="colPaidTitle" prefWidth="215.0" text="Titre"/>
           <TableColumn fx:id="colPaidEditor" prefWidth="96.0" text="Éditeur"/>
@@ -150,7 +156,8 @@
           <TableColumn fx:id="colPaidDatePaid" prefWidth="147.0" text="Remise d'argent"/>
           <TableColumn fx:id="colPaidPrice" prefWidth="58.0" text="Prix"/>
         </columns>
-      </TableView>
+      </DynamicTableView>
     </VBox>
-  </VBox>
-</ScrollPane>
+    <Pane prefHeight="50"/>
+  </DynamicVBox>
+</DynamicScrollPane>

@@ -1,16 +1,16 @@
 import java.io.*;
 
 import api.APIConnector;
-import javafx.application.*;
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.*;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.*;
-import javafx.stage.*;
-
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import layout.FlexVBox;
 import org.json.JSONObject;
 import utility.Dialog;
-import utility.I18N;
 import utility.Settings;
 
 /**
@@ -21,7 +21,8 @@ import utility.Settings;
  */
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class BLU extends Application {
-  private static I18N i18n;
+  // TODO: i18n
+  // private static I18N i18n;
   private static Settings settings;
 
   public static void main(String[] args) {
@@ -31,7 +32,8 @@ public class BLU extends Application {
   @Override
   public void start(Stage stage) {
     settings = new Settings();
-    i18n = new I18N();
+    // TODO: i18n
+    // i18n = new I18N();
 
     if (!hasAPIConnection()) {
       Dialog.information("Veuillez vérifier votre connexion au réseau puis redémarrer l'application");
@@ -41,15 +43,15 @@ public class BLU extends Application {
     double width = Screen.getPrimary().getVisualBounds().getWidth();
     double height = Screen.getPrimary().getVisualBounds().getHeight();
 
-    stage.setTitle(i18n.getString("title"));
+    stage.setTitle("Banque de Livres Usagés (BETA)");
     stage.getIcons().add(new Image(getClass().getResourceAsStream("images/icon.png")));
     stage.setWidth(width);
     stage.setHeight(height);
-    //stage.setMaximized(true);
+    stage.setMaximized(true);
 
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("layout/window.fxml"));
-      Pane window = loader.load();
+      FlexVBox window = loader.load();
 
       Scene scene = new Scene(window);
       scene.getStylesheets().addAll("css/window.css");
