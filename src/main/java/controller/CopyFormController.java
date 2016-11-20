@@ -293,7 +293,7 @@ public class CopyFormController extends PanelController {
 
       if (itemHandler.exists(code)) {
         currentCopy = new Copy();
-        currentCopy.setItem(itemHandler.selectItem(code));
+        currentCopy.setItem(itemHandler.selectItem(code, true));
         itemTitle.setText(itemHandler.getItem().getName());
 
         _toggleView(true, false);

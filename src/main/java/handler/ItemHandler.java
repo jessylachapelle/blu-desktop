@@ -144,8 +144,17 @@ public class ItemHandler {
   }
 
   public Item selectItem(String ean13) {
+    return selectItem(ean13, false);
+  }
+
+  public Item selectItem(String ean13, boolean forCopy) {
     JSONObject data = new JSONObject();
     data.put("ean13", ean13);
+
+    if (forCopy) {
+      data.put("forCopy", true);
+    }
+
     return _selectItem(data);
   }
 
