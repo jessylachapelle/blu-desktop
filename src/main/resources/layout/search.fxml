@@ -30,19 +30,19 @@
   <CheckBox fx:id="cbArchive" text="Inclure les résultats archivés" userData="archive"/>
 
   <AnchorPane>
-    <Button styleClass="form-button, i18n" fx:id="btnSearch" text="search.button.search" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
+    <Button styleClass="form-button, i18n" fx:id="btnSearch" text="Rechercher" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"/>
   </AnchorPane>
 
   <!-- Results -->
-  <Label styleClass="h2, i18n" text="search.label.result" />
-  <Button styleClass="form-button, i18n" fx:id="btnAdd" text="search.button.add"/>
+  <Label styleClass="h2, i18n" text="Résultats" />
+  <Button styleClass="form-button, i18n" fx:id="btnAdd" text="Ajouter"/>
 
   <Label styleClass="h3" fx:id="lblMessage" text="Aucun résultat trouvé"/>
 
   <DynamicTableView fx:id="tblMemberResults">
     <columns>
       <TableColumn text="No" fx:id="colNo" userData="1"/>
-      <TableColumn styleClass="i18n" text="search.table.label.firstName" fx:id="colFirstName" userData="4"/>
+      <TableColumn styleClass="i18n" text="Prénom" fx:id="colFirstName" userData="4"/>
       <TableColumn text="Nom" fx:id="colLastName" userData="4"/>
     </columns>
   </DynamicTableView>

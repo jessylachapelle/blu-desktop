@@ -103,6 +103,10 @@ public class BookTabController extends PanelController {
     return btnSave;
   }
 
+  public Button getBtnCAncel() {
+    return btnCancel;
+  }
+
   public Book getBook() {
     return (Book)itemHandler.getItem();
   }

@@ -12,7 +12,6 @@
 <?import layout.DynamicVBox?>
 <?import layout.FlexVBox?>
 
-<?import layout.DynamicScrollPane?>
 <FlexVBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:id="window"
           fx:controller="controller.WindowController">
   <MenuBar>
@@ -35,10 +34,10 @@
       <ImageView fitHeight="135.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
         <Image url="@../images/logo.png"/>
       </ImageView>
-      <Button fx:id="btnSearch"/>
-      <Button fx:id="btnItemForm"/>
-      <Button fx:id="btnMemberForm"/>
-      <Button fx:id="btnAdmin"/>
+      <Button fx:id="btnSearch" text="Recherche"/>
+      <Button fx:id="btnItemForm" text="Ouvrage"/>
+      <Button fx:id="btnMemberForm" text="Membre"/>
+      <Button fx:id="btnAdmin" text="Admin"/>
     </VBox>
 
     <DynamicVBox userData="{spacing:0}">

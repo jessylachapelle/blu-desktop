@@ -182,27 +182,26 @@ public class CopyFormController extends PanelController {
   private void _itemFormEventHandlers() {
     ItemFormController itemFormController = (ItemFormController) controller;
 
-    itemFormController.getBtnSaveBook().setOnAction((ActionEvent event) -> {
-      if (itemFormController.save()) {
-        currentCopy = new Copy();
-        currentCopy.setItem(itemFormController.getItem());
-        itemTitle.setText(itemFormController.getItem().getName());
+    Button[] saveButtons = new Button[]{itemFormController.getBtnSaveBook(), itemFormController.getBtnSaveItem()};
+    for (Button save : saveButtons) {
+      save.setOnAction((ActionEvent event) -> {
+        if (itemFormController.save()) {
+          currentCopy = new Copy();
+          currentCopy.setItem(itemFormController.getItem());
+          itemTitle.setText(itemFormController.getItem().getName());
 
+          _displaySearchPanel();
+          _toggleView(true, true);
+        }
+      });
+    }
+
+    for (Button cancel : itemFormController.getCancelButtons()) {
+      cancel.setOnAction((ActionEvent event) -> {
         _displaySearchPanel();
-        _toggleView(true, true);
-      }
-    });
-
-    itemFormController.getBtnSaveItem().setOnAction((ActionEvent event) -> {
-      if (itemFormController.save()) {
-        currentCopy = new Copy();
-        currentCopy.setItem(itemFormController.getItem());
-        itemTitle.setText(itemFormController.getItem().getName());
-
-        _displaySearchPanel();
-        _toggleView(true, true);
-      }
-    });
+        event.consume();
+      });
+    }
   }
 
   /**
@@ -271,11 +270,11 @@ public class CopyFormController extends PanelController {
 
   /**
    * Toggle entre la view de recherche et d'ajout de prix
-   * @param restPrice S'il faut effacer le champs de prix
+   * @param resetPrice S'il faut effacer le champs de prix
    * @param resetSearch S'il faut effacer les données de recherche
    */
-  private void _toggleView(boolean restPrice, boolean resetSearch) {
-    if (restPrice) {
+  private void _toggleView(boolean resetPrice, boolean resetSearch) {
+    if (resetPrice) {
      txtPrice.setText("");
     }
 

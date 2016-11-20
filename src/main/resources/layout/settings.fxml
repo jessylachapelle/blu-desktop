@@ -12,7 +12,7 @@
   <Label styleClass="h1" text="Paramètres"/>
 
   <Label styleClass="h2" text="Langue"/>
-  <ComboBox fx:id="cbLang"/>
+  <ComboBox fx:id="cbLang" disable="true"/>
 
   <Label styleClass="h2" text="Calibrer le lecteur à code à barres"/>
   <Button styleClass="form-button" fx:id="btnCalibrate" text="Calibrer"/>

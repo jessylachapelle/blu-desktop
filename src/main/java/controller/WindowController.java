@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.scene.control.MenuItem;
 
@@ -26,7 +27,6 @@ import utility.Dialog;
 @SuppressWarnings("ConstantConditions")
 public class WindowController extends Controller {
   @FXML private VBox sideMenu;
-  @FXML private VBox menu;
   @FXML private Pane window;
   @FXML private Pane mainPanel;
 
@@ -46,7 +46,6 @@ public class WindowController extends Controller {
     double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
     double screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
 
-    //menu.setPrefWidth(screenWidth);
     sideMenu.setPrefSize(screenWidth * .15, screenHeight);
     mainPanel.setPrefSize(screenWidth * .85, screenHeight);
     setMainPanel(mainPanel);
@@ -64,19 +63,19 @@ public class WindowController extends Controller {
     btnAdmin.setOnAction(event -> loadMainPanel("layout/admin.fxml"));
 
     btnBack.setOnAction(event -> {
-      // TODO: Handle back button
-//      if (viewStack.size() > 1) {
-//        View view = viewStack.pop();
-//
-//        while (view.getController() == controller) {
-//          view = viewStack.pop();
-//        }
-//
-//        controller = view.getController();
-//        mainPanel.getChildren().clear();
-//        mainPanel.getChildren().add(view.getPane());
-//        btnBack.setVisible(viewStack.size() > 1);
-//      }
+      // TODO: Back button
+      // if (viewStack.size() > 1) {
+      //   View view = viewStack.pop();
+
+      //   while (view.getController() == controller) {
+      //     view = viewStack.pop();
+      //   }
+
+      //   controller = view.getController();
+      //   mainPanel.getChildren().clear();
+      //   mainPanel.getChildren().add(view.getPane());
+      //   btnBack.setVisible(viewStack.size() > 1);
+      // }
     });
 
     exit.setOnAction(event -> Platform.exit());
@@ -89,6 +88,7 @@ public class WindowController extends Controller {
         Scene scene = new Scene(parent);
 
         scene.getStylesheets().addAll("css/window.css");
+        stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Paramètres");
         stage.setWidth(500);
         stage.setHeight(350);
@@ -103,9 +103,10 @@ public class WindowController extends Controller {
   private void _setText() {
     initI18n();
 
-    btnSearch.setText(i18n.getString("menu.search"));
-    btnItemForm.setText(i18n.getString("menu.item"));
-    btnMemberForm.setText(i18n.getString("menu.member"));
-    btnAdmin.setText(i18n.getString("menu.admin"));
+    // TODO: i18n
+    // btnSearch.setText(i18n.getString("menu.search"));
+    // btnItemForm.setText(i18n.getString("menu.item"));
+    // btnMemberForm.setText(i18n.getString("menu.member"));
+    // btnAdmin.setText(i18n.getString("menu.admin"));
   }
 }

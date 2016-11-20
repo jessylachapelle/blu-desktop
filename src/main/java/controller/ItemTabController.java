@@ -58,6 +58,10 @@ public class ItemTabController extends PanelController {
     return btnSave;
   }
 
+  public Button getBtnCancel() {
+    return btnCancel;
+  }
+
   public Item getItem() {
     return itemHandler.getItem();
   }

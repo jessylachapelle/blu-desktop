@@ -61,6 +61,10 @@ public class ItemFormController extends PanelController {
     }
   }
 
+  public Button[] getCancelButtons() {
+    return new Button[]{bookTab.getBtnCAncel(), itemTab.getBtnCancel()};
+  }
+
   public boolean save() {
     return _isBookTab() ? bookTab.save() : itemTab.save();
   }

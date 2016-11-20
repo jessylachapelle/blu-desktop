@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 import layout.FlexVBox;
 import org.json.JSONObject;
 import utility.Dialog;
-import utility.I18N;
 import utility.Settings;
 
 /**
@@ -22,7 +21,8 @@ import utility.Settings;
  */
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class BLU extends Application {
-  private static I18N i18n;
+  // TODO: i18n
+  // private static I18N i18n;
   private static Settings settings;
 
   public static void main(String[] args) {
@@ -32,7 +32,8 @@ public class BLU extends Application {
   @Override
   public void start(Stage stage) {
     settings = new Settings();
-    i18n = new I18N();
+    // TODO: i18n
+    // i18n = new I18N();
 
     if (!hasAPIConnection()) {
       Dialog.information("Veuillez vérifier votre connexion au réseau puis redémarrer l'application");
@@ -42,7 +43,7 @@ public class BLU extends Application {
     double width = Screen.getPrimary().getVisualBounds().getWidth();
     double height = Screen.getPrimary().getVisualBounds().getHeight();
 
-    stage.setTitle("Banque de Livres Usagés");
+    stage.setTitle("Banque de Livres Usagés (BETA)");
     stage.getIcons().add(new Image(getClass().getResourceAsStream("images/icon.png")));
     stage.setWidth(width);
     stage.setHeight(height);
