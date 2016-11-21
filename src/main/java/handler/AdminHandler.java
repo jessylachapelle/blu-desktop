@@ -1,13 +1,14 @@
 package handler;
 
-import api.APIConnector;
-import model.item.Reservation;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import utility.DateParser;
-
 import java.util.ArrayList;
 import java.util.Date;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import api.APIConnector;
+import model.item.Reservation;
+import utility.DateParser;
 
 /**
  * @author Jessy Lachapelle
@@ -19,29 +20,6 @@ public class AdminHandler {
 
   public AdminHandler() {
     reservations = new ArrayList<>();
-  }
-
-  public boolean selectReservations() {
-    reservations.clear();
-    JSONObject req = new JSONObject();
-
-    req.put("object", "reservation");
-    req.put("function", "select");
-    req.put("data", new JSONObject());
-
-    JSONObject res = APIConnector.call(req);
-    JSONArray data = res.optJSONArray("data");
-
-    if (data != null) {
-      for (int i = 0; i < data.length(); i++) {
-        JSONObject r = data.optJSONObject(i);
-        if (r != null) {
-          reservations.add(new Reservation(r));
-        }
-      }
-    }
-
-    return data != null;
   }
 
   public boolean deleteReservations() {
@@ -99,5 +77,28 @@ public class AdminHandler {
 
   public ArrayList<Reservation> getReservations() {
     return reservations;
+  }
+
+  public boolean selectReservations() {
+    reservations.clear();
+    JSONObject req = new JSONObject();
+
+    req.put("object", "reservation");
+    req.put("function", "select");
+    req.put("data", new JSONObject());
+
+    JSONObject res = APIConnector.call(req);
+    JSONArray data = res.optJSONArray("data");
+
+    if (data != null) {
+      for (int i = 0; i < data.length(); i++) {
+        JSONObject r = data.optJSONObject(i);
+        if (r != null) {
+          reservations.add(new Reservation(r));
+        }
+      }
+    }
+
+    return data != null;
   }
 }

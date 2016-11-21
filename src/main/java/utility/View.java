@@ -1,7 +1,8 @@
 package utility;
 
-import controller.Controller;
 import javafx.scene.layout.Pane;
+
+import controller.Controller;
 
 /**
  * @author jessy on 06/08/16.

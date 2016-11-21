@@ -2,9 +2,9 @@ package model.transaction;
 
 import java.util.Date;
 
-import model.member.StudentParent;
 import org.json.JSONObject;
 
+import model.member.StudentParent;
 import utility.DateParser;
 
 /**
@@ -15,7 +15,6 @@ import utility.DateParser;
  * @since 26/10/2015
  * @version 0.1
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class Transaction {
   public final static class Type {
     public final static String RESERVATION = "RESERVE";
@@ -26,15 +25,8 @@ public class Transaction {
   private String type;
   private StudentParent parent;
 
-  /**
-   * Constructeur par défaut, crée une transaction aux valeurs null
-   */
-  public Transaction() {
-    init();
-  }
-
   public Transaction(JSONObject json) {
-    init();
+    _init();
     fromJSON(json);
   }
 
@@ -42,31 +34,6 @@ public class Transaction {
     this.type = type;
     parent = new StudentParent();
     date = new Date();
-  }
-
-  private void init() {
-    type = "";
-    parent = new StudentParent();
-    date = new Date();
-  }
-
-  /**
-   * Constructeur qui crée une transaction avec toutes les informations
-   *
-   * @param type Le type de transaction
-   * @param date La date de la transaction
-   */
-  public Transaction(String type, Date date) {
-    this.type = type;
-    this.date = date;
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
-    this.type = type;
   }
 
   /**
@@ -78,8 +45,22 @@ public class Transaction {
     return date;
   }
 
-  public String getDateString() {
-    return DateParser.dateToString(date);
+  public void fromJSON(JSONObject transaction) {
+    setDate(transaction.optString("date", _getDateString()));
+    type = transaction.optString("code", type);
+
+    JSONObject parent = transaction.optJSONObject("parent");
+    if (parent != null) {
+      this.parent = new StudentParent(parent);
+    }
+  }
+
+  public StudentParent getParent() {
+    return parent;
+  }
+
+  public String getType() {
+    return type;
   }
 
   /**
@@ -91,14 +72,6 @@ public class Transaction {
     this.date = date;
   }
 
-  public void setParent(StudentParent parent) {
-    this.parent = parent;
-  }
-
-  public StudentParent getParent() {
-    return parent;
-  }
-
   /**
    *
    * @param dateString Formatted date (YYYY-MM-DD)
@@ -107,22 +80,26 @@ public class Transaction {
     date = dateString.isEmpty() ? date : DateParser.dateFromString(dateString);
   }
 
-  public void fromJSON(JSONObject transaction) {
-    setDate(transaction.optString("date", getDateString()));
-    type = transaction.optString("code", type);
-
-    JSONObject parent = transaction.optJSONObject("parent");
-    if (parent != null) {
-      this.parent = new StudentParent(parent);
-    }
+  public void setParent(StudentParent parent) {
+    this.parent = parent;
   }
 
   public JSONObject toJSON() {
     JSONObject transaction = new JSONObject();
 
-    transaction.put("date", getDateString());
+    transaction.put("date", _getDateString());
     transaction.put("type", type);
 
     return transaction;
+  }
+
+  private String _getDateString() {
+    return DateParser.dateToString(date);
+  }
+
+  private void _init() {
+    type = "";
+    parent = new StudentParent();
+    date = new Date();
   }
 }

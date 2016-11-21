@@ -1,10 +1,5 @@
 package api;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import utility.Dialog;
-import utility.Settings;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +8,11 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import utility.Settings;
 
 /**
  * Calls API
@@ -30,7 +30,7 @@ public class APIConnector {
    * Calls the API and sends it JSON.
    * Receives JSON in response.
    * @param req JSONObject to send to API
-   * @return JSONObject containing response from API or error
+   * @return JSONObject containing response from API or _error
    */
   public static JSONObject call(JSONObject req) {
     try {
@@ -53,29 +53,23 @@ public class APIConnector {
       bufferedReader.close();
       connection.disconnect();
 
-      System.out.println(req.toString());
-      System.out.println(response + '\n');
       return new JSONObject(response);
     } catch (MalformedURLException e) {
-      return error(422, "INVALID_DATA");
+      return _error(422, "INVALID_DATA");
     } catch (ConnectException e) {
-      return error(404, "NOT_FOUND");
+      return _error(404, "NOT_FOUND");
     } catch (IOException | JSONException e) {
-      return error(500, "INTERNAL_SERVER_ERROR");
+      return _error(500, "INTERNAL_SERVER_ERROR");
     }
   }
 
-  private static JSONObject error(int code, String message) {
+  private static JSONObject _error(int code, String message) {
     JSONObject error = new JSONObject();
     JSONObject data = new JSONObject();
 
-    try {
-      data.put("code", code);
-      data.put("message", message);
-      error.put("data", data);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+    data.put("code", code);
+    data.put("message", message);
+    error.put("data", data);
 
     return error;
   }

@@ -1,14 +1,13 @@
 package model.item;
 
+import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 /**
  * @author jessy on 05/08/16.
  */
-@SuppressWarnings("WeakerAccess")
 public class Category {
   private int id;
   private String name;
@@ -23,30 +22,9 @@ public class Category {
     fromJSON(category);
   }
 
-  private void _init() {
-    id = 0;
-    name = "";
-    subjects = new ArrayList<>();
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getName() {
+  @Override
+  public String toString() {
     return name;
-  }
-
-  public ArrayList<Subject> getSubjects() {
-    return subjects;
   }
 
   public void fromJSON(JSONObject category) {
@@ -65,6 +43,26 @@ public class Category {
         }
       }
     }
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public ArrayList<Subject> getSubjects() {
+    return subjects;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public JSONObject toJSON() {
@@ -91,8 +89,9 @@ public class Category {
     return category;
   }
 
-  @Override
-  public String toString() {
-    return name;
+  private void _init() {
+    id = 0;
+    name = "";
+    subjects = new ArrayList<>();
   }
 }

@@ -6,16 +6,16 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
-import javafx.scene.control.MenuItem;
-
 import javafx.stage.Stage;
+
 import utility.Dialog;
 
 /**
@@ -24,7 +24,6 @@ import utility.Dialog;
  *
  * @author Marc
  */
-@SuppressWarnings("ConstantConditions")
 public class WindowController extends Controller {
   @FXML private VBox sideMenu;
   @FXML private Pane window;

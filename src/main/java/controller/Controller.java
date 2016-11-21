@@ -5,36 +5,35 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
+import javafx.scene.control.Labeled;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.Node;
+
 import utility.I18N;
 
 /**
  *
  * @author Jessy Lachapelle
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class Controller implements javafx.fxml.Initializable {
   protected static Pane window;
   private static Pane mainPanel;
+  @SuppressWarnings("WeakerAccess")
   protected I18N i18n;
 
-  protected void setI18n(I18N i18n) {
-    this.i18n = i18n;
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {}
+
+  protected Pane getMainPanel() {
+    return mainPanel;
   }
 
-  protected void initI18n(String lang) {
-    i18n = new I18N(lang);
-  }
-
-  protected void initI18n() {
-    i18n = new I18N();
-  }
-
-  protected TableRow _getTableRow(Node node) {
+  protected TableRow getTableRow(Node node) {
     if (node instanceof TableRow) {
       return (TableRow) node;
     }
@@ -46,20 +45,41 @@ public class Controller implements javafx.fxml.Initializable {
     return new TableRow();
   }
 
-  protected void setMainPanel(Pane pane) {
-    if (mainPanel == null) {
-      mainPanel = pane;
+  protected void initI18n() {
+    i18n = new I18N();
+  }
+
+  @SuppressWarnings("unused")
+  protected void initI18n(String lang) {
+    i18n = new I18N(lang);
+  }
+
+  @SuppressWarnings({"unused", "WeakerAccess"})
+  protected void initText(Pane pane) {
+    for(Node node : pane.getChildren()) {
+      if (node instanceof  Labeled && node.getStyleClass().contains("i18n")) {
+        Labeled labeled = ((Labeled) node);
+        String key = labeled.getText();
+        labeled.setText(i18n.getString(key));
+      } else if(node instanceof TableView) {
+        TableView table = (TableView) node;
+        for (int i = 0; i < table.getColumns().size(); i++) {
+          TableColumn column = ((TableColumn) table.getColumns().get(i));
+          String key = column.getText();
+          column.setText(i18n.getString(key));
+        }
+      } else if (node instanceof Pane) {
+        initText((Pane) node);
+      }
     }
   }
 
-  protected void setWindow(Pane pane) {
-    if (window == null) {
-      window = pane;
-    }
+  protected boolean isDoubleClick(MouseEvent event) {
+    return event.isPrimaryButtonDown() && event.getClickCount() == 2;
   }
 
-  protected Pane getMainPanel() {
-    return mainPanel;
+  protected boolean isRightClick(MouseEvent event) {
+    return event.getButton() == MouseButton.SECONDARY;
   }
 
   protected Controller loadMainPanel(String resource) {
@@ -88,33 +108,16 @@ public class Controller implements javafx.fxml.Initializable {
     return null;
   }
 
-  protected boolean isDoubleClick(MouseEvent event) {
-    return event.isPrimaryButtonDown() && event.getClickCount() == 2;
+  @SuppressWarnings("unused")
+  protected void setI18n(I18N i18n) {
+    this.i18n = i18n;
   }
 
-  protected boolean isRightClick(MouseEvent event) {
-    return event.getButton() == MouseButton.SECONDARY;
+  protected void setMainPanel(Pane pane) {
+    mainPanel = mainPanel == null ? pane : mainPanel;
   }
 
-  protected void initText(Pane pane) {
-    for(Node node : pane.getChildren()) {
-      if (node instanceof  Labeled && node.getStyleClass().contains("i18n")) {
-        Labeled labeled = ((Labeled) node);
-        String key = labeled.getText();
-        labeled.setText(i18n.getString(key));
-      } else if(node instanceof TableView) {
-        TableView table = (TableView) node;
-        for (int i = 0; i < table.getColumns().size(); i++) {
-          TableColumn column = ((TableColumn) table.getColumns().get(i));
-          String key = column.getText();
-          column.setText(i18n.getString(key));
-        }
-      } else if (node instanceof Pane) {
-        initText((Pane) node);
-      }
-    }
+  protected void setWindow(Pane pane) {
+    window = window == null ? pane : window;
   }
-
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {}
 }
