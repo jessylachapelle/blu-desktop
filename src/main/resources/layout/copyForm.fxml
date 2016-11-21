@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import layout.DynamicScrollPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.Button?>
-<?import layout.DynamicVBox?>
+<?import javafx.scene.layout.VBox?>
+<?import layout.DynamicScrollPane?>
 <?import layout.DynamicTableView?>
+<?import layout.DynamicVBox?>
 
 <DynamicScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CopyFormController">
   <DynamicVBox minHeight="1000">

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import layout.DynamicVBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import layout.DynamicVBox?>
 
 <DynamicVBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="controller.ItemFormController">
   <Label styleClass="h1" text="Ajouter un ouvrage"/>

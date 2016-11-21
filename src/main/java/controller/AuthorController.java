@@ -6,8 +6,9 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
-import model.item.Author;
 import org.json.JSONObject;
+
+import model.item.Author;
 
 /**
  * Controller to handle author inputs
@@ -15,7 +16,6 @@ import org.json.JSONObject;
  * @since 2016-10-12
  * @version 1.0
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
 public class AuthorController implements javafx.fxml.Initializable {
 
   @FXML private TextField txtAuthorFirstName;
@@ -29,13 +29,13 @@ public class AuthorController implements javafx.fxml.Initializable {
   }
 
   /**
-   * Set the author binded to the controller
-   * @param author The author passed to the controller
+   * Converts JSON to textfield values
+   * @param author The JSONObject with the author data
    */
-  public void setAuthor(Author author) {
-    this.author = author;
-    txtAuthorFirstName.setText(author.getFirstName());
-    txtAuthorLastName.setText(author.getLastName());
+  public void fromJSON(JSONObject author) {
+    this.author.fromJSON(author);
+    _setAuthorFirstName(author.optString("first_name", ""));
+    _setAuthorLastName(author.optString("last_name", ""));
   }
 
   /**
@@ -47,40 +47,6 @@ public class AuthorController implements javafx.fxml.Initializable {
   }
 
   /**
-   * Set the value of the textfield
-   * @param firstName The author's first name
-   */
-  public void setAuthorFirstName(String firstName) {
-    txtAuthorFirstName.setText(firstName);
-  }
-
-  /**
-   * Set the value of the textfield
-   * @param lastName The author's last name
-   */
-  public void setAuthorLastName(String lastName) {
-    txtAuthorLastName.setText(lastName);
-  }
-
-  /**
-   * Set the value of the textfields
-   * @param firstName The author's first name
-   * @param lastName The author's last name
-   */
-  public void setAuthorName(String firstName, String lastName) {
-    setAuthorFirstName(firstName);
-    setAuthorLastName(lastName);
-  }
-
-  /**
-   * Get the input value of the first name
-   * @return String the first name in the textfield
-   */
-  public String getAuthorFirstName() {
-    return txtAuthorFirstName.getText();
-  }
-
-  /**
    * Get the input value of the last name
    * @return String the last name in the textfield
    */
@@ -89,12 +55,22 @@ public class AuthorController implements javafx.fxml.Initializable {
   }
 
   /**
+   * Set the author binded to the controller
+   * @param author The author passed to the controller
+   */
+  public void setAuthor(Author author) {
+    this.author = author;
+    txtAuthorFirstName.setText(author.getFirstName());
+    txtAuthorLastName.setText(author.getLastName());
+  }
+
+  /**
    * Convert fields to JSON
    * { "id": 0, "first_name": "", "last_name": "" }
    * @return JSONObject
    */
   public JSONObject toJSON() {
-    if (!getAuthorFirstName().equals(this.author.getFirstName()) ||
+    if (!_getAuthorFirstName().equals(this.author.getFirstName()) ||
         !getAuthorLastName().equals(this.author.getLastName())) {
       JSONObject author = new JSONObject();
 
@@ -102,7 +78,7 @@ public class AuthorController implements javafx.fxml.Initializable {
         author.put("id", this.author.getId());
       }
 
-      author.put("first_name", getAuthorFirstName());
+      author.put("first_name", _getAuthorFirstName());
       author.put("last_name", getAuthorLastName());
 
       return author;
@@ -111,13 +87,28 @@ public class AuthorController implements javafx.fxml.Initializable {
     return null;
   }
 
+
   /**
-   * Converts JSON to textfield values
-   * @param author The JSONObject with the author data
+   * Get the input value of the first name
+   * @return String the first name in the textfield
    */
-  public void fromJSON(JSONObject author) {
-    this.author.fromJSON(author);
-    setAuthorFirstName(author.optString("first_name", ""));
-    setAuthorLastName(author.optString("last_name", ""));
+  private String _getAuthorFirstName() {
+    return txtAuthorFirstName.getText();
+  }
+
+  /**
+   * Set the value of the textfield
+   * @param firstName The author's first name
+   */
+  private void _setAuthorFirstName(String firstName) {
+    txtAuthorFirstName.setText(firstName);
+  }
+
+  /**
+   * Set the value of the textfield
+   * @param lastName The author's last name
+   */
+  private void _setAuthorLastName(String lastName) {
+    txtAuthorLastName.setText(lastName);
   }
 }

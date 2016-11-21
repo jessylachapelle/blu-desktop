@@ -1,6 +1,8 @@
 package controller;
 
-import handler.ItemHandler;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,20 +10,19 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import model.item.Item;
-import org.json.JSONObject;
-import utility.Dialog;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
+import org.json.JSONObject;
+
+import handler.ItemHandler;
+
+import model.item.Item;
+import utility.Dialog;
 
 /**
  * @author Jessy Lachapelle
  * @since 2016-09-04
  * @version 1.0
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
 public class ItemTabController extends PanelController {
   private ItemHandler itemHandler;
   private SubjectController subjectController;
@@ -41,25 +42,12 @@ public class ItemTabController extends PanelController {
     _initSubjectPane();
   }
 
-  private void _initSubjectPane() {
-    FXMLLoader loader = new FXMLLoader();
-    loader.setLocation(getClass().getClassLoader().getResource("layout/subject.fxml"));
-
-    try {
-      subject.getChildren().add(loader.load());
-      subjectController = loader.getController();
-      subjectController.init(itemHandler);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  public Button getBtnCancel() {
+    return btnCancel;
   }
 
   public Button getBtnSave() {
     return btnSave;
-  }
-
-  public Button getBtnCancel() {
-    return btnCancel;
   }
 
   public Item getItem() {
@@ -77,8 +65,46 @@ public class ItemTabController extends PanelController {
     return itemHandler.saveItem(_toJSON());
   }
 
+  @Override
+  protected void handleScan(String code, boolean isItem) {}
+
   private boolean _canSave() {
     return !txtName.getText().isEmpty();
+  }
+
+  private void _eventHandlers() {
+    btnCancel.setOnAction(event -> {
+      if (getItem().getId() != 0) {
+        ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem());
+      } else {
+        loadMainPanel("layout/search.fxml");
+      }
+    });
+
+    btnSave.setOnAction(event -> {
+      if (_canSave()) {
+        if (itemHandler.saveItem(_toJSON())) {
+          ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem());
+        } else {
+          Dialog.information("Une erreur est survenue");
+        }
+      } else {
+        Dialog.information("Veuillez remplir tous les champs obligatoires avant de sauvegarder");
+      }
+    });
+  }
+
+  private void _initSubjectPane() {
+    FXMLLoader loader = new FXMLLoader();
+    loader.setLocation(getClass().getClassLoader().getResource("layout/subject.fxml"));
+
+    try {
+      subject.getChildren().add(loader.load());
+      subjectController = loader.getController();
+      subjectController.init(itemHandler);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private JSONObject _toJSON() {
@@ -104,29 +130,4 @@ public class ItemTabController extends PanelController {
 
     return form;
   }
-
-  private void _eventHandlers() {
-    btnCancel.setOnAction(event -> {
-      if (getItem().getId() != 0) {
-        ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem());
-      } else {
-        loadMainPanel("layout/search.fxml");
-      }
-    });
-
-    btnSave.setOnAction(event -> {
-      if (_canSave()) {
-        if (itemHandler.saveItem(_toJSON())) {
-          ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem());
-        } else {
-          Dialog.information("Une erreur est survenue");
-        }
-      } else {
-        Dialog.information("Veuillez remplir tous les champs obligatoires avant de sauvegarder");
-      }
-    });
-  }
-
-  @Override
-  protected void handleScan(String code, boolean isItem) {}
 }

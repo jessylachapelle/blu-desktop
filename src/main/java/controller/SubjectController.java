@@ -3,13 +3,13 @@ package controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import handler.ItemHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 
+import handler.ItemHandler;
 import model.item.Category;
 import model.item.Item;
 import model.item.Subject;
@@ -20,7 +20,6 @@ import model.item.Subject;
  * @since 2016-10-13
  * @version 1.0
  */
-@SuppressWarnings({"unchecked", "unused"})
 public class SubjectController implements Initializable {
 
   @FXML private ComboBox<Category> cbCategories;
@@ -28,18 +27,17 @@ public class SubjectController implements Initializable {
 
   private ItemHandler itemHandler;
 
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {}
+
+  public int getSubjectId() {
+    return cbSubject.getValue().getId();
+  }
+
   public void init(ItemHandler itemHandler) {
     this.itemHandler = itemHandler;
     _initCategoryList();
     _eventHandlers();
-  }
-
-  private void _initCategoryList() {
-    ObservableList<Category> options = FXCollections.observableArrayList(itemHandler.getCategories());
-
-    cbCategories.setItems(options);
-    cbCategories.getSelectionModel().select(0);
-    _setSubjectList(cbCategories.getValue());
   }
 
   public void selectCategory() {
@@ -52,8 +50,20 @@ public class SubjectController implements Initializable {
     }
   }
 
+  private void _eventHandlers() {
+    cbCategories.setOnAction(event -> _setSubjectList(cbCategories.getValue()));
+  }
+
   private Item _getItem() {
     return itemHandler.getItem();
+  }
+
+  private void _initCategoryList() {
+    ObservableList<Category> options = FXCollections.observableArrayList(itemHandler.getCategories());
+
+    cbCategories.setItems(options);
+    cbCategories.getSelectionModel().select(0);
+    _setSubjectList(cbCategories.getValue());
   }
 
   private void _setSubjectList(Category category) {
@@ -66,15 +76,4 @@ public class SubjectController implements Initializable {
     cbSubject.setItems(options);
     cbSubject.getSelectionModel().select(subject);
   }
-
-  private void _eventHandlers() {
-    cbCategories.setOnAction(event -> _setSubjectList(cbCategories.getValue()));
-  }
-
-  public int getSubjectId() {
-    return cbSubject.getValue().getId();
-  }
-
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {}
 }

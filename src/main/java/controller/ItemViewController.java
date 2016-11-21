@@ -1,18 +1,20 @@
 package controller;
 
-import handler.ItemHandler;
-import handler.MemberHandler;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
+
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -21,15 +23,14 @@ import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import org.json.JSONObject;
+
+import handler.ItemHandler;
+import handler.MemberHandler;
 import model.item.*;
 import model.member.Member;
-import org.json.JSONObject;
 import utility.Dialog;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
 
 /**
  * Controller de la fenêtre d'une fiche d'item
@@ -38,7 +39,6 @@ import java.util.ResourceBundle;
  * @since 29/11/2015
  * @version 0.1
  */
-@SuppressWarnings({"unused", "WeakerAccess", "unchecked", "ConstantConditions"})
 public class ItemViewController extends PanelController {
   private ItemHandler itemHandler;
   private WebEngine webEngine;
@@ -96,7 +96,6 @@ public class ItemViewController extends PanelController {
 
   @FXML private Button btnUpdate;
   @FXML private Button btnDelete;
-  @FXML private Button btnMerge;
 
   @FXML private Button statusUp;
   @FXML private Button statusDown;
@@ -110,9 +109,15 @@ public class ItemViewController extends PanelController {
     itemHandler = new ItemHandler();
     webEngine = statistics.getEngine();
     URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
-    webEngine.load(url.toExternalForm());
+    if (url != null) {
+      webEngine.load(url.toExternalForm());
+    }
     _eventHandlers();
     _dataBinding();
+  }
+
+  public Item getItem() {
+    return itemHandler.getItem();
   }
 
   public void loadItem(Item item) {
@@ -123,32 +128,135 @@ public class ItemViewController extends PanelController {
     _displayItem(isBook);
   }
 
-  public void loadItem(int id) {
-    loadItem(itemHandler.selectItem(id));
+  private void _dataBinding() {
+    btnReserve.managedProperty().bind(btnReserve.visibleProperty());
+    statusPane.managedProperty().bind(statusPane.visibleProperty());
+    commentPane.managedProperty().bind(commentPane.visibleProperty());
+    descriptionPane.managedProperty().bind(descriptionPane.visibleProperty());
+
+    colReservationParent.setCellValueFactory(new PropertyValueFactory<>("parentName"));
+    colReservationSeller.setCellValueFactory(new PropertyValueFactory<>("memberName"));
+    colReservationAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colReservationDate.setCellValueFactory(new PropertyValueFactory<>("dateReserved"));
+    colReservationPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+
+    colAvailableSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
+    colAvailableAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colAvailablePrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
+
+    colSoldSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
+    colSoldAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colSoldDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
+    colSoldPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
+
+    colPaidSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
+    colPaidAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colPaidDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
+    colPaidDatePaid.setCellValueFactory(new PropertyValueFactory<>("datePaid"));
+    colPaidPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
+
+    for (TableView table : _getCopyTables()) {
+      for (int i = 0; i < table.getColumns().size(); i++) {
+        TableColumn tableColumn = (TableColumn) table.getColumns().get(i);
+        //noinspection unchecked
+        tableColumn.setCellFactory(column -> new TableCell<Copy, String>() {
+          @SuppressWarnings("unchecked")
+          @Override
+          protected void updateItem(String data, boolean empty) {
+            TableRow<Copy> row = getTableRow();
+            boolean deactivated = data != null &&
+                                  !row.getItem().isDonated() &&
+                                  row.getItem().getMember().getAccount().isDeactivated();
+
+            super.updateItem(data, empty);
+            setText(data != null ? data : "");
+            setStyle(deactivated ? "-fx-background-color: grey" : "");
+            setTextFill(deactivated ? Color.WHITE : Color.BLACK);
+          }
+        });
+      }
+    }
   }
 
-  public void loadItem(String ean13) {
-    loadItem(itemHandler.selectItem(ean13));
+  private void _displayBook() {
+    Book book = (Book) getItem();
+
+    lblComment.setText(book.getDescription());
+    lblPublication.setText(book.getPublication());
+    lblAuthor.setText(book.getAuthorString());
+    lblEditor.setText(book.getEditor());
+    lblEdition.setText(Integer.toString(book.getEdition()));
+    lblStatus.setText(book.getStatus());
+    _displayStatusButtons();
   }
 
-  public Item getItem() {
-    return itemHandler.getItem();
+  private void _displayCopies() {
+    tblReservations.setItems(FXCollections.observableArrayList(getItem().getReserved()));
+    tblAvailable.setItems(FXCollections.observableArrayList(getItem().getAvailable()));
+    tblSold.setItems(FXCollections.observableArrayList(getItem().getSold()));
+    tblPaid.setItems(FXCollections.observableArrayList(getItem().getPaid()));
+
+    tblReservations.refresh();
+    tblAvailable.refresh();
+    tblSold.refresh();
+    tblPaid.refresh();
+
+    tblReservations.setVisible(!tblReservations.getItems().isEmpty());
+    tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
+    tblSold.setVisible(!tblSold.getItems().isEmpty());
+    tblPaid.setVisible(!tblPaid.getItems().isEmpty());
+    btnReserve.setVisible(tblAvailable.getItems().isEmpty());
+
+    _displayStats();
   }
 
-  public TableView[] getCopyTables() {
-    return new TableView[]{ tblAvailable, tblSold, tblPaid };
+  private void _displayItem(boolean isBook) {
+    lblTitle.setText(getItem().getName());
+    lblSubject.setText(getItem().getSubject().getName());
+    lblCategory.setText(getItem().getSubject().getCategory().getName());
+    lblEan13.setText(getItem().getEan13());
+    lblStorage.setText(getItem().getStorageString());
+
+    descriptionPane.setVisible(!isBook);
+    statusPane.setVisible(isBook);
+    commentPane.setVisible(isBook);
+
+    if (isBook) {
+      _displayBook();
+    } else {
+      lblDescription.setText(getItem().getDescription());
+    }
+
+    _displayCopies();
   }
 
-  public Button getBtnUpdate() {
-    return btnUpdate;
+  private void _displayStats() {
+    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
+    JSONObject stats = getItem().inventory();
+    if (url != null) {
+      webEngine.load(url.toExternalForm() + "?data=" + stats.toString());
+    }
+
+    String maximum = getItem().maximumPriceTotal() + "$ (" + getItem().maximumPriceStock() + "$ en stock)";
+    String average = getItem().averagePriceTotal() + "$ (" + getItem().averagePriceStock() + "$ en stock)";
+    String minimum = getItem().minimumPriceTotal() + "$ (" + getItem().minimumPriceStock() + "$ en stock)";
+    lblMaximum.setText(maximum);
+    lblAverage.setText(average);
+    lblMinimum.setText(minimum);
+  }
+
+  private void _displayStatusButtons() {
+    Book book = (Book) getItem();
+    statusUp.setVisible(!book.getStatus().equals(Book.STATUS_VALID));
+    statusDown.setVisible(!book.getStatus().equals(Book.STATUS_REMOVED));
   }
 
   private void _eventHandlers() {
     btnAddComment.setOnAction(event -> {
       String title = "Modifcation du commentaire",
-             message = "Veuillez entrer le commentaire que vous souhaitez inscrire :",
-             oldComment = lblComment.getText(),
-             newComment = Dialog.input(title, message, oldComment);
+          message = "Veuillez entrer le commentaire que vous souhaitez inscrire :",
+          oldComment = lblComment.getText(),
+          newComment = Dialog.input(title, message, oldComment);
 
       if (!oldComment.equals(newComment)) {
         if (itemHandler.updateComment(getItem().getId(), newComment)) {
@@ -185,7 +293,7 @@ public class ItemViewController extends PanelController {
 
     btnStorage.setOnAction(event -> {
       String title = "Caisses de rangement",
-             message = "Veuillez noter les caisses de rangement séparer par un \";\" :";
+          message = "Veuillez noter les caisses de rangement séparer par un \";\" :";
       String input = Dialog.input(title, message, lblStorage.getText());
       String[] storageArray = input.replace(" ", "").split(";");
 
@@ -214,7 +322,7 @@ public class ItemViewController extends PanelController {
         Stage stage = (Stage) window.get("stage");
 
         searchController.getTblMemberResults().setOnMouseClicked(e -> {
-          TableRow row = _getTableRow(((Node) e.getTarget()).getParent());
+          TableRow row = getTableRow(((Node) e.getTarget()).getParent());
           Member member = (Member) row.getItem();
           stage.hide();
 
@@ -232,7 +340,7 @@ public class ItemViewController extends PanelController {
     btnDisplayReservations.setOnAction(event -> tblReservations.setVisible(!tblReservations.isVisible()));
 
     tblReservations.setOnMouseClicked(event -> {
-      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      TableRow row = getTableRow(((Node) event.getTarget()).getParent());
       Reservation reservation = (Reservation) row.getItem();
 
       if (reservation != null && isRightClick(event)) {
@@ -277,7 +385,7 @@ public class ItemViewController extends PanelController {
     btnDisplayAvailable.setOnAction(event -> tblAvailable.setVisible(!tblAvailable.isVisible()));
 
     tblAvailable.setOnMouseClicked(event -> {
-      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      TableRow row = getTableRow(((Node) event.getTarget()).getParent());
       Copy copy = (Copy) row.getItem();
 
       if (isRightClick(event)) {
@@ -317,7 +425,7 @@ public class ItemViewController extends PanelController {
             Stage stage = (Stage) window.get("stage");
 
             searchController.getTblMemberResults().setOnMouseClicked(ev -> {
-              TableRow tableRow = _getTableRow(((Node) ev.getTarget()).getParent());
+              TableRow tableRow = getTableRow(((Node) ev.getTarget()).getParent());
               Member member = (Member) tableRow.getItem();
               stage.hide();
 
@@ -349,7 +457,7 @@ public class ItemViewController extends PanelController {
     btnSold.setOnAction(event -> tblSold.setVisible(!tblSold.isVisible()));
 
     tblSold.setOnMouseClicked(event -> {
-      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      TableRow row = getTableRow(((Node) event.getTarget()).getParent());
       Copy copy = (Copy) row.getItem();
 
       if (isRightClick(event)) {
@@ -384,10 +492,10 @@ public class ItemViewController extends PanelController {
       }
     });
 
-    for (TableView table : getCopyTables()) {
+    for (TableView table : _getCopyTables()) {
       table.setOnMousePressed(event -> {
         if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
-          TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+          TableRow row = getTableRow(((Node) event.getTarget()).getParent());
           Copy copy = (Copy) row.getItem();
 
           if (copy != null) {
@@ -410,146 +518,8 @@ public class ItemViewController extends PanelController {
     }
   }
 
-  private void _dataBinding() {
-    btnReserve.managedProperty().bind(btnReserve.visibleProperty());
-    statusPane.managedProperty().bind(statusPane.visibleProperty());
-    commentPane.managedProperty().bind(commentPane.visibleProperty());
-    descriptionPane.managedProperty().bind(descriptionPane.visibleProperty());
-
-    colReservationParent.setCellValueFactory(new PropertyValueFactory<>("parentName"));
-    colReservationSeller.setCellValueFactory(new PropertyValueFactory<>("memberName"));
-    colReservationAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
-    colReservationDate.setCellValueFactory(new PropertyValueFactory<>("dateReserved"));
-    colReservationPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
-
-    colAvailableSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
-    colAvailableAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
-    colAvailablePrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
-
-    colSoldSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
-    colSoldAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
-    colSoldDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
-    colSoldPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
-
-    colPaidSeller.setCellValueFactory(new PropertyValueFactory<>("seller"));
-    colPaidAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
-    colPaidDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
-    colPaidDatePaid.setCellValueFactory(new PropertyValueFactory<>("datePaid"));
-    colPaidPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
-
-    for (TableView table : getCopyTables()) {
-      for (int i = 0; i < table.getColumns().size(); i++) {
-        TableColumn tableColumn = (TableColumn) table.getColumns().get(i);
-        tableColumn.setCellFactory(column -> new TableCell<Copy, String>() {
-          @Override
-          protected void updateItem(String data, boolean empty) {
-            TableRow<Copy> row = getTableRow();
-            boolean deactivated = data != null &&
-                                  !row.getItem().isDonated() &&
-                                  row.getItem().getMember().getAccount().isDeactivated();
-
-            super.updateItem(data, empty);
-            setText(data != null ? data : "");
-            setStyle(deactivated ? "-fx-background-color: grey" : "");
-            setTextFill(deactivated ? Color.WHITE : Color.BLACK);
-          }
-        });
-      }
-    }
-  }
-
-  private void _displayItem(boolean isBook) {
-    lblTitle.setText(getItem().getName());
-    lblSubject.setText(getItem().getSubject().getName());
-    lblCategory.setText(getItem().getSubject().getCategory().getName());
-    lblEan13.setText(getItem().getEan13());
-    lblStorage.setText(getItem().getStorageString());
-
-    descriptionPane.setVisible(!isBook);
-    statusPane.setVisible(isBook);
-    commentPane.setVisible(isBook);
-
-    if (isBook) {
-      _displayBook();
-    } else {
-      lblDescription.setText(getItem().getDescription());
-    }
-
-    _displayCopies();
-  }
-
-  private void _updatePrice(Copy copy) {
-    String titre = "Modification du price",
-           message = "Entrez le nouveau montant :";
-    boolean isDouble = false;
-    double price = copy.getPrice();
-
-    while (!isDouble) {
-      try {
-
-        price = Double.parseDouble(Dialog.input(titre, message, Double.toString(copy.getPrice())));
-        isDouble = true;
-      } catch (NumberFormatException e) {
-        Dialog.information("Vous devez entrer un montant valide");
-      }
-    }
-
-    if (itemHandler.updateCopyPrice(copy.getId(), price)) {
-      _displayCopies();
-    } else {
-      Dialog.information("Une erreur est survenue");
-    }
-  }
-
-  private void _displayBook() {
-    Book book = (Book) getItem();
-
-    lblComment.setText(book.getDescription());
-    lblPublication.setText(book.getPublication());
-    lblAuthor.setText(book.getAuthorString());
-    lblEditor.setText(book.getEditor());
-    lblEdition.setText(Integer.toString(book.getEdition()));
-    lblStatus.setText(book.getStatus());
-    _displayStatusButtons();
-  }
-
-  private void _displayStatusButtons() {
-    Book book = (Book) getItem();
-    statusUp.setVisible(!book.getStatus().equals(Book.STATUS_VALID));
-    statusDown.setVisible(!book.getStatus().equals(Book.STATUS_REMOVED));
-  }
-
-  private void _displayCopies() {
-    tblReservations.setItems(FXCollections.observableArrayList(getItem().getReserved()));
-    tblAvailable.setItems(FXCollections.observableArrayList(getItem().getAvailable()));
-    tblSold.setItems(FXCollections.observableArrayList(getItem().getSold()));
-    tblPaid.setItems(FXCollections.observableArrayList(getItem().getPaid()));
-
-    tblReservations.refresh();
-    tblAvailable.refresh();
-    tblSold.refresh();
-    tblPaid.refresh();
-
-    tblReservations.setVisible(!tblReservations.getItems().isEmpty());
-    tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
-    tblSold.setVisible(!tblSold.getItems().isEmpty());
-    tblPaid.setVisible(!tblPaid.getItems().isEmpty());
-    btnReserve.setVisible(tblAvailable.getItems().isEmpty());
-
-    _displayStats();
-  }
-
-  private void _displayStats() {
-     URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
-     JSONObject stats = getItem().inventory();
-     webEngine.load(url.toExternalForm() + "?data=" + stats.toString());
-
-     String maximum = getItem().maximumPriceTotal() + "$ (" + getItem().maximumPriceStock() + "$ en stock)";
-     String average = getItem().averagePriceTotal() + "$ (" + getItem().averagePriceStock() + "$ en stock)";
-     String minimum = getItem().minimumPriceTotal() + "$ (" + getItem().minimumPriceStock() + "$ en stock)";
-     lblMaximum.setText(maximum);
-     lblAverage.setText(average);
-     lblMinimum.setText(minimum);
+  private TableView[] _getCopyTables() {
+    return new TableView[]{ tblAvailable, tblSold, tblPaid };
   }
 
   private JSONObject _openSearchWindow() {
@@ -576,5 +546,28 @@ public class ItemViewController extends PanelController {
     }
 
     return null;
+  }
+
+  private void _updatePrice(Copy copy) {
+    String titre = "Modification du price",
+           message = "Entrez le nouveau montant :";
+    boolean isDouble = false;
+    double price = copy.getPrice();
+
+    while (!isDouble) {
+      try {
+
+        price = Double.parseDouble(Dialog.input(titre, message, Double.toString(copy.getPrice())));
+        isDouble = true;
+      } catch (NumberFormatException e) {
+        Dialog.information("Vous devez entrer un montant valide");
+      }
+    }
+
+    if (itemHandler.updateCopyPrice(copy.getId(), price)) {
+      _displayCopies();
+    } else {
+      Dialog.information("Une erreur est survenue");
+    }
   }
 }

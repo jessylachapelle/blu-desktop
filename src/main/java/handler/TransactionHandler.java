@@ -52,7 +52,7 @@ public class TransactionHandler {
   public boolean insert(int memberNo, int copyId, String type) {
     int[] copies = new int[1];
     copies[0] = copyId;
-    return insert(memberNo, copies, type);
+    return _insert(memberNo, copies, type);
   }
 
   /**
@@ -62,7 +62,7 @@ public class TransactionHandler {
    * @param type The type of transaction to insert
    * @return true If insert is successful
    */
-  public boolean insert(int memberNo, int[] copyIds, String type) {
+  private boolean _insert(int memberNo, int[] copyIds, String type) {
     JSONObject req = new JSONObject();
     JSONObject data = new JSONObject();
     JSONArray copies = new JSONArray();

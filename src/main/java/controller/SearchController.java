@@ -4,20 +4,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import handler.ItemHandler;
-import handler.MemberHandler;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
+import javafx.scene.Node;
 
-import model.item.Item;
-import model.item.Book;
+import handler.ItemHandler;
+import handler.MemberHandler;
 import handler.SearchHandler;
+import model.item.Book;
+import model.item.Item;
 import model.member.Member;
 
 /**
@@ -26,7 +26,6 @@ import model.member.Member;
  * @since 19/11/2015
  * @version 0.1
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class SearchController extends PanelController {
 
   private SearchHandler searchHandler;
@@ -57,14 +56,64 @@ public class SearchController extends PanelController {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     searchHandler = new SearchHandler();
-    dataBinding();
+    _dataBinding();
     _eventHandlers();
 
     rbMembers.setSelected(true);
     resetSearch(false);
   }
 
-  private void dataBinding() {
+  public Button getBtnAdd() {
+    return btnAdd;
+  }
+
+  public TableView<Item> getTblItemResults() {
+    return tblItemResults;
+  }
+
+  public TableView<Member> getTblMemberResults() {
+    return tblMemberResults;
+  }
+
+  public void resetSearch(boolean eraseTxtSearch) {
+    lblMessage.setVisible(true);
+    tblMemberResults.setVisible(false);
+    tblItemResults.setVisible(false);
+
+    if (eraseTxtSearch) {
+      txtSearch.setText("");
+    }
+  }
+
+  public void setParentController(PanelController controller) {
+    parentController = controller;
+  }
+
+  public void setSearchItems() {
+    rbItems.setSelected(true);
+    lblTitle.setText("Recherche d'articles");
+    _toggleFilters(false);
+  }
+
+  public void setSearchParent() {
+    rbMembers.setSelected(true);
+    cbArchive.setSelected(false);
+    lblTitle.setText("Recherche de parents-étudiants");
+    _toggleFilters(false);
+    btnAdd.setVisible(false);
+    searchHandler.setParentSearch();
+  }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {
+    if (parentController != null) {
+      parentController.handleScan(code, isItem);
+    } else {
+      super.handleScan(code, isItem);
+    }
+  }
+
+  private void _dataBinding() {
     cbArchive.managedProperty().bind(cbArchive.visibleProperty());
     rbMembers.managedProperty().bind(rbMembers.visibleProperty());
     rbItems.managedProperty().bind(rbItems.visibleProperty());
@@ -114,7 +163,7 @@ public class SearchController extends PanelController {
 
     tblMemberResults.setOnMousePressed(event -> {
       if (isDoubleClick(event)) {
-        TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+        TableRow row = getTableRow(((Node) event.getTarget()).getParent());
         Member member = (Member) row.getItem();
 
         if (member != null) {
@@ -137,7 +186,7 @@ public class SearchController extends PanelController {
 
     tblItemResults.setOnMousePressed(event -> {
       if (isDoubleClick(event)) {
-        TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+        TableRow row = getTableRow(((Node) event.getTarget()).getParent());
         Item item = (Item) row.getItem();
 
         if (item != null) {
@@ -214,22 +263,6 @@ public class SearchController extends PanelController {
     }
   }
 
-  private void _searchMembers() {
-    window.setCursor(Cursor.WAIT);
-    Task<ArrayList<Member>> t = new Task<ArrayList<Member>>() {
-      @Override
-      protected ArrayList<Member> call() throws Exception {
-        return searchHandler.searchMembers();      }
-    };
-    t.setOnSucceeded(e -> {
-      window.setCursor(Cursor.DEFAULT);
-      tblMemberResults.setItems(FXCollections.observableArrayList(t.getValue()));
-      tblMemberResults.setVisible(!tblMemberResults.getItems().isEmpty());
-      lblMessage.setText(tblMemberResults.getItems().size() + " résultats");
-    });
-    new Thread(t).start();
-  }
-
   private void _searchItems() {
     window.setCursor(Cursor.WAIT);
     Task<ArrayList<Item>> t = new Task<ArrayList<Item>>() {
@@ -247,71 +280,25 @@ public class SearchController extends PanelController {
     new Thread(t).start();
   }
 
-  public void setParentController(PanelController controller) {
-    parentController = controller;
+  private void _searchMembers() {
+    window.setCursor(Cursor.WAIT);
+    Task<ArrayList<Member>> t = new Task<ArrayList<Member>>() {
+      @Override
+      protected ArrayList<Member> call() throws Exception {
+        return searchHandler.searchMembers();      }
+    };
+    t.setOnSucceeded(e -> {
+      window.setCursor(Cursor.DEFAULT);
+      tblMemberResults.setItems(FXCollections.observableArrayList(t.getValue()));
+      tblMemberResults.setVisible(!tblMemberResults.getItems().isEmpty());
+      lblMessage.setText(tblMemberResults.getItems().size() + " résultats");
+    });
+    new Thread(t).start();
   }
 
-  public TableView<Member> getTblMemberResults() {
-    return tblMemberResults;
-  }
-
-  public TableView<Item> getTblItemResults() {
-    return tblItemResults;
-  }
-
-  public void resetSearch(boolean eraseTxtSearch) {
-    lblMessage.setVisible(true);
-    tblMemberResults.setVisible(false);
-    tblItemResults.setVisible(false);
-
-    if (eraseTxtSearch) {
-      txtSearch.setText("");
-    }
-  }
-
-  public void setSearchAll() {
-    rbMembers.setSelected(true);
-    lblTitle.setText("Recherche dans le système");
-    toggleFilters(true);
-  }
-
-  public void setSearchItems() {
-    rbItems.setSelected(true);
-    lblTitle.setText("Recherche d'articles");
-    toggleFilters(false);
-  }
-
-  public void setSearchMembers() {
-    rbMembers.setSelected(true);
-    lblTitle.setText("Recherche de membres");
-    toggleFilters(false);
-  }
-
-  public void setSearchParent() {
-    rbMembers.setSelected(true);
-    cbArchive.setSelected(false);
-    lblTitle.setText("Recherche de parents-étudiants");
-    toggleFilters(false);
-    btnAdd.setVisible(false);
-    searchHandler.setParentSearch();
-  }
-
-  public Button getBtnAdd() {
-    return btnAdd;
-  }
-
-  private void toggleFilters(boolean visible) {
+  private void _toggleFilters(boolean visible) {
     rbItems.setVisible(visible);
     rbMembers.setVisible(visible);
     cbArchive.setVisible(visible);
-  }
-
-  @Override
-  protected void handleScan(String code, boolean isItem) {
-    if (parentController != null) {
-      parentController.handleScan(code, isItem);
-    } else {
-      super.handleScan(code, isItem);
-    }
   }
 }

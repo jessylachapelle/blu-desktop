@@ -5,29 +5,29 @@ import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
 
-import handler.ItemHandler;
 import javafx.concurrent.Task;
-import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Cursor;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.Cursor;
 import javafx.scene.input.MouseButton;
 import javafx.scene.Node;
-
-import handler.MemberHandler;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import handler.ItemHandler;
+import handler.MemberHandler;
 import model.item.Book;
 import model.item.Copy;
 import model.item.Item;
@@ -35,10 +35,9 @@ import model.item.Reservation;
 import model.member.Comment;
 import model.member.Member;
 import model.member.StudentParent;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import utility.DateParser;
 import utility.Dialog;
+
 
 /**
  *
@@ -46,7 +45,6 @@ import utility.Dialog;
  * @since 2016/07/24
  * @version 1.0
  */
-@SuppressWarnings({"WeakerAccess", "unchecked", "ConstantConditions", "unused"})
 public class MemberViewController extends PanelController {
   @FXML private Button btnUpdate;
   @FXML private Button btnDelete;
@@ -117,22 +115,15 @@ public class MemberViewController extends PanelController {
     initI18n();
     webEngine = statistics.getEngine();
     URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
-    webEngine.load(url.toExternalForm());
+    if (url != null) {
+      webEngine.load(url.toExternalForm());
+    }
     _eventHandlers();
     _dataBinding();
   }
 
-  public TableView[] getCopyTables() {
-    return new TableView[]{tblAvailable, tblSold, tblPaid};
-  }
-
   public Member getMember() {
     return memberHandler.getMember();
-  }
-
-  public void loadMember(int memberNo) {
-    memberHandler.setMember(memberNo);
-    _displayMember();
   }
 
   public void loadMember(Member member) {
@@ -140,9 +131,138 @@ public class MemberViewController extends PanelController {
     _displayMember();
   }
 
-  public void loadMember(String email) {
-    memberHandler.setMember(email);
-    _displayMember();
+  private void _dataBinding() {
+    btnReactivate.managedProperty().bind(btnReactivate.visibleProperty());
+    btnReactivate.visibleProperty().bind(btnAddCopy.disableProperty());
+    reservation.managedProperty().bind(reservation.visibleProperty());
+
+    colComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
+    colCommentDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+
+    colReservationTitle.setCellValueFactory(new PropertyValueFactory<>("itemName"));
+    colReservationDateReserved.setCellValueFactory(new PropertyValueFactory<>("dateReserved"));
+    colReservationSeller.setCellValueFactory(new PropertyValueFactory<>("memberName"));
+    colReservationDateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colReservationPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
+
+    colAvailableTitle.setCellValueFactory(new PropertyValueFactory<>("name"));
+    colAvailableEdition.setCellValueFactory(new PropertyValueFactory<>("edition"));
+    colAvailableEditor.setCellValueFactory(new PropertyValueFactory<>("editor"));
+    colAvailableDateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colAvailablePrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
+
+    colSoldTitle.setCellValueFactory(new PropertyValueFactory<>("name"));
+    colSoldEdition.setCellValueFactory(new PropertyValueFactory<>("edition"));
+    colSoldEditor.setCellValueFactory(new PropertyValueFactory<>("editor"));
+    colSoldDateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colSoldDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
+    colSoldPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
+
+    colPaidTitle.setCellValueFactory(new PropertyValueFactory<>("name"));
+    colPaidEditor.setCellValueFactory(new PropertyValueFactory<>("editor"));
+    colPaidEdition.setCellValueFactory(new PropertyValueFactory<>("edition"));
+    colPaidDateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
+    colPaidDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
+    colPaidDatePaid.setCellValueFactory(new PropertyValueFactory<>("datePaid"));
+    colPaidPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
+
+    for (TableView table : _getCopyTables()) {
+      for (int i = 0; i < table.getColumns().size(); i++) {
+        TableColumn tableColumn = (TableColumn) table.getColumns().get(i);
+        //noinspection unchecked
+        tableColumn.setCellFactory(column -> new TableCell<Copy, String>() {
+          @SuppressWarnings("unchecked")
+          @Override
+          protected void updateItem(String data, boolean empty) {
+            TableRow<Copy> row = getTableRow();
+            if (row != null) {
+              boolean isBook = row.getItem() != null && row.getItem().getItem() instanceof Book;
+              boolean outdated = isBook && ((Book) row.getItem().getItem()).isOutdated();
+              boolean removed = isBook && ((Book) row.getItem().getItem()).isRemoved();
+
+              super.updateItem(data, empty);
+              setText(data != null ? data : "");
+
+              if (removed) {
+                setStyle("-fx-background-color: black");
+                setTextFill(Color.WHITE);
+              } else if (outdated) {
+                setStyle("-fx-background-color: grey");
+                setTextFill(Color.WHITE);
+              } else {
+                setStyle("");
+                setTextFill(Color.BLACK);
+              }
+            }
+          }
+        });
+      }
+    }
+  }
+
+  private void _displayAccount() {
+    lblState.setText(getMember().getAccount().isActive() ? "Compte actif" : "Compte désactivé");
+    lblRegistration.setText(getMember().getAccount().getRegistrationString());
+    lblLastActivity.setText(getMember().getAccount().getLastActivityString());
+    lblDeactivation.setText(getMember().getAccount().getDeactivationString());
+
+    btnAddCopy.setDisable(getMember().getAccount().isDeactivated());
+    btnRenew.setDisable(getMember().getAccount().isDeactivated());
+    btnPay.setDisable(getMember().getAccount().isDeactivated());
+  }
+
+  private void _displayComment() {
+    tblComments.setItems(FXCollections.observableArrayList(getMember().getAccount().getComments()));
+    tblComments.refresh();
+  }
+
+  @SuppressWarnings("unchecked")
+  private void _displayCopies() {
+    tblReservation.setItems(FXCollections.observableArrayList(getMember().getAccount().getReservation()));
+    tblAvailable.setItems(FXCollections.observableArrayList(getMember().getAccount().getAvailable()));
+    tblSold.setItems(FXCollections.observableArrayList(getMember().getAccount().getSold()));
+    tblPaid.setItems(FXCollections.observableArrayList(getMember().getAccount().getPaid()));
+
+    tblReservation.refresh();
+    tblAvailable.refresh();
+    tblSold.refresh();
+    tblPaid.refresh();
+
+    tblReservation.setVisible(!tblReservation.getItems().isEmpty());
+    tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
+    tblSold.setVisible(!tblSold.getItems().isEmpty());
+    tblPaid.setVisible(!tblPaid.getItems().isEmpty());
+
+    _displayStats();
+  }
+
+  private void _displayMember() {
+    reservation.setVisible(getMember() instanceof StudentParent);
+
+    lblName.setText(getMember().getFirstName() + " " + getMember().getLastName());
+    lblNo.setText(Integer.toString(getMember().getNo()));
+    lblAddress.setText(getMember().getAddressString());
+    lblEmail.setText(getMember().getEmail());
+
+    if (getMember().getPhone(0) != null) {
+      lblPhone1.setText(getMember().getPhone(0).toString());
+    }
+
+    if (getMember().getPhone(1) != null) {
+      lblPhone2.setText(getMember().getPhone(1).toString());
+    }
+
+    _displayAccount();
+    _displayComment();
+    _displayCopies();
+  }
+
+  private void _displayStats() {
+    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
+    JSONObject stats = getMember().getAccount().getStats();
+    if (url != null) {
+      webEngine.load(url.toExternalForm() + "?data=" + stats.toString());
+    }
   }
 
   private void _eventHandlers() {
@@ -164,7 +284,7 @@ public class MemberViewController extends PanelController {
     });
 
     tblReservation.setOnMouseClicked(event -> {
-      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      TableRow row = getTableRow(((Node) event.getTarget()).getParent());
       Reservation reservation = (Reservation) row.getItem();
 
       if (reservation != null && event.getButton().equals(MouseButton.SECONDARY)) {
@@ -207,7 +327,7 @@ public class MemberViewController extends PanelController {
     });
 
     tblAvailable.setOnMouseClicked(event -> {
-      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      TableRow row = getTableRow(((Node) event.getTarget()).getParent());
       Copy copy = (Copy) row.getItem();
 
       if (isRightClick(event)) {
@@ -247,7 +367,7 @@ public class MemberViewController extends PanelController {
             Stage stage = (Stage) window.get("stage");
 
             searchController.getTblMemberResults().setOnMouseClicked(ev -> {
-              TableRow tableRow = _getTableRow(((Node) ev.getTarget()).getParent());
+              TableRow tableRow = getTableRow(((Node) ev.getTarget()).getParent());
               Member member = (Member) tableRow.getItem();
               stage.hide();
 
@@ -266,7 +386,7 @@ public class MemberViewController extends PanelController {
           boolean isDouble = false;
           double price = copy.getPrice();
           String title = "Modification du prix",
-                 message = "Entrez le nouveau montant :";
+              message = "Entrez le nouveau montant :";
 
           while (!isDouble) {
             try {
@@ -298,7 +418,7 @@ public class MemberViewController extends PanelController {
     });
 
     tblSold.setOnMouseClicked(event -> {
-      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      TableRow row = getTableRow(((Node) event.getTarget()).getParent());
       Copy copy = (Copy) row.getItem();
 
       if (isRightClick(event)) {
@@ -319,7 +439,7 @@ public class MemberViewController extends PanelController {
     });
 
     tblComments.setOnMouseClicked(event -> {
-      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      TableRow row = getTableRow(((Node) event.getTarget()).getParent());
 
       if (row != null) {
         Comment comment = (Comment) row.getItem();
@@ -428,7 +548,9 @@ public class MemberViewController extends PanelController {
       data.put("copies", copies);
 
       try {
-        new ProcessBuilder("x-www-browser", url.toExternalForm() + "?data=" + data.toString()).start();
+        if (url != null) {
+          new ProcessBuilder("x-www-browser", url.toExternalForm() + "?data=" + data.toString()).start();
+        }
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -457,10 +579,10 @@ public class MemberViewController extends PanelController {
 
     btnUpdate.setOnAction(e -> ((MemberFormController) loadMainPanel("layout/memberForm.fxml")).loadMember(memberHandler.getMember()));
 
-    for (TableView table : getCopyTables()) {
+    for (TableView table : _getCopyTables()) {
       table.setOnMousePressed(event -> {
         if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
-          TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+          TableRow row = getTableRow(((Node) event.getTarget()).getParent());
           Copy copy = (Copy) row.getItem();
 
           if (copy != null) {
@@ -485,134 +607,10 @@ public class MemberViewController extends PanelController {
     btnAddCopy.setOnAction(event -> ((CopyFormController) loadMainPanel("layout/copyForm.fxml")).loadMembre(memberHandler.getMember()));
   }
 
-  private void _dataBinding() {
-    btnReactivate.managedProperty().bind(btnReactivate.visibleProperty());
-    btnReactivate.visibleProperty().bind(btnAddCopy.disableProperty());
-    reservation.managedProperty().bind(reservation.visibleProperty());
-
-    colComment.setCellValueFactory(new PropertyValueFactory<>("comment"));
-    colCommentDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-
-    colReservationTitle.setCellValueFactory(new PropertyValueFactory<>("itemName"));
-    colReservationDateReserved.setCellValueFactory(new PropertyValueFactory<>("dateReserved"));
-    colReservationSeller.setCellValueFactory(new PropertyValueFactory<>("memberName"));
-    colReservationDateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
-    colReservationPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
-
-    colAvailableTitle.setCellValueFactory(new PropertyValueFactory<>("name"));
-    colAvailableEdition.setCellValueFactory(new PropertyValueFactory<>("edition"));
-    colAvailableEditor.setCellValueFactory(new PropertyValueFactory<>("editor"));
-    colAvailableDateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
-    colAvailablePrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
-
-    colSoldTitle.setCellValueFactory(new PropertyValueFactory<>("name"));
-    colSoldEdition.setCellValueFactory(new PropertyValueFactory<>("edition"));
-    colSoldEditor.setCellValueFactory(new PropertyValueFactory<>("editor"));
-    colSoldDateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
-    colSoldDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
-    colSoldPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
-
-    colPaidTitle.setCellValueFactory(new PropertyValueFactory<>("name"));
-    colPaidEditor.setCellValueFactory(new PropertyValueFactory<>("editor"));
-    colPaidEdition.setCellValueFactory(new PropertyValueFactory<>("edition"));
-    colPaidDateAdded.setCellValueFactory(new PropertyValueFactory<>("dateAdded"));
-    colPaidDateSold.setCellValueFactory(new PropertyValueFactory<>("dateSold"));
-    colPaidDatePaid.setCellValueFactory(new PropertyValueFactory<>("datePaid"));
-    colPaidPrice.setCellValueFactory(new PropertyValueFactory<>("priceString"));
-
-    for (TableView table : getCopyTables()) {
-      for (int i = 0; i < table.getColumns().size(); i++) {
-        TableColumn tableColumn = (TableColumn) table.getColumns().get(i);
-        tableColumn.setCellFactory(column -> new TableCell<Copy, String>() {
-          @Override
-          protected void updateItem(String data, boolean empty) {
-            TableRow<Copy> row = getTableRow();
-            if (row != null) {
-              boolean isBook = row.getItem() != null && row.getItem().getItem() instanceof Book;
-              boolean outdated = isBook && ((Book) row.getItem().getItem()).isOutdated();
-              boolean removed = isBook && ((Book) row.getItem().getItem()).isRemoved();
-
-              super.updateItem(data, empty);
-              setText(data != null ? data : "");
-
-              if (removed) {
-                setStyle("-fx-background-color: black");
-                setTextFill(Color.WHITE);
-              } else if (outdated) {
-                setStyle("-fx-background-color: grey");
-                setTextFill(Color.WHITE);
-              } else {
-                setStyle("");
-                setTextFill(Color.BLACK);
-              }
-            }
-          }
-        });
-      }
-    }
+  private TableView[] _getCopyTables() {
+    return new TableView[]{tblAvailable, tblSold, tblPaid};
   }
 
-  private void _displayAccount() {
-    lblState.setText(getMember().getAccount().isActive() ? "Compte actif" : "Compte désactivé");
-    lblRegistration.setText(getMember().getAccount().getRegistrationString());
-    lblLastActivity.setText(getMember().getAccount().getLastActivityString());
-    lblDeactivation.setText(getMember().getAccount().getDeactivationString());
-
-    btnAddCopy.setDisable(getMember().getAccount().isDeactivated());
-    btnRenew.setDisable(getMember().getAccount().isDeactivated());
-    btnPay.setDisable(getMember().getAccount().isDeactivated());
-  }
-
-  private void _displayComment() {
-    tblComments.setItems(FXCollections.observableArrayList(getMember().getAccount().getComments()));
-    tblComments.refresh();
-  }
-
-  private void _displayCopies() {
-    tblReservation.setItems(FXCollections.observableArrayList(getMember().getAccount().getReservation()));
-    tblAvailable.setItems(FXCollections.observableArrayList(getMember().getAccount().getAvailable()));
-    tblSold.setItems(FXCollections.observableArrayList(getMember().getAccount().getSold()));
-    tblPaid.setItems(FXCollections.observableArrayList(getMember().getAccount().getPaid()));
-
-    tblReservation.refresh();
-    tblAvailable.refresh();
-    tblSold.refresh();
-    tblPaid.refresh();
-
-    tblReservation.setVisible(!tblReservation.getItems().isEmpty());
-    tblAvailable.setVisible(!tblAvailable.getItems().isEmpty());
-    tblSold.setVisible(!tblSold.getItems().isEmpty());
-    tblPaid.setVisible(!tblPaid.getItems().isEmpty());
-
-    _displayStats();
-  }
-
-  private void _displayStats() {
-    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
-    JSONObject stats = getMember().getAccount().getStats();
-    webEngine.load(url.toExternalForm() + "?data=" + stats.toString());
-  }
-
-  private void _displayMember() {
-    reservation.setVisible(getMember() instanceof StudentParent);
-
-    lblName.setText(getMember().getFirstName() + " " + getMember().getLastName());
-    lblNo.setText(Integer.toString(getMember().getNo()));
-    lblAddress.setText(getMember().getAddressString());
-    lblEmail.setText(getMember().getEmail());
-
-    if (getMember().getPhone(0) != null) {
-      lblPhone1.setText(getMember().getPhone(0).toString());
-    }
-
-    if (getMember().getPhone(1) != null) {
-      lblPhone2.setText(getMember().getPhone(1).toString());
-    }
-
-    _displayAccount();
-    _displayComment();
-    _displayCopies();
-  }
   private JSONObject _openSearchWindow() {
     try {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/layout/search.fxml"));

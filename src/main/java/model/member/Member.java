@@ -10,7 +10,6 @@ import org.json.JSONObject;
  * @since 26/10/2015
  * @version 0.2
  */
-@SuppressWarnings("unused")
 public class Member {
   private int no;
   private Account account;
@@ -37,242 +36,9 @@ public class Member {
     fromJSON(json);
   }
 
-  protected void init() {
-    no = 0;
-    account = new Account();
-
-    phone = new Phone[2];
-    phone[0] = new Phone();
-    phone[1] = new Phone();
-
-    firstName = "";
-    lastName = "";
-    email = "";
-    address = "";
-    city = "";
-    state = "";
-    zip = "";
-    cityId = 0;
-    stateCode = "";
-  }
-
-  /**
-   * Accède au numéro du member
-   *
-   * @return no Le numéro du member
-   */
-  public int getNo() {
-    return no;
-  }
-
-  /**
-   * Modifie le numéro du member
-   *
-   * @param no Le numéro du member
-   */
-  public void setNo(int no) {
-    this.no = no;
-  }
-
-  /**
-   * Accède au account du member
-   *
-   * @return account Le account du member
-   */
-  public Account getAccount() {
-    return account;
-  }
-
-  /**
-   * Défini le account du member
-   *
-   * @param account Le account du member
-   */
-  public void setAccount(Account account) {
-    this.account = account;
-  }
-
-  /**
-   * Acccède a un téléphone selon un indice
-   *
-   * @param index doit être 0 ou 1
-   * @return le Téléphone
-   */
-  public Phone getPhone(int index) {
-    return phone[index];
-  }
-
-  public Phone[] getPhone() {
-    return phone;
-  }
-
-  public void setPhone(Phone phone) {
-    if (this.phone[0] == null) {
-      this.phone[0] = phone;
-    } else {
-      this.phone[1] = phone;
-    }
-  }
-
-  public void setPhone(Phone phone, int index) {
-    if (index >= 0 || index < this.phone.length) {
-      this.phone[index] = phone;
-    }
-  }
-
-  public void removePhone(int id) {
-    if (phone[1].getId() == id) {
-      phone[1] = null;
-    } else if (phone[0].getId() == id) {
-      phone[0] = phone[1];
-      phone[1] = null;
-    }
-  }
-
-  /**
-   * Accède au prénom du member
-   *
-   * @return nom Le prénom du member
-   */
-  public String getFirstName() {
-    return firstName;
-  }
-
-  /**
-   * Modifie le prénom du member
-   *
-   * @param firstName Le prénom du member
-   */
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
-
-  /**
-   * Accède au nom du member
-   *
-   * @return nom Le nom du member
-   */
-  public String getLastName() {
-    return lastName;
-  }
-
-  /**
-   * Modifie le lastName du member
-   *
-   * @param lastName Le lastName du member
-   */
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
-
-  /**
-   * Accède au email du member
-   *
-   * @return email Courriel du member
-   */
-  public String getEmail() {
-    return email;
-  }
-
-  /**
-   * Modifie le email du member
-   *
-   * @param email Le email du member
-   */
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  /**
-   * Accède au nom de la address
-   *
-   * @return address Le nom de la address
-   */
-  public String getAddress() {
-    return address;
-  }
-
-  /**
-   * Modifie le nom de la address
-   *
-   * @param address Le nom de la address
-   */
-  public void setAddress(String address) {
-    this.address = address;
-  }
-
-  public String getAddressString() {
-    return address + ", " + city + " (" + stateCode + ") " + zip;
-  }
-
-  /**
-   * Accède à la city
-   *
-   * @return city La city
-   */
-  public String getCity() {
-    return city;
-  }
-
-  /**
-   * Modifie la city
-   *
-   * @param city La city
-   */
-  public void setCity(String city) {
-    this.city = city;
-  }
-
-  /**
-   * Accède à la state
-   *
-   * @return state La state
-   */
-  public String getState() {
-    return state;
-  }
-
-  /**
-   * Modifie la state
-   *
-   * @param state La state
-   */
-  public void setState(String state) {
-    this.state = state;
-  }
-
-  /**
-   * Accède au code postal
-   *
-   * @return zip Le code postal
-   */
-  public String getZip() {
-    return zip;
-  }
-
-  /**
-   * Modifie le code postal
-   *
-   * @param zip Le code postal
-   */
-  public void setZip(String zip) {
-    this.zip = zip;
-  }
-
-  public void setCityId(int id) {
-    cityId = id;
-  }
-
-  public void setStateCode(String code) {
-    stateCode = code;
-  }
-
-  public int getCityId() {
-    return cityId;
-  }
-
-  public String getStateCode() {
-    return stateCode;
+  @Override
+  public String toString() {
+    return firstName + " " + lastName;
   }
 
   public void fromJSON(JSONObject member) {
@@ -310,6 +76,122 @@ public class Member {
     }
   }
 
+  /**
+   * Accède au nom de la address
+   *
+   * @return address Le nom de la address
+   */
+  public String getAddress() {
+    return address;
+  }
+
+  public String getAddressString() {
+    return address + ", " + city + " (" + stateCode + ") " + zip;
+  }
+
+  /**
+   * Accède à la city
+   *
+   * @return city La city
+   */
+  public String getCity() {
+    return city;
+  }
+
+  /**
+   * Accède au account du member
+   *
+   * @return account Le account du member
+   */
+  public Account getAccount() {
+    return account;
+  }
+
+  /**
+   * Accède au email du member
+   *
+   * @return email Courriel du member
+   */
+  public String getEmail() {
+    return email;
+  }
+
+  /**
+   * Accède au prénom du member
+   *
+   * @return nom Le prénom du member
+   */
+  public String getFirstName() {
+    return firstName;
+  }
+
+  /**
+   * Accède au nom du member
+   *
+   * @return nom Le nom du member
+   */
+  public String getLastName() {
+    return lastName;
+  }
+
+  /**
+   * Accède au numéro du member
+   *
+   * @return no Le numéro du member
+   */
+  public int getNo() {
+    return no;
+  }
+
+  public Phone[] getPhone() {
+    return phone;
+  }
+
+  /**
+   * Acccède a un téléphone selon un indice
+   *
+   * @param index doit être 0 ou 1
+   * @return le Téléphone
+   */
+  public Phone getPhone(int index) {
+    return phone[index];
+  }
+
+  public String getStateCode() {
+    return stateCode;
+  }
+
+  /**
+   * Accède au code postal
+   *
+   * @return zip Le code postal
+   */
+  public String getZip() {
+    return zip;
+  }
+
+  public void removePhone(int id) {
+    if (phone[1].getId() == id) {
+      phone[1] = null;
+    } else if (phone[0].getId() == id) {
+      phone[0] = phone[1];
+      phone[1] = null;
+    }
+  }
+
+  public void setCityId(int id) {
+    cityId = id;
+  }
+
+  /**
+   * Modifie le numéro du member
+   *
+   * @param no Le numéro du member
+   */
+  public void setNo(int no) {
+    this.no = no;
+  }
+
   public JSONObject toJSON() {
     JSONObject member = new JSONObject();
 
@@ -340,8 +222,22 @@ public class Member {
     return member;
   }
 
-  @Override
-  public String toString() {
-    return firstName + " " + lastName;
+  protected void init() {
+    no = 0;
+    account = new Account();
+
+    phone = new Phone[2];
+    phone[0] = new Phone();
+    phone[1] = new Phone();
+
+    firstName = "";
+    lastName = "";
+    email = "";
+    address = "";
+    city = "";
+    state = "";
+    zip = "";
+    cityId = 0;
+    stateCode = "";
   }
 }

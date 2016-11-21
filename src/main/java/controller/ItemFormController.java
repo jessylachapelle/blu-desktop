@@ -6,7 +6,8 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TabPane;
 
 import model.item.Book;
 import model.item.Item;
@@ -17,7 +18,6 @@ import model.item.Item;
  * @since 2016/08/01
  * @version 1.0
  */
-@SuppressWarnings("WeakerAccess")
 public class ItemFormController extends PanelController {
   @FXML private TabPane tabpane;
 
@@ -36,6 +36,10 @@ public class ItemFormController extends PanelController {
 
   public Button getBtnSaveItem() {
     return itemTab.getBtnSave();
+  }
+
+  public Button[] getCancelButtons() {
+    return new Button[]{bookTab.getBtnCancel(), itemTab.getBtnCancel()};
   }
 
   public Item getItem() {
@@ -61,13 +65,12 @@ public class ItemFormController extends PanelController {
     }
   }
 
-  public Button[] getCancelButtons() {
-    return new Button[]{bookTab.getBtnCAncel(), itemTab.getBtnCancel()};
-  }
-
   public boolean save() {
     return _isBookTab() ? bookTab.save() : itemTab.save();
   }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {}
 
   private boolean _isBookTab() {
     return tabpane.getSelectionModel().getSelectedItem().getText().equals("Ouvrage");
@@ -86,7 +89,4 @@ public class ItemFormController extends PanelController {
 
     return null;
   }
-
-  @Override
-  protected void handleScan(String code, boolean isItem) {}
 }

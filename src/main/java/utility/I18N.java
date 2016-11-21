@@ -1,11 +1,11 @@
 package utility;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author Jessy Lachapelle
@@ -44,11 +44,11 @@ public class I18N {
     return key;
   }
 
-  @SuppressWarnings("ConstantConditions")
   private void _init(String lang) {
     String jsonString = "";
     String path = "i18n/" + lang + ".json";
     if (this.getClass().getClassLoader().getResource(path) != null) {
+      @SuppressWarnings("ConstantConditions")
       File file = new File(this.getClass().getClassLoader().getResource(path).getFile());
 
       try (Scanner scanner = new Scanner(file)) {

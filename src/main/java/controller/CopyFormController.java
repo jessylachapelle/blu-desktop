@@ -5,14 +5,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import handler.ItemHandler;
-import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -20,17 +19,17 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-
 import javafx.scene.layout.VBox;
+
+import handler.CopyHandler;
+import handler.ItemHandler;
 import model.item.Copy;
 import model.item.Item;
-import handler.CopyHandler;
 import model.member.Member;
-
 import utility.Dialog;
 
 /**
@@ -41,10 +40,8 @@ import utility.Dialog;
  * @since 28/03/2016
  * @version 1.0
  */
-@SuppressWarnings("WeakerAccess")
 public class CopyFormController extends PanelController {
   private Controller controller;
-
   private CopyHandler copyHandler;
   private Member member;
   private ArrayList<Copy> copies;
@@ -74,6 +71,43 @@ public class CopyFormController extends PanelController {
   }
 
   /**
+   * Rendre le member actif publique
+   * @return Le member actif
+   */
+  public Member getMember() {
+    return member;
+  }
+
+  /**
+   * Ajouter les informations du member
+   * auquel ont veux ajouter des copies
+   * @param member Le member actif
+   */
+  public void loadMembre(Member member) {
+    this.member = member;
+    memberName.setText(this.member.getFirstName() + " " + this.member.getLastName());
+  }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {
+    if (isItem && currentCopy == null) {
+      ItemHandler itemHandler = new ItemHandler();
+
+      if (itemHandler.exists(code)) {
+        currentCopy = new Copy();
+        currentCopy.setItem(itemHandler.selectItem(code, true));
+        itemTitle.setText(itemHandler.getItem().getName());
+
+        _toggleView(true, false);
+      } else {
+        _displayItemForm().loadItem(code);
+      }
+    } else {
+      Dialog.information("Erreur de code", "Le code saisie n'est pas pris en charge");
+    }
+  }
+
+  /**
    * Ajout des données au tableau des copies
    */
   private void _dataBinding() {
@@ -84,9 +118,39 @@ public class CopyFormController extends PanelController {
   }
 
   /**
+   * Refraichir l'affichage du tableau d'copies ajoutés
+   */
+  private void _displayCopies() {
+    ObservableList<Copy> copiesList = FXCollections.observableArrayList(copies);
+    tblCopies.setItems(copiesList);
+    tblCopies.setVisible(!tblCopies.getItems().isEmpty());
+  }
+
+  /**
+   * Recherche le panneau d'ajout d'item
+   * @return Controller d'ajout d'articles
+   */
+  private ItemFormController _displayItemForm() {
+    controller = _loadPanel("layout/itemForm.fxml");
+    _itemFormEventHandlers();
+    return (ItemFormController) controller;
+  }
+
+  /**
+   * Affiche le panneau de recherche
+   * @return Controller de recherche
+   */
+  private SearchController _displaySearchPanel() {
+    controller = _loadPanel("layout/search.fxml");
+    _searchEventHandlers();
+    ((SearchController) controller).setParentController(this);
+    ((SearchController) controller).setSearchItems();
+    return (SearchController) controller;
+  }
+
+  /**
    * Gestion des évènements
    */
-  @SuppressWarnings("unchecked")
   private void _eventHandlers() {
     // Tape sur "Enter" dans le champs de prix
     txtPrice.setOnAction((ActionEvent event) -> btnAdd.fire());
@@ -121,7 +185,7 @@ public class CopyFormController extends PanelController {
 
     // Click droit dans la liste d'copies
     tblCopies.setOnMouseClicked((MouseEvent event) -> {
-      TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+      TableRow row = getTableRow(((Node) event.getTarget()).getParent());
       Copy copy = (Copy) row.getItem();
 
       if (copy != null && isRightClick(event)) {
@@ -143,13 +207,52 @@ public class CopyFormController extends PanelController {
     memberName.setOnMouseClicked(event -> ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(getMember()));
   }
 
-  @SuppressWarnings("unchecked")
+  private void _itemFormEventHandlers() {
+    ItemFormController itemFormController = (ItemFormController) controller;
+
+    Button[] saveButtons = new Button[]{itemFormController.getBtnSaveBook(), itemFormController.getBtnSaveItem()};
+    for (Button save : saveButtons) {
+      save.setOnAction((ActionEvent event) -> {
+        if (itemFormController.save()) {
+          currentCopy = new Copy();
+          currentCopy.setItem(itemFormController.getItem());
+          itemTitle.setText(itemFormController.getItem().getName());
+
+          _displaySearchPanel();
+          _toggleView(true, true);
+        }
+      });
+    }
+
+    for (Button cancel : itemFormController.getCancelButtons()) {
+      cancel.setOnAction((ActionEvent event) -> {
+        _displaySearchPanel();
+        event.consume();
+      });
+    }
+  }
+
+  private Controller _loadPanel(String resource) {
+    FXMLLoader loader = new FXMLLoader();
+    loader.setLocation(WindowController.class.getClassLoader().getResource(resource));
+    resources.getChildren().clear();
+
+    try {
+      resources.getChildren().add(loader.load());
+      return loader.getController();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
   private void _searchEventHandlers() {
     SearchController searchController = (SearchController) controller;
     // Double click sur un item de la liste d'articles
     searchController.getTblItemResults().setOnMousePressed((MouseEvent event) -> {
       if (isDoubleClick(event)) {
-        TableRow row = _getTableRow(((Node) event.getTarget()).getParent());
+        TableRow row = getTableRow(((Node) event.getTarget()).getParent());
         Item item = (Item) row.getItem();
 
         if (item != null) {
@@ -179,95 +282,6 @@ public class CopyFormController extends PanelController {
     _toggleView(true, false);
   }
 
-  private void _itemFormEventHandlers() {
-    ItemFormController itemFormController = (ItemFormController) controller;
-
-    Button[] saveButtons = new Button[]{itemFormController.getBtnSaveBook(), itemFormController.getBtnSaveItem()};
-    for (Button save : saveButtons) {
-      save.setOnAction((ActionEvent event) -> {
-        if (itemFormController.save()) {
-          currentCopy = new Copy();
-          currentCopy.setItem(itemFormController.getItem());
-          itemTitle.setText(itemFormController.getItem().getName());
-
-          _displaySearchPanel();
-          _toggleView(true, true);
-        }
-      });
-    }
-
-    for (Button cancel : itemFormController.getCancelButtons()) {
-      cancel.setOnAction((ActionEvent event) -> {
-        _displaySearchPanel();
-        event.consume();
-      });
-    }
-  }
-
-  /**
-   * Ajouter les informations du member
-   * auquel ont veux ajouter des copies
-   * @param member Le member actif
-   */
-  public void loadMembre(Member member) {
-    this.member = member;
-    memberName.setText(this.member.getFirstName() + " " + this.member.getLastName());
-  }
-
-  /**
-   * Rendre le member actif publique
-   * @return Le member actif
-   */
-  public Member getMember() {
-    return member;
-  }
-
-  /**
-   * Affiche le panneau de recherche
-   * @return Controller de recherche
-   */
-  private SearchController _displaySearchPanel() {
-    controller = _loadPanel("layout/search.fxml");
-    _searchEventHandlers();
-    ((SearchController) controller).setParentController(this);
-    ((SearchController) controller).setSearchItems();
-    return (SearchController) controller;
-  }
-
-  private Controller _loadPanel(String resource) {
-    FXMLLoader loader = new FXMLLoader();
-    loader.setLocation(WindowController.class.getClassLoader().getResource(resource));
-    resources.getChildren().clear();
-
-    try {
-      resources.getChildren().add(loader.load());
-      return loader.getController();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return null;
-  }
-
-  /**
-   * Recherche le panneau d'ajout d'item
-   * @return Controller d'ajout d'articles
-   */
-  private ItemFormController _displayItemForm() {
-    controller = _loadPanel("layout/itemForm.fxml");
-    _itemFormEventHandlers();
-    return (ItemFormController) controller;
-  }
-
-  /**
-   * Refraichir l'affichage du tableau d'copies ajoutés
-   */
-  private void _displayCopies() {
-    ObservableList<Copy> copiesList = FXCollections.observableArrayList(copies);
-    tblCopies.setItems(copiesList);
-    tblCopies.setVisible(!tblCopies.getItems().isEmpty());
-  }
-
   /**
    * Toggle entre la view de recherche et d'ajout de prix
    * @param resetPrice S'il faut effacer le champs de prix
@@ -284,24 +298,5 @@ public class CopyFormController extends PanelController {
 
     resources.setVisible(!resources.isVisible());
     setPrice.setVisible(!setPrice.isVisible());
-  }
-
-  @Override
-  protected void handleScan(String code, boolean isItem) {
-    if (isItem && currentCopy == null) {
-      ItemHandler itemHandler = new ItemHandler();
-
-      if (itemHandler.exists(code)) {
-        currentCopy = new Copy();
-        currentCopy.setItem(itemHandler.selectItem(code, true));
-        itemTitle.setText(itemHandler.getItem().getName());
-
-        _toggleView(true, false);
-      } else {
-        _displayItemForm().loadItem(code);
-      }
-    } else {
-      Dialog.information("Erreur de code", "Le code saisie n'est pas pris en charge");
-    }
   }
 }

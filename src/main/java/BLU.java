@@ -1,15 +1,17 @@
-import java.io.*;
+import java.io.IOException;
 
-import api.APIConnector;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import layout.FlexVBox;
+
 import org.json.JSONObject;
+
+import api.APIConnector;
+import layout.FlexVBox;
 import utility.Dialog;
 import utility.Settings;
 
@@ -19,10 +21,10 @@ import utility.Settings;
  * @since 12/11/2015
  * @version 0.1
  */
-@SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class BLU extends Application {
   // TODO: i18n
   // private static I18N i18n;
+  @SuppressWarnings({"FieldCanBeLocal", "unused"})
   private static Settings settings;
 
   public static void main(String[] args) {
@@ -35,7 +37,7 @@ public class BLU extends Application {
     // TODO: i18n
     // i18n = new I18N();
 
-    if (!hasAPIConnection()) {
+    if (!_hasAPIConnection()) {
       Dialog.information("Veuillez vérifier votre connexion au réseau puis redémarrer l'application");
       Platform.exit();
     }
@@ -62,7 +64,7 @@ public class BLU extends Application {
     }
   }
 
-  private boolean hasAPIConnection() {
+  private boolean _hasAPIConnection() {
     JSONObject res = APIConnector.call(new JSONObject());
     JSONObject data = res.optJSONObject("data");
     return data != null && data.optInt("code", 404) != 404;

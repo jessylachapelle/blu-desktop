@@ -1,9 +1,10 @@
 package handler;
 
+import org.json.JSONObject;
+
 import api.APIConnector;
 import model.item.Copy;
 import model.member.StudentParent;
-import org.json.JSONObject;
 
 /**
  * Permet de reprendre des resultset et de les transformer en objet et de
@@ -21,33 +22,6 @@ public class CopyHandler {
    */
   public CopyHandler() {
     this.copy = new Copy();
-  }
-
-  public Copy getCopy() {
-    return copy;
-  }
-  /**
-   * Modifie un copy dans la base de données
-   *
-   * @param id Le numéro de l'copy
-   * @param price Le nouveau prix
-   * @return True si l'copy a été modifié
-   */
-  public boolean updateCopyPrice(int id, double price) {
-    JSONObject req = new JSONObject();
-    JSONObject data = new JSONObject();
-
-    data.put("id", id);
-    data.put("price", price);
-
-    req.put("function", "update");
-    req.put("object", "copy");
-    req.put("data", data);
-
-    JSONObject res = APIConnector.call(req);
-    data = res.optJSONObject("data");
-
-    return data != null && data.optInt("code", 0) == 200;
   }
 
   /**
@@ -95,6 +69,34 @@ public class CopyHandler {
 
     req.put("object", "copy");
     req.put("function", "delete");
+    req.put("data", data);
+
+    JSONObject res = APIConnector.call(req);
+    data = res.optJSONObject("data");
+
+    return data != null && data.optInt("code", 0) == 200;
+  }
+
+  public Copy getCopy() {
+    return copy;
+  }
+
+  /**
+   * Modifie un copy dans la base de données
+   *
+   * @param id Le numéro de l'copy
+   * @param price Le nouveau prix
+   * @return True si l'copy a été modifié
+   */
+  public boolean updateCopyPrice(int id, double price) {
+    JSONObject req = new JSONObject();
+    JSONObject data = new JSONObject();
+
+    data.put("id", id);
+    data.put("price", price);
+
+    req.put("function", "update");
+    req.put("object", "copy");
     req.put("data", data);
 
     JSONObject res = APIConnector.call(req);

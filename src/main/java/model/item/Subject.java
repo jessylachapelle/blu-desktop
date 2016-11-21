@@ -7,7 +7,6 @@ import org.json.JSONObject;
  * @author Jessy Lachapele
  * @since 13/07/2016
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class Subject {
   private int id;
   private String name;
@@ -25,45 +24,9 @@ public class Subject {
     fromJSON(json);
   }
 
-  private void _init() {
-    id = 0;
-    name = "";
-    category = new Category();
-  }
-
-  public int getId() {
-    return id;
-  }
-  /**
-   * Get subject's name
-   * @return name Subject's name
-   */
-  public String getName() {
+  @Override
+  public String toString() {
     return name;
-  }
-
-  /**
-   * Set subject's name
-   * @param name Subject's name
-   */
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  /**
-   * Get subject's category
-   * @return category Subject's category
-   */
-  public Category getCategory() {
-    return category;
-  }
-
-  /**
-   * Set subject's category
-   * @param category Subject's category
-   */
-  public void setCategory(Category category) {
-    this.category = category;
   }
 
   /**
@@ -80,6 +43,34 @@ public class Subject {
     }
   }
 
+  /**
+   * Get subject's category
+   * @return category Subject's category
+   */
+  public Category getCategory() {
+    return category;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  /**
+   * Get subject's name
+   * @return name Subject's name
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Set subject's name
+   * @param name Subject's name
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
+
   public JSONObject toJSON() {
     JSONObject subject = new JSONObject();
 
@@ -90,8 +81,9 @@ public class Subject {
     return subject;
   }
 
-  @Override
-  public String toString() {
-    return name;
+  private void _init() {
+    id = 0;
+    name = "";
+    category = new Category();
   }
 }

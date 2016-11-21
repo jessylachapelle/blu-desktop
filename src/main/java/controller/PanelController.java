@@ -1,29 +1,78 @@
 package controller;
 
-import handler.ItemHandler;
-import handler.MemberHandler;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.scene.Cursor;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
+
+import handler.ItemHandler;
+import handler.MemberHandler;
 import model.item.Item;
 import model.member.Member;
 import utility.Settings;
-
-import java.net.URL;
-import java.util.ResourceBundle;
 
 /**
  * @author jessy on 27/09/16.
  */
 public class PanelController extends Controller {
+  public PanelController() {
+    _setScanner();
+  }
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {}
 
-  public PanelController() {
-    _setScanner();
+  protected void handleScan(String code, boolean isItem) {
+    handleScan(getMainPanel(), code, isItem);
+  }
+
+  @SuppressWarnings("WeakerAccess")
+  protected void handleScan(Pane target, String code, boolean isItem) {
+    if (isItem) {
+      ItemHandler itemHandler = new ItemHandler();
+
+      if (itemHandler.exists(code)) {
+        window.setCursor(Cursor.WAIT);
+        Task<Item> t = new Task<Item>() {
+          @Override
+          protected Item call() throws Exception {
+            return itemHandler.selectItem(code);
+          }
+        };
+        t.setOnSucceeded(e -> {
+          window.setCursor(Cursor.DEFAULT);
+          ((ItemViewController) loadPanel(target, "layout/itemView.fxml")).loadItem(t.getValue());
+        });
+        new Thread(t).start();
+      } else {
+        ((ItemFormController) loadPanel(target, "layout/itemForm.fxml")).loadItem(code);
+      }
+    } else {
+      MemberHandler memberHandler = new MemberHandler();
+      int memberNo = Integer.parseInt(code);
+
+      if(memberHandler.exist(memberNo)) {
+        window.setCursor(Cursor.WAIT);
+        Task<Member> t = new Task<Member>() {
+          @Override
+          protected Member call() throws Exception {
+            return memberHandler.selectMember(memberNo);
+          }
+        };
+        t.setOnSucceeded(e -> {
+          window.setCursor(Cursor.DEFAULT);
+          ((MemberViewController) loadPanel(target, "layout/memberView.fxml")).loadMember(t.getValue());
+        });
+        new Thread(t).start();
+      } else {
+        ((MemberFormController) loadPanel(target, "layout/memberForm.fxml")).loadMember(memberNo);
+      }
+    }
   }
 
   private void _setScanner() {
@@ -73,53 +122,5 @@ public class PanelController extends Controller {
         utility.Dialog.information("Erreur de code", "Le code saisie n'est pas pris en charge");
       }
     });
-  }
-
-  protected void handleScan(String code, boolean isItem) {
-    handleScan(getMainPanel(), code, isItem);
-  }
-
-  @SuppressWarnings("WeakerAccess")
-  protected void handleScan(Pane target, String code, boolean isItem) {
-    if (isItem) {
-      ItemHandler itemHandler = new ItemHandler();
-
-      if (itemHandler.exists(code)) {
-        window.setCursor(Cursor.WAIT);
-        Task<Item> t = new Task<Item>() {
-          @Override
-          protected Item call() throws Exception {
-            return itemHandler.selectItem(code);
-          }
-        };
-        t.setOnSucceeded(e -> {
-          window.setCursor(Cursor.DEFAULT);
-          ((ItemViewController) loadPanel(target, "layout/itemView.fxml")).loadItem(t.getValue());
-        });
-        new Thread(t).start();
-      } else {
-        ((ItemFormController) loadPanel(target, "layout/itemForm.fxml")).loadItem(code);
-      }
-    } else {
-      MemberHandler memberHandler = new MemberHandler();
-      int memberNo = Integer.parseInt(code);
-
-      if(memberHandler.exist(memberNo)) {
-        window.setCursor(Cursor.WAIT);
-        Task<Member> t = new Task<Member>() {
-          @Override
-          protected Member call() throws Exception {
-            return memberHandler.selectMember(memberNo);
-          }
-        };
-        t.setOnSucceeded(e -> {
-          window.setCursor(Cursor.DEFAULT);
-          ((MemberViewController) loadPanel(target, "layout/memberView.fxml")).loadMember(t.getValue());
-        });
-        new Thread(t).start();
-      } else {
-        ((MemberFormController) loadPanel(target, "layout/memberForm.fxml")).loadMember(memberNo);
-      }
-    }
   }
 }

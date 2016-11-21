@@ -1,27 +1,31 @@
 package controller;
 
-import handler.ItemHandler;
-
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import model.item.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import handler.ItemHandler;
+import model.item.Author;
+import model.item.Book;
+import model.item.Item;
 
 /**
  * @author Jessy Lachapelle
  * @since 2016-09-05
  * @version 1.0
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
 public class BookTabController extends PanelController {
 
   @FXML private TextField txtTitle;
@@ -54,69 +58,21 @@ public class BookTabController extends PanelController {
     authorControllers = new ArrayList<>();
     deletedAuthors = new ArrayList<>();
     _addAuthor();
-    updateAuthorButtons();
+    _updateAuthorButtons();
     _eventHandlers();
     _initSubjectPane();
-  }
-
-  private void _initSubjectPane() {
-    FXMLLoader loader = new FXMLLoader();
-    loader.setLocation(getClass().getClassLoader().getResource("layout/subject.fxml"));
-
-    try {
-      subject.getChildren().add(loader.load());
-      subjectController = loader.getController();
-      subjectController.init(itemHandler);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void _addAuthor() {
-    FXMLLoader loader = new FXMLLoader();
-    loader.setLocation(getClass().getClassLoader().getResource("layout/author.fxml"));
-
-    try {
-      authors.getChildren().add(loader.load());
-      authorControllers.add(loader.getController());
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void _removeAuthor(int index) {
-    if (index >= 0 && index < authorControllers.size()) {
-      int id = authorControllers.remove(index).getId();
-      authors.getChildren().remove(index);
-
-      if (id > 0) {
-        deletedAuthors.add(id);
-      }
-    }
-  }
-
-  private void removeLastAuthor() {
-    _removeAuthor(authorControllers.size() - 1);
-  }
-
-  public Button getBtnSave() {
-    return btnSave;
-  }
-
-  public Button getBtnCAncel() {
-    return btnCancel;
   }
 
   public Book getBook() {
     return (Book)itemHandler.getItem();
   }
 
-  public void loadItem(String ean13) {
-    Item item = new Book();
-    item.setEan13(ean13);
-    itemHandler.setItem(item);
-    txtEan13.setText(ean13);
-    cbHasEan13.setDisable(true);
+  public Button getBtnCancel() {
+    return btnCancel;
+  }
+
+  public Button getBtnSave() {
+    return btnSave;
   }
 
   public void loadItem(Book book) {
@@ -144,8 +100,31 @@ public class BookTabController extends PanelController {
     subjectController.selectCategory();
   }
 
+  public void loadItem(String ean13) {
+    Item item = new Book();
+    item.setEan13(ean13);
+    itemHandler.setItem(item);
+    txtEan13.setText(ean13);
+    cbHasEan13.setDisable(true);
+  }
+
   public boolean save() {
     return itemHandler.saveItem(_toJSON());
+  }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {}
+
+  private void _addAuthor() {
+    FXMLLoader loader = new FXMLLoader();
+    loader.setLocation(getClass().getClassLoader().getResource("layout/author.fxml"));
+
+    try {
+      authors.getChildren().add(loader.load());
+      authorControllers.add(loader.getController());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private boolean _canSave() {
@@ -158,10 +137,77 @@ public class BookTabController extends PanelController {
     }
 
     return !txtTitle.getText().isEmpty() &&
-           !txtEditor.getText().isEmpty() &&
-           !txtPublication.getText().isEmpty() &&
-           validAuthors &&
-           (!txtEan13.getText().isEmpty() || cbHasEan13.isSelected());
+        !txtEditor.getText().isEmpty() &&
+        !txtPublication.getText().isEmpty() &&
+        validAuthors &&
+        (!txtEan13.getText().isEmpty() || cbHasEan13.isSelected());
+  }
+
+  private void _eventHandlers() {
+    btnCancel.setOnAction(event -> {
+      if (itemHandler.getItem().getId() != 0) {
+        ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem());
+      } else {
+        loadMainPanel("layout/search.fxml");
+      }
+    });
+
+    btnSave.setOnAction(event -> {
+      if (_canSave()) {
+        if (itemHandler.saveItem(_toJSON())) {
+          ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem());
+        } else {
+          utility.Dialog.information("Une erreur est survenue");
+        }
+      } else {
+        utility.Dialog.information("Veuillez remplir tous les champs obligatoires avant de sauvegarder");
+      }
+    });
+
+    btnAddAuthor.setOnAction(event -> {
+      if (authorControllers.size() < MAX_AUTHOR) {
+        _addAuthor();
+        _updateAuthorButtons();
+      }
+    });
+
+    btnRemoveAuthor.setOnAction(event -> {
+      if (authorControllers.size() > MIN_AUTHOR) {
+        _removeLastAuthor();
+        _updateAuthorButtons();
+      }
+    });
+
+    cbHasEan13.setOnAction(e -> txtEan13.setDisable(cbHasEan13.isSelected()));
+    txtEan13.setOnKeyReleased(e -> cbHasEan13.setDisable(!txtEan13.getText().isEmpty()));
+  }
+
+  private void _initSubjectPane() {
+    FXMLLoader loader = new FXMLLoader();
+    loader.setLocation(getClass().getClassLoader().getResource("layout/subject.fxml"));
+
+    try {
+      subject.getChildren().add(loader.load());
+      subjectController = loader.getController();
+      subjectController.init(itemHandler);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void _removeAuthor(int index) {
+    if (index >= 0 && index < authorControllers.size()) {
+      int id = authorControllers.remove(index).getId();
+      authors.getChildren().remove(index);
+
+      if (id > 0) {
+        deletedAuthors.add(id);
+      }
+    }
+  }
+
+  private void _removeLastAuthor() {
+    _removeAuthor(authorControllers.size() - 1);
   }
 
   private JSONObject _toJSON() {
@@ -211,50 +257,8 @@ public class BookTabController extends PanelController {
     return form;
   }
 
-  private void _eventHandlers() {
-    btnCancel.setOnAction(event -> {
-      if (itemHandler.getItem().getId() != 0) {
-        ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem());
-      } else {
-        loadMainPanel("layout/search.fxml");
-      }
-    });
-
-    btnSave.setOnAction(event -> {
-      if (_canSave()) {
-        if (itemHandler.saveItem(_toJSON())) {
-          ((ItemViewController) loadMainPanel("layout/itemView.fxml")).loadItem(itemHandler.getItem());
-        } else {
-          utility.Dialog.information("Une erreur est survenue");
-        }
-      } else {
-        utility.Dialog.information("Veuillez remplir tous les champs obligatoires avant de sauvegarder");
-      }
-    });
-
-    btnAddAuthor.setOnAction(event -> {
-      if (authorControllers.size() < MAX_AUTHOR) {
-        _addAuthor();
-        updateAuthorButtons();
-      }
-    });
-
-    btnRemoveAuthor.setOnAction(event -> {
-      if (authorControllers.size() > MIN_AUTHOR) {
-        removeLastAuthor();
-        updateAuthorButtons();
-      }
-    });
-
-    cbHasEan13.setOnAction(e -> txtEan13.setDisable(cbHasEan13.isSelected()));
-    txtEan13.setOnKeyReleased(e -> cbHasEan13.setDisable(!txtEan13.getText().isEmpty()));
-  }
-
-  private void updateAuthorButtons() {
+  private void _updateAuthorButtons() {
     btnAddAuthor.setVisible(authorControllers.size() < MAX_AUTHOR);
     btnRemoveAuthor.setVisible(authorControllers.size() > MIN_AUTHOR);
   }
-
-  @Override
-  protected void handleScan(String code, boolean isItem) {}
 }

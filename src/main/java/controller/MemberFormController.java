@@ -4,29 +4,27 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.concurrent.Task;
-import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.control.*;
-
 import javafx.scene.layout.VBox;
-import model.member.StudentParent;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import handler.MemberHandler;
 import model.member.Member;
+import model.member.StudentParent;
 import utility.Dialog;
 
 /**
  * La classe qui fait le pont entre la vue(ajoutMembre) et le modèle
  * (gestionnaireMembre)
- *
  * @author Marc
  */
-@SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
 public class MemberFormController extends PanelController {
-  private final String DEFAULT_STATE = "QC";
+  private static final String DEFAULT_STATE = "QC";
 
   @FXML private Label lblAdd;
   @FXML private VBox commentSection;
@@ -73,15 +71,7 @@ public class MemberFormController extends PanelController {
     return memberHandler.getMember();
   }
 
-  public Member loadMember(int memberNo) {
-    insertion = true;
-    getMember().setNo(memberNo);
-    txtNo.setText(Integer.toString(memberNo));
-
-    return getMember();
-  }
-
-  Member loadMember(Member member) {
+  public Member loadMember(Member member) {
     memberHandler.setMember(member);
     insertion = false;
 
@@ -113,17 +103,16 @@ public class MemberFormController extends PanelController {
     return getMember();
   }
 
-  Member saveMember() {
-    JSONObject form = _toJSON();
-
-    if (insertion && form.length() > 0) {
-      return memberHandler.insertMember(form);
-    } else if (form.length() > 0) {
-      return memberHandler.updateMember(form);
-    }
+  public Member loadMember(int memberNo) {
+    insertion = true;
+    getMember().setNo(memberNo);
+    txtNo.setText(Integer.toString(memberNo));
 
     return getMember();
   }
+
+  @Override
+  protected void handleScan(String code, boolean isItem) {}
 
   private boolean _canSave() {
     TextField[] mandatory = { txtFirstName, txtLastName, txtEmail };
@@ -187,6 +176,45 @@ public class MemberFormController extends PanelController {
     return true;
   }
 
+  private String _capitalize(String string) {
+    if (string == null || string.isEmpty()) {
+      return "";
+    }
+
+    return string.substring(0, 1).toUpperCase() + string.substring(1);
+  }
+
+  private int _getRandomMemberNo() {
+    int no = (int) (Math.random() * (189999999 - 180000000 + 1) + 180000000);
+
+    if (memberHandler.exist(no)) {
+      return _getRandomMemberNo();
+    }
+
+    return no;
+  }
+
+  private void _eventHandlers() {
+    btnCancel.setOnAction(e -> ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(memberHandler.getMember()));
+
+    btnSave.setOnAction(e -> {
+      if (_canSave()) {
+        Member member = _saveMember();
+
+        if (member != null) {
+          ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(member);
+        } else {
+          Dialog.information("Une erreur est survenue");
+        }
+      } else {
+        Dialog.information("Assurez-vous d'avoir bien rempli tous les champs obligatoires avant d'enregistrer");
+      }
+    });
+
+    cbGenerateMemberNo.setOnAction(e -> txtNo.setDisable(cbGenerateMemberNo.isSelected()));
+
+    txtNo.setOnKeyReleased(e -> cbGenerateMemberNo.setDisable(!txtNo.getText().isEmpty()));
+  }
 
   /**
    * Rajout les choix de cbState au CbBox
@@ -194,6 +222,18 @@ public class MemberFormController extends PanelController {
   private void _populeState() {
     cbState.setItems(FXCollections.observableArrayList(memberHandler.getStates()));
     cbState.setValue(DEFAULT_STATE);
+  }
+
+  private Member _saveMember() {
+    JSONObject form = _toJSON();
+
+    if (insertion && form.length() > 0) {
+      return memberHandler.insertMember(form);
+    } else if (form.length() > 0) {
+      return memberHandler.updateMember(form);
+    }
+
+    return getMember();
   }
 
   private JSONObject _toJSON() {
@@ -210,11 +250,11 @@ public class MemberFormController extends PanelController {
     }
 
     if (!txtLastName.getText().equals(getMember().getLastName())) {
-      form.put("last_name", capitalize(txtLastName.getText()));
+      form.put("last_name", _capitalize(txtLastName.getText()));
     }
 
     if (!txtFirstName.getText().equals(getMember().getFirstName())) {
-      form.put("first_name", capitalize(txtFirstName.getText()));
+      form.put("first_name", _capitalize(txtFirstName.getText()));
     }
 
     if (!txtAddress.getText().equals(getMember().getAddress())) {
@@ -230,7 +270,7 @@ public class MemberFormController extends PanelController {
       JSONObject state = new JSONObject();
 
       state.put("code", cbState.getValue());
-      city.put("name", capitalize(txtCity.getText()));
+      city.put("name", _capitalize(txtCity.getText()));
       city.put("state", state);
       form.put("city", city);
     }
@@ -277,47 +317,4 @@ public class MemberFormController extends PanelController {
 
     return form;
   }
-
-  private int _getRandomMemberNo() {
-    int no = (int) (Math.random() * (189999999 - 180000000 + 1) + 180000000);
-
-    if (memberHandler.exist(no)) {
-      return _getRandomMemberNo();
-    }
-
-    return no;
-  }
-
-  private void _eventHandlers() {
-    btnCancel.setOnAction(e -> ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(memberHandler.getMember()));
-
-    btnSave.setOnAction(e -> {
-      if (_canSave()) {
-        Member member = saveMember();
-
-        if (member != null) {
-          ((MemberViewController) loadMainPanel("layout/memberView.fxml")).loadMember(member);
-        } else {
-          Dialog.information("Une erreur est survenue");
-        }
-      } else {
-        Dialog.information("Assurez-vous d'avoir bien rempli tous les champs obligatoires avant d'enregistrer");
-      }
-    });
-
-    cbGenerateMemberNo.setOnAction(e -> txtNo.setDisable(cbGenerateMemberNo.isSelected()));
-
-    txtNo.setOnKeyReleased(e -> cbGenerateMemberNo.setDisable(!txtNo.getText().isEmpty()));
-  }
-
-  private String capitalize(String string) {
-    if (string == null || string.isEmpty()) {
-      return "";
-    }
-
-    return string.substring(0, 1).toUpperCase() + string.substring(1);
-  }
-
-  @Override
-  protected void handleScan(String code, boolean isItem) {}
 }

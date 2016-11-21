@@ -1,17 +1,17 @@
 package model.item;
 
-import model.member.StudentParent;
-import org.json.JSONObject;
-import utility.DateParser;
-
 import java.util.Date;
+
+import org.json.JSONObject;
+
+import model.member.StudentParent;
+import utility.DateParser;
 
 /**
  * @author Jessy Lachapelle
  * @since 23/07/16
  * @version 0.1
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class Reservation {
   private int id;
   private StudentParent parent;
@@ -39,55 +39,6 @@ public class Reservation {
     fromJSON(reservation);
   }
 
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public Item getItem() {
-    return item;
-  }
-
-  public void setItem(Item item) {
-    this.item = item;
-  }
-
-  public Copy getCopy() {
-    return copy;
-  }
-
-  public void setCopy(Copy copy) {
-    this.copy = copy;
-  }
-
-  private void _init() {
-    parent = new StudentParent();
-    date = new Date();
-    item = new Book();
-    copy = new Copy();
-  }
-
-  public StudentParent getParent() {
-    return parent;
-  }
-
-  public void setParent(StudentParent parent) {
-    this.parent = parent;
-  }
-
-
-  public Date getDate() {
-    return date;
-  }
-
-  public void setDate(Date date) {
-    this.date = date;
-  }
-
   public void fromJSON(JSONObject reservation) {
     if (reservation.has("date")) {
       date = DateParser.dateFromString(reservation.getString("date"));
@@ -109,6 +60,76 @@ public class Reservation {
     }
   }
 
+  public Copy getCopy() {
+    return copy;
+  }
+
+  public Date getDate() {
+    return date;
+  }
+
+  @SuppressWarnings("unused")
+  public String getDateAdded() {
+    return copy.getDateAdded();
+  }
+
+  @SuppressWarnings("unused")
+  public String getDateReserved() {
+    return DateParser.dateToString(date);
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public Item getItem() {
+    return item;
+  }
+
+  @SuppressWarnings("unused")
+  public String getItemName() {
+    return item.getName();
+  }
+
+  @SuppressWarnings("unused")
+  public String getMemberName() {
+    return copy.getMember().toString();
+  }
+
+  public StudentParent getParent() {
+    return parent;
+  }
+
+  @SuppressWarnings("unused")
+  public String getParentName() {
+    return parent.toString();
+  }
+
+  @SuppressWarnings("unused")
+  public String getPrice() {
+    return copy.getDateAdded().isEmpty() ? "" : (int) Math.floor(copy.getPrice() / 2) + " $";
+  }
+
+  public void setCopy(Copy copy) {
+    this.copy = copy;
+  }
+
+  public void setDate(Date date) {
+    this.date = date;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public void setItem(Item item) {
+    this.item = item;
+  }
+
+  public void setParent(StudentParent parent) {
+    this.parent = parent;
+  }
+
   public JSONObject toJSON() {
     JSONObject reservation = new JSONObject();
 
@@ -120,27 +141,10 @@ public class Reservation {
     return reservation;
   }
 
-  public String getMemberName() {
-    return copy.getMember().toString();
-  }
-
-  public String getParentName() {
-    return parent.toString();
-  }
-
-  public String getPrice() {
-    return copy.getDateAdded().isEmpty() ? "" : (int) Math.floor(copy.getPrice() / 2) + " $";
-  }
-
-  public String getItemName() {
-    return item.getName();
-  }
-
-  public String getDateReserved() {
-    return DateParser.dateToString(date);
-  }
-
-  public String getDateAdded() {
-    return copy.getDateAdded();
+  private void _init() {
+    parent = new StudentParent();
+    date = new Date();
+    item = new Book();
+    copy = new Copy();
   }
 }

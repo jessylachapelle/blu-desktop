@@ -1,15 +1,16 @@
 package controller;
 
-import javafx.collections.FXCollections;
-import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import utility.Dialog;
-import utility.Settings;
-
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.Node;
+
+import utility.Dialog;
+import utility.Settings;
 
 /**
  *
@@ -27,10 +28,9 @@ public class SettingsController extends PanelController {
     _eventHandlers();
   }
 
-  private void _initLangList() {
-    cbLang.setItems(FXCollections.observableArrayList(Settings.supportedLang()));
-    cbLang.getSelectionModel().select(Settings.lang());
-  }
+  @Override
+  protected void handleScan(String code, boolean isItem) {}
+
 
   private void _eventHandlers() {
     btnCalibrate.setOnAction(event -> {
@@ -58,6 +58,8 @@ public class SettingsController extends PanelController {
     });
   }
 
-  @Override
-  protected void handleScan(String code, boolean isItem) {}
+  private void _initLangList() {
+    cbLang.setItems(FXCollections.observableArrayList(Settings.supportedLang()));
+    cbLang.getSelectionModel().select(Settings.lang());
+  }
 }

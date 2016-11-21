@@ -1,6 +1,7 @@
 package handler;
 
 import java.util.ArrayList;
+
 import model.item.Item;
 import model.member.Member;
 
@@ -12,7 +13,6 @@ import model.member.Member;
  * @since 05/11/2015
  * @version 0.1
  */
-@SuppressWarnings("unused")
 public class SearchHandler {
   private MemberHandler memberHandler;
   private ItemHandler itemHandler;
@@ -33,13 +33,28 @@ public class SearchHandler {
     parentOnly = false;
   }
 
+  public boolean isItemSearch() {
+    return item;
+  }
+
   /**
-   * Définie la chaîne de charactère de la searchQuery
+   * Demande aux gestionnaire d'item de faire une liste selon les propriétés
+   * définies
    *
-   * @param searchQuery La searchQuery à faire
+   * @return Liste des Articles résultant de la searchQuery
    */
-  public void setSearchQuery(String searchQuery) {
-    this.searchQuery = searchQuery;
+  public ArrayList<Item> searchItems() {
+    return itemHandler.searchItem(searchQuery, archive);
+  }
+
+  /**
+   * Demande aux gestionnaire de member de faire une liste selon les propriétés
+   * définies
+   *
+   * @return Liste des Membres résultant de la searchQuery
+   */
+  public ArrayList<Member> searchMembers() {
+    return memberHandler.searchMembers(searchQuery, archive, parentOnly);
   }
 
   /**
@@ -56,6 +71,10 @@ public class SearchHandler {
     item = false;
   }
 
+  public void setParentSearch() {
+    parentOnly = true;
+  }
+
   /**
    * Défini de chercher dans les comptes désactivés
    */
@@ -63,35 +82,12 @@ public class SearchHandler {
     this.archive = archive;
   }
 
-  public boolean isItemSearch() {
-    return item;
-  }
-
-  public boolean isMemberSearch() {
-    return !item;
-  }
-
   /**
-   * Demande aux gestionnaire de member de faire une liste selon les propriétés
-   * définies
+   * Définie la chaîne de charactère de la searchQuery
    *
-   * @return Liste des Membres résultant de la searchQuery
+   * @param searchQuery La searchQuery à faire
    */
-  public ArrayList<Member> searchMembers() {
-    return memberHandler.searchMembers(searchQuery, archive, parentOnly);
-  }
-
-  /**
-   * Demande aux gestionnaire d'item de faire une liste selon les propriétés
-   * définies
-   *
-   * @return Liste des Articles résultant de la searchQuery
-   */
-  public ArrayList<Item> searchItems() {
-    return itemHandler.searchItem(searchQuery, archive);
-  }
-
-  public void setParentSearch() {
-    parentOnly = true;
+  public void setSearchQuery(String searchQuery) {
+    this.searchQuery = searchQuery;
   }
 }

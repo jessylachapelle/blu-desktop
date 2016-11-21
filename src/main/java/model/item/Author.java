@@ -8,7 +8,6 @@ import org.json.JSONObject;
  * @author Jessy Lachapelle
  * @since 12/07/2016
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class Author {
   private int id;
   private String firstName;
@@ -20,38 +19,35 @@ public class Author {
     lastName = "";
   }
 
-  public Author(int id, String firstName, String lastName) {
-    this.id = id;
-    this.firstName = firstName;
-    this.lastName = lastName;
-  }
-
   public Author(JSONObject author) {
     fromJSON(author);
+  }
+
+  @Override
+  public String toString() {
+    return firstName + " " + lastName;
+  }
+
+  public void fromJSON(JSONObject author) {
+    id = author.optInt("id", id);
+    firstName = author.optString("first_name", firstName);
+    lastName = author.optString("last_name", lastName);
   }
 
   public int getId() {
     return id;
   }
 
-  public void setId(int id) {
-    this.id = id;
-  }
-
   public String getFirstName() {
     return firstName;
-  }
-
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
   }
 
   public String getLastName() {
     return lastName;
   }
 
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
+  public void setId(int id) {
+    this.id = id;
   }
 
   public JSONObject toJSON() {
@@ -62,16 +58,5 @@ public class Author {
     author.put("last_name", lastName);
 
     return author;
-  }
-
-  public void fromJSON(JSONObject author) {
-    id = author.optInt("id", id);
-    firstName = author.optString("first_name", firstName);
-    lastName = author.optString("last_name", lastName);
-  }
-
-  @Override
-  public String toString() {
-    return firstName + " " + lastName;
   }
 }
