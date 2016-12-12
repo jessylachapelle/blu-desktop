@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,36 +17,42 @@ import org.json.JSONObject;
  * @version 1.0
  */
 public class Settings {
-  private static final String FILE = "settings.json";
+  private static final String FILE = System.getProperty("user.dir") + "/settings.json";
   private static JSONObject settings;
 
   public Settings() {
-    if (getClass().getClassLoader().getResource(FILE) != null) {
-      @SuppressWarnings("ConstantConditions")
-      File file = new File(getClass().getClassLoader().getResource(FILE).getFile());
+    File file = new File(FILE);
 
-      try (Scanner scanner = new Scanner(file)) {
-        String jsonString = "";
+    try {
+      Scanner scanner = new Scanner(file);
+      String jsonString = "";
 
-        while (scanner.hasNext()) {
-          jsonString += scanner.nextLine();
-        }
-
-        settings = new JSONObject(jsonString);
-        scanner.close();
-      } catch (FileNotFoundException | JSONException e) {
-        e.printStackTrace();
-        settings = new JSONObject();
+      while (scanner.hasNext()) {
+        jsonString += scanner.nextLine();
       }
+
+      settings = new JSONObject(jsonString);
+      scanner.close();
+    } catch (FileNotFoundException | JSONException e) {
+      e.printStackTrace();
+      settings = new JSONObject();
     }
   }
 
   public static String apiKey() {
-    return settings.has("api_key") ? settings.getString("api_key") : "";
+    return settings.optString("api_key", "");
   }
 
   public static String apiUrl() {
-    return settings.has("api_url") ? settings.getString("api_url") : "";
+    return settings.optString("api_url", "");
+  }
+
+  public static String statsGridUrl() {
+    return settings.optString("stats_grid_url", "");
+  }
+
+  public static String accountStatementUrl() {
+    return settings.optString("account_statement_url", "");
   }
 
   public static String lang() {
@@ -141,8 +144,7 @@ public class Settings {
 
   private static boolean _updateSettings() {
     try {
-      @SuppressWarnings("ConstantConditions")
-      File file = new File(Settings.class.getClassLoader().getResource(FILE).getFile());
+      File file = new File(FILE);
       FileWriter fileWriter = new FileWriter(file, false);
 
       fileWriter.write(settings.toString());

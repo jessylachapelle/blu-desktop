@@ -100,24 +100,24 @@ public class PanelController extends Controller {
         return;
       }
 
-      // Student number
-      if (key.getText().equals(LAST_CHAR) && console.getItems().size() == MEMBER_CODE_LENGTH) {
-        String code = "2" + console.getItems().toString().replaceAll("[\\D]", "").substring(1, 9);
-        console.getItems().clear();
-        handleScan(code, false);
-        return;
-      }
+      if (console.getItems().size() > 1 && key.getText().equals(LAST_CHAR)) {
+        // Student number
+        if (console.getItems().size() == MEMBER_CODE_LENGTH) {
+          String code = "2" + console.getItems().toString().replaceAll("[\\D]", "").substring(1, 9);
+          console.getItems().clear();
+          handleScan(code, false);
+          return;
+        }
 
-      // Item code
-      if (key.getText().equals(LAST_CHAR) && console.getItems().size() == ITEM_CODE_LENGTH) {
-        String code = console.getItems().toString().replaceAll("[\\D]", "");
-        console.getItems().clear();
-        handleScan(code, true);
-        return;
-      }
+        // Item code
+        if (console.getItems().size() == ITEM_CODE_LENGTH) {
+          String code = console.getItems().toString().replaceAll("[\\D]", "");
+          console.getItems().clear();
+          handleScan(code, true);
+          return;
+        }
 
-      // Invalid code
-      if (key.getText().equals(LAST_CHAR)) {
+        // Invalid code
         console.getItems().clear();
         utility.Dialog.information("Erreur de code", "Le code saisie n'est pas pris en charge");
       }
