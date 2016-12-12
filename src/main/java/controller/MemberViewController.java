@@ -1,6 +1,8 @@
 package controller;
 
+import java.awt.*;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
@@ -10,6 +12,9 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseButton;
@@ -23,7 +28,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import handler.ItemHandler;
@@ -37,6 +41,7 @@ import model.member.Member;
 import model.member.StudentParent;
 import utility.DateParser;
 import utility.Dialog;
+import utility.Settings;
 
 
 /**
@@ -108,16 +113,16 @@ public class MemberViewController extends PanelController {
 
   private MemberHandler memberHandler;
   private WebEngine webEngine;
+  private static final String STATS_GRID_URL = Settings.statsGridUrl();
+  private static final String ACCOUNT_STATEMENT_URL = Settings.accountStatementUrl();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     memberHandler = new MemberHandler();
     initI18n();
     webEngine = statistics.getEngine();
-    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
-    if (url != null) {
-      webEngine.load(url.toExternalForm());
-    }
+    webEngine.load(STATS_GRID_URL);
+
     _eventHandlers();
     _dataBinding();
   }
@@ -258,11 +263,8 @@ public class MemberViewController extends PanelController {
   }
 
   private void _displayStats() {
-    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
     JSONObject stats = getMember().getAccount().getStats();
-    if (url != null) {
-      webEngine.load(url.toExternalForm() + "?data=" + stats.toString());
-    }
+    webEngine.load(STATS_GRID_URL + "?data=" + stats.toString());
   }
 
   private void _eventHandlers() {
@@ -511,48 +513,29 @@ public class MemberViewController extends PanelController {
     });
 
     btnReceipt.setOnAction(event -> {
-      URL url = getClass().getClassLoader().getResource("html/account_statement/index.html");
-      JSONObject data = new JSONObject();
-      JSONArray copies = new JSONArray();
       int amount = 0;
-
-      for (Copy copy : getMember().getAccount().getCopies()) {
-        JSONObject c = new JSONObject();
-
-        c.put("title", copy.getName());
-        c.put("price", copy.getPriceString());
-        c.put("added", copy.getDateAdded());
-        c.put("sold", copy.getDateSold());
-        c.put("paid", copy.getDatePaid());
-
-        if (copy.getItem() instanceof Book) {
-          Book book = (Book) copy.getItem();
-          c.put("editor", book.getEditor());
-          c.put("edition", book.getEdition());
-        }
-
+      for (Copy copy : getMember().getAccount().getSold()) {
         if (copy.getDateSold().equals(DateParser.dateToString(new Date()))) {
           amount += copy.getPrice();
         }
-
-        copies.put(c);
       }
 
-      data.put("name", getMember().toString());
-      data.put("no", getMember().getNo());
-      data.put("address", getMember().getAddressString());
-      data.put("email", getMember().getEmail());
-      data.put("phone1", getMember().getPhone(0).toString());
-      data.put("phone2", getMember().getPhone(1).toString());
-      data.put("amount", amount);
-      data.put("copies", copies);
+      String params = "?no=" + getMember().getNo() + "&amount=" + amount;
 
       try {
+        URL url = getClass().getClassLoader().getResource("html/account_statement/index.html");
+
         if (url != null) {
-          new ProcessBuilder("x-www-browser", url.toExternalForm() + "?data=" + data.toString()).start();
+          new ProcessBuilder("x-www-browser", url.toExternalForm() + params).start();
         }
       } catch (IOException e) {
         e.printStackTrace();
+
+        try {
+          Desktop.getDesktop().browse(new URL(ACCOUNT_STATEMENT_URL + params).toURI());
+        } catch (IOException | URISyntaxException ex) {
+          ex.printStackTrace();
+        }
       }
     });
 

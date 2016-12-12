@@ -31,6 +31,7 @@ import handler.MemberHandler;
 import model.item.*;
 import model.member.Member;
 import utility.Dialog;
+import utility.Settings;
 
 /**
  * Controller de la fenêtre d'une fiche d'item
@@ -100,18 +101,18 @@ public class ItemViewController extends PanelController {
   @FXML private Button statusUp;
   @FXML private Button statusDown;
 
-   @FXML private Label lblMaximum;
-   @FXML private Label lblAverage;
-   @FXML private Label lblMinimum;
+  @FXML private Label lblMaximum;
+  @FXML private Label lblAverage;
+  @FXML private Label lblMinimum;
+
+  private static final String STATS_GRID_URL = Settings.statsGridUrl();
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     itemHandler = new ItemHandler();
     webEngine = statistics.getEngine();
-    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
-    if (url != null) {
-      webEngine.load(url.toExternalForm());
-    }
+    webEngine.load(STATS_GRID_URL);
+
     _eventHandlers();
     _dataBinding();
   }
@@ -165,8 +166,8 @@ public class ItemViewController extends PanelController {
           protected void updateItem(String data, boolean empty) {
             TableRow<Copy> row = getTableRow();
             boolean deactivated = data != null &&
-                                  !row.getItem().isDonated() &&
-                                  row.getItem().getMember().getAccount().isDeactivated();
+                !row.getItem().isDonated() &&
+                row.getItem().getMember().getAccount().isDeactivated();
 
             super.updateItem(data, empty);
             setText(data != null ? data : "");
@@ -231,11 +232,8 @@ public class ItemViewController extends PanelController {
   }
 
   private void _displayStats() {
-    URL url = getClass().getClassLoader().getResource("html/stats_grid.html");
     JSONObject stats = getItem().inventory();
-    if (url != null) {
-      webEngine.load(url.toExternalForm() + "?data=" + stats.toString());
-    }
+    webEngine.load(STATS_GRID_URL + "?data=" + stats.toString());
 
     String maximum = getItem().maximumPriceTotal() + "$ (" + getItem().maximumPriceStock() + "$ en stock)";
     String average = getItem().averagePriceTotal() + "$ (" + getItem().averagePriceStock() + "$ en stock)";
@@ -550,7 +548,7 @@ public class ItemViewController extends PanelController {
 
   private void _updatePrice(Copy copy) {
     String titre = "Modification du price",
-           message = "Entrez le nouveau montant :";
+        message = "Entrez le nouveau montant :";
     boolean isDouble = false;
     double price = copy.getPrice();
 

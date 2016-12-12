@@ -1,0 +1,12 @@
+{
+  "supported_lang": ["fr", "en"],
+  "default_lang": "fr",
+  "lang": "fr",
+  "scan_first_char": "à",
+  "scan_last_char": "À",
+  "item_code_length": [16],
+  "api_key": "8ecf71749e3a5a5f02d585943e81849f",
+  "api_url": "http://aecs.info/blu/beta/api/index.php",
+  "stats_grid_url": "http://aecs.info/blu/beta/desktop_ressources/stats_grid.html",
+  "account_statement_url": "http://aecs.info/blu/beta/desktop_ressources/account_statement/index.html"
+}
