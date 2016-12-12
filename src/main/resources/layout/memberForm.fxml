@@ -4,16 +4,16 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import layout.DynamicScrollPane?>
+<?import layout.DynamicVBox?>
 
-
-<ScrollPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MemberFormController">
-  <VBox styleClass="main" spacing="10">
+<DynamicScrollPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MemberFormController">
+  <DynamicVBox styleClass="main" spacing="10">
     <Label styleClass="h1" fx:id="lblAdd" text="Ajouter un membre"/>
 
     <VBox styleClass="section" spacing="10">
@@ -90,5 +90,5 @@
         <Button styleClass="form-button" fx:id="btnSave" text="Ajouter"/>
       </HBox>
     </AnchorPane>
-  </VBox>
-</ScrollPane>
+  </DynamicVBox>
+</DynamicScrollPane>
